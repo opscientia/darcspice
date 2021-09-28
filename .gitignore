@@ -1,6 +1,7 @@
 # Local drivers
 *.pyc
 *~
+*DS_Store
 .pytest_cache/
 engine/__pycache__/
 engine/test/__pycache__/
