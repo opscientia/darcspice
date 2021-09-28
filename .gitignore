@@ -13,3 +13,4 @@ tags
 example_makefile
 .vim/
 tokenspiceenv/
+venv/
