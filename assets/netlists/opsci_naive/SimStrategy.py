@@ -16,8 +16,9 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
 
         #===new attributes specific to this netlist===
 
-        #initial # sellers
+        #initial # sellers and assets
         self.init_n_sellers = 1
+        self.init_n_assets = 1
 
         # (taken from constants.py)
         self.TOTAL_OCEAN_SUPPLY = 1.41e9 
