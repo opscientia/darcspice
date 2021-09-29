@@ -33,3 +33,23 @@ Since this is a naive implementation of the open science token ecosystem, it is 
 - fixed number of researchers, grant size, project length, and asset output size (not reflecting the real-world variability of research projects, which usually have teams of multiple people actively working for long periods of time)
 - fixed price for marketplace assets (clearly, different services will have different prices, datasets may vary in size, algorithms may vary in the price for their utility)
 - even distribution of funds to asset sellers (this will result in a gradual decrease in revenue/seller (since the money flowing through the marketplace is constant), which is on one hand slightly representative of the scenario where more people are selling their assets, thus increasing the competition and supply, hence lowering revenue, but on the other, it fails to represent the variability of different assets offered)
+
+### Future improvements of the model
+
+To successfully simulate a realistic open science environment, we need to add randomness to some fixed variables such as the research size, number of researchers, cost of assets, etc. Furthermore, we can make use of DataTokens and DataWallets to track different types of assets in the open science marketplace.
+
+Let's consider a simple grant model (omitting DeSci):
+1. A research grant proposal is submitted by a research team/
+2. The proposal is evaluated by a grant agency.
+3. If the grant has merit (determined by the properties of the proposal), the grant is accepted.
+Note: The grant will only be used to cover the required expenses for the research project. In the case of universities, professors receive a fixed salary from the university and the grant is only there to support their research project.
+4. The research team spends all grant money on equipment, data acquisition, computing power, etc., and writes a research paper.
+5. The research paper has some impact and continues to deliver value after the research is finished (e.g. data, algorithms, citations, etc.).
+6. The grant agency receives a portion of this additional value (for providing the grant in the first place) and part of the value goes to the research team (for doing the work).
+7. The researchers in the research team get some “reputation points” based on the value of their research and their contributions (“reputation points” may be a factor at play for getting additional grants in the future).
+
+To address point 3, we can create a list of parameters in a grant proposal that might intuitively be indicators of a worthwhile research project. All of these parameters can then serve as input to an evaluator function which will determine whether a proposal will be accepted (this is still a rather naive model, since in a fully decentralized ecosystem, the release of grants should be determined by the community, however, this approach can still be utilized as an indication of merit).
+
+These parameters may include: number of researchers, timeframe, grant size, reputation of researchers, number of deliverables, timeframe for deliverables.
+
+Reputation of researchers can itself be a return value of a multivariable function, with inputs such as: number of research papers published, previous contribution in projects, number of citations, number of algorithms/data bought by the community in the open science marketplace, etc. Contribution can be measured with something like [SourceCred](https://sourcecred.io/).
