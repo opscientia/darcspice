@@ -7,6 +7,11 @@ class SellerAgent(AgentBase):
     '''
     Seller of assets in the Opscientia Marketplace (sells data, algorithms, compute services, etc.)
     In the naive model, sellers only receive rewards at each step from the sales of their assets.
+
+    Note: there are two ways to track the increasing number of sellers and the revenue per tick. Either
+    we increase the number of sellers at each step and track the metrics from this class, or we can have 
+    just one seller agent in the loop and use the number of assets in the marketplace as an indicator of 
+    the number of sellers and their rewards.
     '''
     def __init__(self, name: str, USD: float, OCEAN: float):
         super().__init__(name, USD, OCEAN)
