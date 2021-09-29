@@ -9,7 +9,7 @@ from util.constants import S_PER_YEAR
     
 
 @enforce_types
-class MarketplacesAgent(AgentBase):
+class OpsciMarketplaceAgent(AgentBase):
     '''
     Intermediary between ResearcherAgent and SellerAgent.
     Also tracks the number and revenue of SellerAgents (by tracking 
