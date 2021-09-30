@@ -21,6 +21,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.init_n_assets = 1
 
         # (taken from constants.py)
+        self.TOTAL_MINTS = 1000 # better number to be determined
         self.TOTAL_OCEAN_SUPPLY = 1.41e9 
         self.INIT_OCEAN_SUPPLY = 0.49 * self.TOTAL_OCEAN_SUPPLY
         self.UNMINTED_OCEAN_SUPPLY = self.TOTAL_OCEAN_SUPPLY - self.INIT_OCEAN_SUPPLY
