@@ -16,13 +16,14 @@ The key metrics measured in this simulation are:
 
 ### List of Agents
 - ```ResearcherAgent```
-- ```RouterAgent```
 - ```OpsciMarketplaceAgent```
 - ```SellerAgent```
 - ```OCEANBurnerAgent```
 - ```OCEANMinterAgent```
 - ```OpscientiaDAOAgent``` (Token Treasury above)
 - ```ProposalStorageAgent``` (Research Funding Marketplace above)
+
+Note: in this implementation, the function of the ```RouterAgent``` from the diagram above can be performed by ```OCEANMinterAgent```
 
 ### Description of one step in the loop
 
@@ -31,8 +32,7 @@ The key metrics measured in this simulation are:
 1. ```ResearcherAgent``` publishes a grant proposal (fixed price) to ```ProposalStorageAgent```
 2. ```ProposalStorageAgent``` sends data about the proposal to ```OpscientiaDAOAgent```
 3. ```OpscientiaDAOAgent``` tells ```OCEANMinterAgent``` to mint the corresponding amount of OCEAN
-4. ```OCEANMinterAgent``` sends the minted OCEAN to ```RouterAgent```
-5. ```RouterAgent``` sends everything to ```ResearcherAgent```
+4. ```OCEANMinterAgent``` sends the minted OCEAN to ```ResearcherAgent```
 6. ```ResearcherAgent``` sends all funds to ```OpsciMarketplaceAgent``` and ```OCEANBurnerAgent``` in a fixed ratio
 7. ```OpsciMarketplaceAgent``` sends all funds evenly to all instances of ```SellerAgent``` and a fixed amount to ```OpscientiaDAOAgent``` (equivalent to a partial ownership of the research assets by the DAO)
 8. ```OpscientiaDAOAgent``` sends a fixed amount of OCEAN to ```OCEANBurnerAgent```
