@@ -74,18 +74,19 @@ class SimState(SimStateBase.SimStateBase):
             revenue_per_asset_per_s = 20e3 / S_PER_MONTH, #magic number
             time_step = self.ss.time_step))
 
-        new_agents.add(SellerAgent(
-            name = "seller"
-            # TODO
-        ))
-
+        # 4. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent
         new_agents.add(OpscientiaDAOAgent(
             name = "opsci_dao", USD=0.0, OCEAN=0.0,
             receiving_agents = {"ocean_burner": self.percentToBurn}))
 
+        # 5. OCEANBurnerAgent burns all funds in wallet
         new_agents.add(TokenBurnerAgent(
-            name = "opc_burner", USD=0.0, OCEAN=0.0))
+            name = "ocean_burner", USD=0.0, OCEAN=0.0))
         
+        new_agents.add(SellerAgent(
+            name = "seller"
+            # TODO
+        ))
 
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)
