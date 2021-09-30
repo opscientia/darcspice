@@ -3,6 +3,7 @@ from typing import Set
 
 from assets.agents import MinterAgents
 from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
+from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from assets.agents.opsci_agents.SellerAgent import SellerAgent
 from assets.agents.opsci_agents.OpsciMarketplaceAgent import OpsciMarketplaceAgent
 from assets.agents.opsci_agents.TokenBurnerAgent import TokenBurnerAgent
@@ -33,7 +34,8 @@ class SimState(SimStateBase.SimStateBase):
         
         #as ecosystem improves, these parameters may change / improve
         self._marketplace_percent_toll_to_ocean = 0.002 #magic number
-        self._percent_burn: float = 0.05 #to burning, vs to DAO #magic number
+        self._percent_burn: float = 0.05 #to burning, vs to OpsciMarketplace #magic number
+        self._percent_dao: float = 0.05 #to dao vs to sellers
 
         self._total_OCEAN_minted: float = 0.0
         self._total_OCEAN_burned: float = 0.0
@@ -47,32 +49,43 @@ class SimState(SimStateBase.SimStateBase):
         #Instantiate and connnect agent instances. "Wire up the circuit"
         new_agents: Set[AgentBase.AgentBase] = set()
 
+        #################### Wiring of agents that send OCEAN ####################
+        
+        # 1. MinterAgent sends funds to ResearcherAgent
+        new_agents.add(MinterAgents.OCEANLinearMinterAgent(
+            name = "minter",
+            receiving_agent_name = "researcher",
+            total_OCEAN_to_mint = ss.UNMINTED_OCEAN_SUPPLY,
+            s_between_mints = S_PER_DAY,
+            n_mints = ss.TOTAL_MINTS))
+
+        # 2. ResearcherAgent sends funds to OpsciMarketplaceAgent and to OCEANBurnerAgent
+        new_agents.add(ResearcherAgent(
+            name = "researcher", USD=0.0, OCEAN=0.0,
+            receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
+                                "ocean_burner" : self.percentToBurn}))
+
+        # 3. OpsciMarketplaceAgent sends funds to OpscientiaDAOAgent and to all instances of SellerAgent
         new_agents.add(OpsciMarketplaceAgent(
             name = "opsci_marketplace", USD=0.0, OCEAN=0.0,
-            toll_agent_name = "opc_address",
+            receiving_agents = {"opsci_dao" : self.percentToOpsciDAO,
+                                "seller" : self.percentToSellers},
             n_assets = float(ss.init_n_assets),
             revenue_per_asset_per_s = 20e3 / S_PER_MONTH, #magic number
-            time_step = self.ss.time_step,
-            ))
+            time_step = self.ss.time_step))
 
-        new_agents.add(RouterAgent(
-            name = "opc_address", USD=0.0, OCEAN=0.0,
-            receiving_agents = {"ocean_dao" : self.percentToOceanDao,
-                                "opc_burner" : self.percentToBurn}))
+        new_agents.add(SellerAgent(
+            name = "seller"
+            # TODO
+        ))
+
+        new_agents.add(OpscientiaDAOAgent(
+            name = "opsci_dao", USD=0.0, OCEAN=0.0,
+            receiving_agents = {"ocean_burner": self.percentToBurn}))
 
         new_agents.add(TokenBurnerAgent(
             name = "opc_burner", USD=0.0, OCEAN=0.0))
-
-        #func = MinterAgents.ExpFunc(H=4.0)
-        func = MinterAgents.RampedExpFunc(H=4.0,
-                                          T0=0.5, T1=1.0, T2=1.4, T3=3.0,
-                                          M1=0.10, M2=0.25, M3=0.50)
-        new_agents.add(MinterAgents.OCEANFuncMinterAgent(
-            name = "ocean_51",
-            receiving_agent_name = "ocean_dao",
-            total_OCEAN_to_mint = ss.UNMINTED_OCEAN_SUPPLY,
-            s_between_mints = S_PER_DAY,
-            func = func))
+        
 
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)
@@ -93,8 +106,14 @@ class SimState(SimStateBase.SimStateBase):
     def percentToBurn(self) -> float:
         return self._percent_burn
 
-    def percentToOceanDao(self) -> float:
+    def percentToOpsciMrkt(self) -> float:
         return 1.0 - self._percent_burn
+    
+    def percentToOpsciDAO(self) -> float:
+        return self._percent_dao
+
+    def percentToSellers(self) -> float:
+        return 1.0 - self._percent_dao
     
     #==============================================================
     def grantTakersSpentAtTick(self) -> float:
