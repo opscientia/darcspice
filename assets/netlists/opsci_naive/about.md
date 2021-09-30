@@ -14,15 +14,25 @@ The key metrics measured in this simulation are:
 - price of OCEAN
 - monthly revenue of sellers
 
+### List of Agents
+- ```ResearcherAgent```
+- ```RouterAgent```
+- ```OpsciMarketPlaceAgent```
+- ```SellerAgent```
+- ```OCEANBurnerAgent```
+- ```OCEANMinterAgent```
+- ```OpscientiaDAOAgent``` (Token Treasury above)
+- ```ProposalStorageAgent``` (Research Funding Marketplace above)
+
 ### Description of one step in the loop
 
 1. ```ResearcherAgent``` publishes a grant proposal (fixed price)
 2. ```OCEANMinterAgent``` mints fixed amount of OCEAN and sends it to ```RouterAgent```
 3. ```RouterAgent``` sends the requested amount of OCEAN to ```ResearcherAgent```
-4. ```ResearcherAgent``` sends fixed amount of OCEAN to ```MarketplaceAgent``` and the rest is burned (work done)
-5. ```MarketplaceAgent``` sends all OCEAN evenly to all instances of ```SellerAgent``` and sends a fixed ratio to ```OCEANBurnerAgent``` (equivalent to a partial ownership of the research assets by the DAO)
+4. ```ResearcherAgent``` sends fixed amount of OCEAN to ```OpsciMarketplaceAgent``` and the rest is burned (work done)
+5. ```OpsciMarketplaceAgent``` sends all OCEAN evenly to all instances of ```SellerAgent``` and sends a fixed ratio to ```OCEANBurnerAgent``` (equivalent to a partial ownership of the research assets by the DAO)
 6. ```OCEANBurnerAgent``` spends everything in its wallet
-7. ```ResearcherAgent``` "publishes" *assets* to ```MarketplaceAgent``` (corresponding to ```assets += 1```)
+7. ```ResearcherAgent``` "publishes" *assets* to ```OpsciMarketplaceAgent``` (corresponding to ```assets += 1```)
 8. New ```SellerAgent``` is created (corresponding to a researcher selling *assets* from research)
 
 The diagram above shows a researcher minter, however, it will be easier if we only create a new ```SellerAgent``` rather than destroy the existing ```ResearcherAgent```, then create a new ```SellerAgent```, and then a new ```ResearcherAgent```.
