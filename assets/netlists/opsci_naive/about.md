@@ -26,6 +26,8 @@ The key metrics measured in this simulation are:
 
 ### Description of one step in the loop
 
+![](opsci_naive_step.jpeg)
+
 1. ```ResearcherAgent``` publishes a grant proposal (fixed price)
 2. ```OCEANMinterAgent``` mints fixed amount of OCEAN and sends it to ```RouterAgent```
 3. ```RouterAgent``` sends the requested amount of OCEAN to ```ResearcherAgent```
