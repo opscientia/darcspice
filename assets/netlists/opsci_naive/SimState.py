@@ -84,8 +84,7 @@ class SimState(SimStateBase.SimStateBase):
             name = "ocean_burner", USD=0.0, OCEAN=0.0))
         
         new_agents.add(SellerAgent(
-            name = "seller"
-            # TODO
+            name = "sellers", USD=0.0, OCEAN=0.0
         ))
 
         #track certain metrics over time, so that we don't have to load

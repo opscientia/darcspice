@@ -26,9 +26,9 @@ class KPIs(KPIsBase.KPIsBase):
     def takeStep(self, state):
         super().takeStep(state) #parent e.g. increments self._tick
         
-        am = state.getAgent("marketplaces1")
+        am = state.getAgent("opsci_marketplace")
         self._total_assets_per_tick.append(
-            am.getTotalAssets()) #TODO: getTotalAssets()
+            am.numAssets())
 
         sellers = state.getAgent("sellers")
         self._revenue_per_seller_per_s__per_tick.append(

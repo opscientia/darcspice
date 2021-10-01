@@ -31,6 +31,18 @@ class SellerAgent(AgentBase):
         self._OCEAN_per_tick.append(self.OCEAN())
         self._n_sellers_per_tick += 1
 
+    def revenuePerSellerPerSecond():
+        #TODO
+        return
+
+    def numSellers():
+        #TODO
+        return
+
+    def revenuePerTick():
+        #TODO
+        return
+
     def monthlyUSDreceived(self, state) -> float:
         """Amount of USD received in the past month.
         Assumes that it disburses USD as soon as it gets it."""
