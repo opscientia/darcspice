@@ -16,9 +16,12 @@ class ResearcherAgent(AgentBase):
     '''
     So far only a combination of DataconsumerAgent and GrantTakingAgent
     '''   
-    def __init__(self, name: str, USD: float, OCEAN: float):
+    def __init__(self, name: str, USD: float, OCEAN: float, 
+                 receiving_agents : dict):
         super().__init__(name, USD, OCEAN)
         self._spent_at_tick = 0.0 #USD and OCEAN (in USD) spent
+        self._receiving_agents = receiving_agents
+
         
         # self._s_since_buy = 0 # seconds since bought data
         # self._s_between_buys = 3 * constants.S_PER_DAY  # magic number
@@ -26,15 +29,26 @@ class ResearcherAgent(AgentBase):
         
     def takeStep(self, state):
         self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
-        
-        #spend it all, as soon as agent has it
-        self._transferUSD(None, self.USD())
-        self._transferOCEAN(None, self.OCEAN())
+
+        if self.USD() > 0:
+            self._disburseUSD(state)
+        if self.OCEAN() > 0:
+            self._disburseOCEAN(state)
 
         # self._s_since_buy += state.ss.time_step
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
+
+    def _disburseUSD(self, state) -> None:
+        USD = self.USD()
+        for name, computePercent in self._receiving_agents.items():
+            self._transferUSD(state.getAgent(name), computePercent() * USD)
+
+    def _disburseOCEAN(self, state) -> None:
+        OCEAN = self.OCEAN()
+        for name, computePercent in self._receiving_agents.items():
+            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
 
     # For future iterations with DTs
     '''
