@@ -173,10 +173,10 @@ def netlist_createLogData(state):
     #SimEngine already logs: Tick, Second, Min, Hour, Day, Month, Year
     #So we log other things...
 
-    am = state.getAgent("marketplaces1")
-    #s += ["; # mkts=%s" % prettyBigNum(am._n_marketplaces,F)]
+    am = state.getAgent("opsci_marketplace")
+    #s += ["; # mkts=%s" % prettyBigNum(am._n_sellers,F)]
     dataheader += ["Num_mkts"]
-    datarow += [am._n_marketplaces]
+    datarow += [am._n_sellers]
 
     onemkt_rev_mo = kpis.onemktMonthlyRevenueNow()
     onemkt_rev_yr = kpis.onemktAnnualRevenueNow()
