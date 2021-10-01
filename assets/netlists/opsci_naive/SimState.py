@@ -115,13 +115,6 @@ class SimState(SimStateBase.SimStateBase):
 
     def percentToSellers(self) -> float:
         return 1.0 - self._percent_dao
-    
-    #==============================================================
-    def grantTakersSpentAtTick(self) -> float:
-        return sum(
-            agent.spentAtTick()
-            for agent in self.agents.values()
-            if isinstance(agent, GrantTakingAgent))
 
     #==============================================================
     def OCEANprice(self) -> float:
