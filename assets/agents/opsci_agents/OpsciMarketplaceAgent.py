@@ -17,13 +17,16 @@ class OpsciMarketplaceAgent(AgentBase):
     '''
     def __init__(self,
                  name: str, USD: float, OCEAN: float,
-                 toll_agent_name: str,
+                #  toll_agent_name: str,
                  n_assets: float,
                  revenue_per_asset_per_s: float,
                  time_step: int,
+                 receiving_agents : dict
                  ):
         super().__init__(name, USD, OCEAN)
-        self._toll_agent_name: str = toll_agent_name
+        # self._toll_agent_name: str = toll_agent_name
+        self._receiving_agents = receiving_agents
+
 
         #set initial values. These grow over time.
         self._n_assets: float = n_assets
@@ -39,15 +42,30 @@ class OpsciMarketplaceAgent(AgentBase):
         
     def takeStep(self, state):
         
-        #*grow* the number of assets, and revenue per asset
-        self._n_assets *= (1.0 + mkts_growth_rate_per_tick)
-        self._revenue_per_asset_per_s *= (1.0 + mkts_growth_rate_per_tick)
+        self._n_assets += 1.0 
+        # self._revenue_per_asset_per_s *= (1.0 + mkts_growth_rate_per_tick)
 
         #compute sales -> toll -> send funds accordingly
         sales = self._salesPerTick()
         toll = sales * state.assetPercentTollToDAO() # TODO: assetPercentTollToDAO()
-        toll_agent = state.getAgent(self._toll_agent_name)
-        toll_agent.receiveUSD(toll)
+        # toll_agent = state.getAgent(self._toll_agent_name)
+        # toll_agent.receiveUSD(toll)
+
+        if self.USD() > 0:
+            self._disburseUSD(state)
+        if self.OCEAN() > 0:
+            self._disburseOCEAN(state)
+
+    def _disburseUSD(self, state) -> None:
+        USD = self.USD()
+        for name, computePercent in self._receiving_agents.items():
+            self._transferUSD(state.getAgent(name), computePercent() * USD)
+
+    def _disburseOCEAN(self, state) -> None:
+        OCEAN = self.OCEAN()
+        for name, computePercent in self._receiving_agents.items():
+            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
+
 
     def _salesPerTick(self) -> float:
         return self._n_assets * self._revenue_per_asset_per_s \
