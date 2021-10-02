@@ -32,11 +32,11 @@ class KPIs(KPIsBase.KPIsBase):
 
         sellers = state.getAgent("sellers")
         self._revenue_per_seller_per_s__per_tick.append(
-            sellers.revenuePerSellerPerSecond()) #TODO: revenuePerSellerPerSecond()
+            sellers.revenuePerSellerPerSecond())
         self._n_sellers_per_tick.append(
-            sellers.numSellers()) #TODO: NumSellers()
+            sellers.numSellers())
         self._sellers_revenue_per_tick.append(
-            sellers.revenuePerTick()) #TODO: revenuePerTick()
+            sellers._revenue_per_tick)
 
         O_minted = state.totalOCEANminted()
         O_burned = state.totalOCEANburned()
