@@ -103,6 +103,37 @@ class KPIs(KPIsBase.KPIsBase):
     def _allSellersRevenueOverInterval(self, t1: int, t2:int) -> float:
         return self._revenueOverInterval(t1, t2, self.allSellersRevenuePerSecond)
     
+#=======================================================================
+    #revenue numbers: ocean community
+    def oceanMonthlyRevenueNow(self) -> float:
+        t2 = self.elapsedTime()
+        t1 = t2 - S_PER_MONTH
+        return self._oceanRevenueOverInterval(t1, t2)
+    
+    def oceanAnnualRevenueNow(self) -> float:
+        t2 = self.elapsedTime()
+        t1 = t2 - S_PER_YEAR
+        return self._oceanRevenueOverInterval(t1, t2)
+    
+    def oceanMonthlyRevenueOneMonthAgo(self) -> float:
+        t2 = self.elapsedTime() - S_PER_MONTH
+        t1 = t2 - S_PER_MONTH
+        return self._oceanRevenueOverInterval(t1, t2)
+    
+    def oceanAnnualRevenueOneYearAgo(self) -> float:
+        t2 = self.elapsedTime() - S_PER_YEAR
+        t1 = t2 - S_PER_YEAR
+        return self._oceanRevenueOverInterval(t1, t2)
+            
+    def _oceanRevenueOverInterval(self, t1: int, t2:int) -> float:
+        return self._revenueOverInterval(t1, t2, self.oceanRevenuePerSecond)
+    
+    def oceanRevenuePerSecond(self, tick) -> float:
+        """Returns ocean's revenue per second at a given tick"""
+        return self._revenue_per_marketplace_per_s__per_tick[tick] \
+            * self._n_marketplaces__per_tick[tick] \
+            * self._marketplace_percent_toll_to_ocean__per_tick[tick]
+    
     #=======================================================================
     def _revenueOverInterval(self, t1: int, t2:int, revenuePerSecondFunc) \
         -> float:
@@ -126,6 +157,31 @@ class KPIs(KPIsBase.KPIsBase):
             
             rev += rev_this_tick
         return rev
+        
+    #=======================================================================
+    #revenue growth numbers: ocean community
+    def oceanMonthlyRevenueGrowth(self) -> float:
+        rev1 = self.oceanMonthlyRevenueOneMonthAgo()
+        rev2 = self.oceanMonthlyRevenueNow()
+        if rev1 == 0.0:
+            return INF
+        g = rev2 / rev1 - 1.0
+        return g
+    
+    def oceanAnnualRevenueGrowth(self) -> float:
+        rev1 = self.oceanAnnualRevenueOneYearAgo()
+        rev2 = self.oceanAnnualRevenueNow()
+        if rev1 == 0.0:
+            return INF
+        g = rev2 / rev1 - 1.0
+        return g
+        
+    @enforce_types
+    def valuationPS(self, p_s_ratio: float) -> float:
+        """Use Price/Sales ratio to compute valuation."""
+        annual_revenue = self.oceanAnnualRevenueNow()
+        v = valuation.firmValuationPS(annual_revenue, p_s_ratio)
+        return v
 
     #=======================================================================
     #OCEAN minted & burned per month, as a count (#) and as USD ($)
@@ -204,16 +260,16 @@ def netlist_createLogData(state):
     # datarow += [kpis.oceanMonthlyRevenueGrowth(),
     #             kpis.oceanAnnualRevenueGrowth()]
 
-    # ps30_valuation = kpis.valuationPS(30.0)
-    # dataheader += ["ps30_valuation"]
-    # datarow += [ps30_valuation]
+    ps30_valuation = kpis.valuationPS(30.0)
+    dataheader += ["ps30_valuation"]
+    datarow += [ps30_valuation]
 
-    # ov = state.overallValuation()
-    # dataheader += ["overall_valuation", "fundamentals_valuation",
-    #                "speculation_valuation"]
-    # s += ["; valn=$%s" % prettyBigNum(ov,F)]
-    # datarow += [ov, state.fundamentalsValuation(),
-    #             state.speculationValuation()]
+    ov = state.overallValuation()
+    dataheader += ["overall_valuation", "fundamentals_valuation",
+                   "speculation_valuation"]
+    s += ["; valn=$%s" % prettyBigNum(ov,F)]
+    datarow += [ov, state.fundamentalsValuation(),
+                state.speculationValuation()]
 
     tot_O_supply = state.OCEANsupply()
     s += ["; #OCEAN=%s" % prettyBigNum(tot_O_supply)]
