@@ -7,7 +7,6 @@ from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from assets.agents.opsci_agents.SellerAgent import SellerAgent
 from assets.agents.opsci_agents.OpsciMarketplaceAgent import OpsciMarketplaceAgent
 from assets.agents.opsci_agents.TokenBurnerAgent import TokenBurnerAgent
-from assets.agents.RouterAgent import RouterAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
 from util import valuation

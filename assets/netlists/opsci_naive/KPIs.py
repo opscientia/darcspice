@@ -16,6 +16,7 @@ class KPIs(KPIsBase.KPIsBase):
         #for these, append a new value with each tick
         self._total_assets_per_tick: List[float] = [] # how many assets are in the marketplace
         self._n_sellers_per_tick: List[float] = []
+        self._marketplace_percent_toll_to_ocean__per_tick: List[float] = []
         self._total_OCEAN_minted__per_tick: List[float] = []
         self._total_OCEAN_burned__per_tick: List[float] = []
         self._total_OCEAN_minted_USD__per_tick: List[float] = []
@@ -26,17 +27,20 @@ class KPIs(KPIsBase.KPIsBase):
     def takeStep(self, state):
         super().takeStep(state) #parent e.g. increments self._tick
         
-        am = state.getAgent("opsci_marketplace")
-        self._total_assets_per_tick.append(
-            am.numAssets())
+        # am = state.getAgent("opsci_marketplace")
+        # self._total_assets_per_tick.append(
+        #     am.numAssets())
 
-        sellers = state.getAgent("sellers")
+        am = state.getAgent("sellers")
         self._revenue_per_seller_per_s__per_tick.append(
-            sellers.revenuePerSellerPerSecond())
+            am.revenuePerSellerPerSecond())
         self._n_sellers_per_tick.append(
-            sellers.numSellers())
+            am.numSellers())
         self._sellers_revenue_per_tick.append(
-            sellers._revenue_per_tick)
+            am._revenue_per_tick)
+        
+        self._marketplace_percent_toll_to_ocean__per_tick.append(
+            state.marketplacePercentTollToOcean())
 
         O_minted = state.totalOCEANminted()
         O_burned = state.totalOCEANburned()
@@ -130,8 +134,8 @@ class KPIs(KPIsBase.KPIsBase):
     
     def oceanRevenuePerSecond(self, tick) -> float:
         """Returns ocean's revenue per second at a given tick"""
-        return self._revenue_per_marketplace_per_s__per_tick[tick] \
-            * self._n_marketplaces__per_tick[tick] \
+        return self._revenue_per_seller_per_s__per_tick[tick] \
+            * self._n_sellers_per_tick[tick] \
             * self._marketplace_percent_toll_to_ocean__per_tick[tick]
     
     #=======================================================================
@@ -248,17 +252,17 @@ def netlist_createLogData(state):
     dataheader += ["allSellers_rev/mo", "allSellers_rev/yr"]
     datarow += [allSellers_rev_mo, allSellers_rev_yr]        
 
-    # ocean_rev_mo = kpis.oceanMonthlyRevenueNow()
-    # ocean_rev_yr = kpis.oceanAnnualRevenueNow()
-    # #s += ["; ocean_rev/mo=$%sm,/yr=$%s" %
-    # #      (prettyBigNum(ocean_rev_mo,F), prettyBigNum(ocean_rev_yr,F))]
-    # s += ["; ocean_rev/mo=$%sm" % prettyBigNum(ocean_rev_mo,F)]
-    # dataheader += ["ocean_rev/mo", "ocean_rev/yr"]
-    # datarow += [ocean_rev_mo, ocean_rev_yr]
+    ocean_rev_mo = kpis.oceanMonthlyRevenueNow()
+    ocean_rev_yr = kpis.oceanAnnualRevenueNow()
+    #s += ["; ocean_rev/mo=$%sm,/yr=$%s" %
+    #      (prettyBigNum(ocean_rev_mo,F), prettyBigNum(ocean_rev_yr,F))]
+    s += ["; ocean_rev/mo=$%sm" % prettyBigNum(ocean_rev_mo,F)]
+    dataheader += ["ocean_rev/mo", "ocean_rev/yr"]
+    datarow += [ocean_rev_mo, ocean_rev_yr]
 
-    # dataheader += ["ocean_rev_growth/mo", "ocean_rev_growth/yr"]
-    # datarow += [kpis.oceanMonthlyRevenueGrowth(),
-    #             kpis.oceanAnnualRevenueGrowth()]
+    dataheader += ["ocean_rev_growth/mo", "ocean_rev_growth/yr"]
+    datarow += [kpis.oceanMonthlyRevenueGrowth(),
+                kpis.oceanAnnualRevenueGrowth()]
 
     ps30_valuation = kpis.valuationPS(30.0)
     dataheader += ["ps30_valuation"]
@@ -305,7 +309,7 @@ def netlist_createLogData(state):
     # dataheader += ["rnd_to_sales_ratio", "mkts_annual_growth_rate"]
     # datarow += [ratio, growth]
 
-    dao = state.getAgent("opsci_dao") #RouterAgent
+    dao = state.getAgent("opsci_dao")
     dao_USD = dao.monthlyUSDreceived(state)
     dao_OCEAN = dao.monthlyOCEANreceived(state)
     dao_OCEAN_in_USD = dao_OCEAN * O_price
