@@ -173,47 +173,47 @@ def netlist_createLogData(state):
     #SimEngine already logs: Tick, Second, Min, Hour, Day, Month, Year
     #So we log other things...
 
-    am = state.getAgent("seller")
+    am = state.getAgent("sellers")
     #s += ["; # mkts=%s" % prettyBigNum(am._n_sellers,F)]
     dataheader += ["Num_sllr"]
     datarow += [am._n_sellers]
 
-    onemkt_rev_mo = kpis.onemktMonthlyRevenueNow()
-    onemkt_rev_yr = kpis.onemktAnnualRevenueNow()
-    #s += ["; 1mkt_rev/mo=$%s,/yr=$%s" %
-    #      (prettyBigNum(onemkt_rev_mo,F), prettyBigNum(onemkt_rev_yr,F))]
-    dataheader += ["onemkt_rev/mo", "onemkt_rev/yr"]
-    datarow += [onemkt_rev_mo, onemkt_rev_yr]
+    oneSeller_rev_mo = kpis.oneSellerMonthlyRevenueNow()
+    oneSeller_rev_yr = kpis.oneSellerAnnualRevenueNow()
+    #s += ["; 1Seller_rev/mo=$%s,/yr=$%s" %
+    #      (prettyBigNum(oneSeller_rev_mo,F), prettyBigNum(oneSeller_rev_yr,F))]
+    dataheader += ["oneSeller_rev/mo", "oneSeller_rev/yr"]
+    datarow += [oneSeller_rev_mo, oneSeller_rev_yr]
 
-    allmkts_rev_mo = kpis.allmktsMonthlyRevenueNow()
-    allmkts_rev_yr = kpis.allmktsAnnualRevenueNow()
-    #s += ["; allmkts_rev/mo=$%s,/yr=$%s" %
-    #      (prettyBigNum(allmkts_rev_mo,F), prettyBigNum(allmkts_rev_yr,F))]
-    dataheader += ["allmkts_rev/mo", "allmkts_rev/yr"]
-    datarow += [allmkts_rev_mo, allmkts_rev_yr]        
+    allSellers_rev_mo = kpis.allSellersMonthlyRevenueNow()
+    allSellers_rev_yr = kpis.allSellersAnnualRevenueNow()
+    #s += ["; allSellers_rev/mo=$%s,/yr=$%s" %
+    #      (prettyBigNum(allSellers_rev_mo,F), prettyBigNum(allSellers_rev_yr,F))]
+    dataheader += ["allSellers_rev/mo", "allSellers_rev/yr"]
+    datarow += [allSellers_rev_mo, allSellers_rev_yr]        
 
-    ocean_rev_mo = kpis.oceanMonthlyRevenueNow()
-    ocean_rev_yr = kpis.oceanAnnualRevenueNow()
-    #s += ["; ocean_rev/mo=$%sm,/yr=$%s" %
-    #      (prettyBigNum(ocean_rev_mo,F), prettyBigNum(ocean_rev_yr,F))]
-    s += ["; ocean_rev/mo=$%sm" % prettyBigNum(ocean_rev_mo,F)]
-    dataheader += ["ocean_rev/mo", "ocean_rev/yr"]
-    datarow += [ocean_rev_mo, ocean_rev_yr]
+    # ocean_rev_mo = kpis.oceanMonthlyRevenueNow()
+    # ocean_rev_yr = kpis.oceanAnnualRevenueNow()
+    # #s += ["; ocean_rev/mo=$%sm,/yr=$%s" %
+    # #      (prettyBigNum(ocean_rev_mo,F), prettyBigNum(ocean_rev_yr,F))]
+    # s += ["; ocean_rev/mo=$%sm" % prettyBigNum(ocean_rev_mo,F)]
+    # dataheader += ["ocean_rev/mo", "ocean_rev/yr"]
+    # datarow += [ocean_rev_mo, ocean_rev_yr]
 
-    dataheader += ["ocean_rev_growth/mo", "ocean_rev_growth/yr"]
-    datarow += [kpis.oceanMonthlyRevenueGrowth(),
-                kpis.oceanAnnualRevenueGrowth()]
+    # dataheader += ["ocean_rev_growth/mo", "ocean_rev_growth/yr"]
+    # datarow += [kpis.oceanMonthlyRevenueGrowth(),
+    #             kpis.oceanAnnualRevenueGrowth()]
 
-    ps30_valuation = kpis.valuationPS(30.0)
-    dataheader += ["ps30_valuation"]
-    datarow += [ps30_valuation]
+    # ps30_valuation = kpis.valuationPS(30.0)
+    # dataheader += ["ps30_valuation"]
+    # datarow += [ps30_valuation]
 
-    ov = state.overallValuation()
-    dataheader += ["overall_valuation", "fundamentals_valuation",
-                   "speculation_valuation"]
-    s += ["; valn=$%s" % prettyBigNum(ov,F)]
-    datarow += [ov, state.fundamentalsValuation(),
-                state.speculationValuation()]
+    # ov = state.overallValuation()
+    # dataheader += ["overall_valuation", "fundamentals_valuation",
+    #                "speculation_valuation"]
+    # s += ["; valn=$%s" % prettyBigNum(ov,F)]
+    # datarow += [ov, state.fundamentalsValuation(),
+    #             state.speculationValuation()]
 
     tot_O_supply = state.OCEANsupply()
     s += ["; #OCEAN=%s" % prettyBigNum(tot_O_supply)]
@@ -238,18 +238,18 @@ def netlist_createLogData(state):
     dataheader += ["OCEAN_price"]
     datarow += [O_price]
 
-    gt_rev = kpis.grantTakersMonthlyRevenueNow()
-    #s += ["; r&d/mo=$%s" % prettyBigNum(gt_rev,F)]
-    dataheader += ["RND/mo"]
-    datarow += [gt_rev]
+    # gt_rev = kpis.grantTakersMonthlyRevenueNow()
+    # #s += ["; r&d/mo=$%s" % prettyBigNum(gt_rev,F)]
+    # dataheader += ["RND/mo"]
+    # datarow += [gt_rev]
 
-    ratio = kpis.mktsRNDToSalesRatio()
-    growth = ss.annualMktsGrowthRate(ratio)
-    #s += ["; r&d/sales ratio=%.2f, growth(ratio)=%.3f" % (ratio, growth)]
-    dataheader += ["rnd_to_sales_ratio", "mkts_annual_growth_rate"]
-    datarow += [ratio, growth]
+    # ratio = kpis.mktsRNDToSalesRatio()
+    # growth = ss.annualMktsGrowthRate(ratio)
+    # #s += ["; r&d/sales ratio=%.2f, growth(ratio)=%.3f" % (ratio, growth)]
+    # dataheader += ["rnd_to_sales_ratio", "mkts_annual_growth_rate"]
+    # datarow += [ratio, growth]
 
-    dao = state.getAgent("ocean_dao") #RouterAgent
+    dao = state.getAgent("opsci_dao") #RouterAgent
     dao_USD = dao.monthlyUSDreceived(state)
     dao_OCEAN = dao.monthlyOCEANreceived(state)
     dao_OCEAN_in_USD = dao_OCEAN * O_price
