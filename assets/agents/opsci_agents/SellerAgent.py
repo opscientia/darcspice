@@ -31,6 +31,7 @@ class SellerAgent(AgentBase):
         self._n_sellers: float = n_sellers
         self._revenue_per_seller_per_s: float = revenue_per_seller_per_s
         self._time_step: int = time_step
+        self._revenue_per_tick: float = 0
 
     def numSellers(self) -> float:
         return self._n_sellers
@@ -45,10 +46,11 @@ class SellerAgent(AgentBase):
         # increase the number of sellers (in the future, the number of sellers will increase 
         # based on the number of researchers in the previous step)
         self._n_sellers += 1
+        self._revenue_per_tick = self._salesPerTick()
 
-    def revenuePerTick():
-        #TODO
-        return
+    def _salesPerTick(self) -> float:
+        return self._n_sellers * self._revenue_per_seller_per_s \
+            * self._time_step
 
     def monthlyUSDreceived(self, state) -> float:
         """Amount of USD received in the past month.
