@@ -31,6 +31,12 @@ class SellerAgent(AgentBase):
         self._n_sellers: float = n_sellers
         self._revenue_per_seller_per_s: float = revenue_per_seller_per_s
         self._time_step: int = time_step
+
+    def numSellers(self) -> float:
+        return self._n_sellers
+
+    def revenuePerSellerPerSecond(self) -> float:
+        return self._revenue_per_seller_per_s
     
     def takeStep(self) -> None:
         #record what we had up until this point
@@ -39,14 +45,6 @@ class SellerAgent(AgentBase):
         # increase the number of sellers (in the future, the number of sellers will increase 
         # based on the number of researchers in the previous step)
         self._n_sellers += 1
-
-    def revenuePerSellerPerSecond():
-        #TODO
-        return
-
-    def numSellers():
-        #TODO
-        return
 
     def revenuePerTick():
         #TODO
