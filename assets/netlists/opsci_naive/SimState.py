@@ -68,7 +68,7 @@ class SimState(SimStateBase.SimStateBase):
         new_agents.add(OpsciMarketplaceAgent(
             name = "opsci_marketplace", USD=0.0, OCEAN=0.0,
             receiving_agents = {"opsci_dao" : self.percentToOpsciDAO,
-                                "seller" : self.percentToSellers},
+                                "sellers" : self.percentToSellers},
             n_assets = float(ss.init_n_assets),
             revenue_per_asset_per_s = 20e3 / S_PER_MONTH, #magic number
             time_step = self.ss.time_step))
