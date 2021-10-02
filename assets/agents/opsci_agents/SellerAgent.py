@@ -17,19 +17,28 @@ class SellerAgent(AgentBase):
     just one seller agent in the loop and use the number of assets in the marketplace as an indicator of 
     the number of sellers and their rewards.
     '''
-    def __init__(self, name: str, USD: float, OCEAN: float):
+    def __init__(self, name: str, USD: float, OCEAN: float,
+                 n_sellers: float,
+                 revenue_per_seller_per_s: float,
+                 time_step: int,):
         super().__init__(name, USD, OCEAN)
 
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
-        self._n_sellers_per_tick = 0
+
+        # time-dependent parameters
+        self._n_sellers: float = n_sellers
+        self._revenue_per_seller_per_s: float = revenue_per_seller_per_s
+        self._time_step: int = time_step
     
     def takeStep(self) -> None:
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
-        self._n_sellers_per_tick += 1
+        # increase the number of sellers (in the future, the number of sellers will increase 
+        # based on the number of researchers in the previous step)
+        self._n_sellers += 1
 
     def revenuePerSellerPerSecond():
         #TODO
