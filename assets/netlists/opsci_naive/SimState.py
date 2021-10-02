@@ -44,7 +44,6 @@ class SimState(SimStateBase.SimStateBase):
         self._speculation_valuation = 150e6 #in USD #magic number
         self._percent_increase_speculation_valuation_per_s = 0.10 / S_PER_YEAR # ""
 
-        # TODO: wire up agents
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
         new_agents: Set[AgentBase.AgentBase] = set()
@@ -84,8 +83,12 @@ class SimState(SimStateBase.SimStateBase):
             name = "ocean_burner", USD=0.0, OCEAN=0.0))
         
         new_agents.add(SellerAgent(
-            name = "sellers", USD=0.0, OCEAN=0.0
+            name = "sellers", USD=0.0, OCEAN=0.0,
+            n_sellers = float(ss.init_n_sellers)
         ))
+
+        for agent in new_agents:
+            self.agents[agent.name] = agent
 
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)
