@@ -47,7 +47,7 @@ class OpsciMarketplaceAgent(AgentBase):
 
         #compute sales -> toll -> send funds accordingly
         sales = self._salesPerTick()
-        toll = sales * state.assetPercentTollToDAO() # TODO: assetPercentTollToDAO()
+        # toll = sales * state.marketplacePercentTollToOcean() # TODO: assetPercentTollToDAO()
         # toll_agent = state.getAgent(self._toll_agent_name)
         # toll_agent.receiveUSD(toll)
 
@@ -65,7 +65,6 @@ class OpsciMarketplaceAgent(AgentBase):
         OCEAN = self.OCEAN()
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
-
 
     def _salesPerTick(self) -> float:
         return self._n_assets * self._revenue_per_asset_per_s \
