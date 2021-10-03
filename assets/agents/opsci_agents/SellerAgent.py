@@ -39,7 +39,7 @@ class SellerAgent(AgentBase):
     def revenuePerSellerPerSecond(self) -> float:
         return self._revenue_per_seller_per_s
     
-    def takeStep(self) -> None:
+    def takeStep(self, state) -> None:
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())

@@ -65,7 +65,7 @@ class SimState(SimStateBase.SimStateBase):
 
         # 3. OpsciMarketplaceAgent sends funds to OpscientiaDAOAgent and to all instances of SellerAgent
         new_agents.add(OpsciMarketplaceAgent(
-            name = "opsci_marketplace", USD=0.0, OCEAN=0.0,
+            name = "opsci_market", USD=0.0, OCEAN=0.0,
             receiving_agents = {"opsci_dao" : self.percentToOpsciDAO,
                                 "sellers" : self.percentToSellers},
             n_assets = float(ss.init_n_assets),
