@@ -79,7 +79,7 @@ class SimState(SimStateBase.SimStateBase):
 
         # 4. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent
         new_agents.add(OpscientiaDAOAgent(
-            name = "opsci_dao", USD=0.0, OCEAN=0.0,
+            name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_OCEAN,
             receiving_agents = {"ocean_burner": self.percentToBurn}))
 
         # 5. OCEANBurnerAgent burns all funds in wallet
