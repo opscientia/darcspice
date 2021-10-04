@@ -22,7 +22,7 @@ class ResearcherAgent(AgentBase):
         self._spent_at_tick = 0.0 #USD and OCEAN (in USD) spent
         self._receiving_agents = receiving_agents
 
-        
+        self.proposal = self.createProposal()
         # self._s_since_buy = 0 # seconds since bought data
         # self._s_between_buys = 3 * constants.S_PER_DAY  # magic number
         # self.profit_margin_on_consume = 0.2  # magic number
@@ -36,6 +36,12 @@ class ResearcherAgent(AgentBase):
             self._disburseOCEAN(state)
 
         # self._s_since_buy += state.ss.time_step
+
+    def createProposal(self) -> dict:
+        return {'grant_requested': random.randint(1000, 50000),
+                'no_researchers': random.randint(1, 10),
+                'research_length_mo': random.randint(1, 24),
+                'assets_generated': random.randint(1, 10)}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
