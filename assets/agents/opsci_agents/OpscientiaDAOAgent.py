@@ -21,8 +21,37 @@ class OpscientiaDAOAgent(AgentBase):
 
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
-        self._OCEAN_per_tick: List[float] = [] # ""    
+        self._OCEAN_per_tick: List[float] = [] # ""
         
+        self._pending_proposal = False
+    
+    def evaluateProposal(self, state) -> dict:
+        '''
+        Function that evaluates proposals from all researcher agents.
+        A proposal has 4 parameters that will be used to evaluate it.
+        -------
+        Params:
+            grant_requested
+            no_researchers
+            research_length_mo
+            assets_generated
+        -------
+        These parameters are then evaluated as ((grant_requested / no_researchers) / research_length_mo) / assets_generated.
+        The proposal with the smaller score is accepted. 
+        '''
+        r0 = state.getAgent('researcher0')
+        r1 = state.getAgent('researcher1')
+
+        if r0.proposal != None and r1.proposal != None:
+            r0_score = ((r0.proposal['grant_requested'] / r0.proposal['no_researchers']) / r0.proposal['research_length_mo']) / r0.proposal['assets_generated']
+            r1_score = ((r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['research_length_mo']) / r1.proposal['assets_generated']
+
+            if r0_score < r1_score:
+                return {'winner': 'researcher0'}
+            else:
+                return {'winner': 'researcher1'}
+
+
     def takeStep(self, state) -> None:
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
