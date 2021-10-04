@@ -28,6 +28,9 @@ class OpscientiaDAOAgent(AgentBase):
     def isPendingProposal(self, state) -> bool:
         r0 = state.getAgent('researcher0')
         r1 = state.getAgent('researcher1')
+
+        if r0.proposal != None and r1.proposal != None and self.proposal_evaluation == None:
+            return True
         return False
 
     def evaluateProposal(self, state) -> dict:
