@@ -22,9 +22,14 @@ class OpscientiaDAOAgent(AgentBase):
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
-        
-        self._pending_proposal = False
-    
+
+        self.proposal_evaluation = None
+            
+    def isPendingProposal(self, state) -> bool:
+        r0 = state.getAgent('researcher0')
+        r1 = state.getAgent('researcher1')
+        return False
+
     def evaluateProposal(self, state) -> dict:
         '''
         Function that evaluates proposals from all researcher agents.
@@ -53,6 +58,9 @@ class OpscientiaDAOAgent(AgentBase):
 
 
     def takeStep(self, state) -> None:
+        if self.isPendingProposal(state):
+            self.proposal_evaluation = self.evaluateProposal(state)
+
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())

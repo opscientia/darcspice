@@ -57,8 +57,8 @@ class ResearcherAgent(AgentBase):
             self._transferOCEAN(state.getAgent(name), computePercent() * disburse_per_tick)
     
     def takeStep(self, state):
-        if self.proposal == None:  
-            self.proposal = self.createProposal()  
+        if self.proposal == None and (self.USD() == 0 or self.OCEAN() == 0):  
+            self.proposal = self.createProposal()
         self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
 
         if self.USD() > 0:
