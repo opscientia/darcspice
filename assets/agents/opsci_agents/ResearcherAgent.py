@@ -36,15 +36,25 @@ class ResearcherAgent(AgentBase):
     def spentAtTick(self) -> float:
         return self._spent_at_tick
 
-    def _disburseUSD(self, state) -> None:
-        USD = self.USD()
+    def _USDToDisbursePerTick(self, state) -> None:
+        '''
+        1 tick = 1 hour
+        '''
+        if self.proposal != None:
+            no_ticks = self.proposal['research_length_mo'] * constants.S_PER_MONTH / 3600
+            disburse_per_tick = self.proposal['grant_requested'] / no_ticks
         for name, computePercent in self._receiving_agents.items():
-            self._transferUSD(state.getAgent(name), computePercent() * USD)
-
-    def _disburseOCEAN(self, state) -> None:
-        OCEAN = self.OCEAN()
+            self._transferUSD(state.getAgent(name), computePercent() * disburse_per_tick)
+    
+    def _OCEANToDisbursePerTick(self, state) -> None:
+        '''
+        1 tick = 1 hour
+        '''
+        if self.proposal != None:
+            no_ticks = self.proposal['research_length_mo'] * constants.S_PER_MONTH / 3600
+            disburse_per_tick = self.proposal['grant_requested'] / no_ticks
         for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
+            self._transferOCEAN(state.getAgent(name), computePercent() * disburse_per_tick)
     
     def takeStep(self, state):
         if self.proposal == None:  
@@ -52,9 +62,9 @@ class ResearcherAgent(AgentBase):
         self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
 
         if self.USD() > 0:
-            self._disburseUSD(state)
+            self._USDToDisbursePerTick(state)
         if self.OCEAN() > 0:
-            self._disburseOCEAN(state)
+            self._OCEANToDisbursePerTick(state)
         
         # Once all funds have been spent, research is done and new proposal can be submitted
         if self.OCEAN() == 0 and self.USD() == 0:
