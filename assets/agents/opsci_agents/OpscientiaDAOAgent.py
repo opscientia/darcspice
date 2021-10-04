@@ -10,6 +10,9 @@ from util.constants import S_PER_MONTH
 
 @enforce_types
 class OpscientiaDAOAgent(AgentBase):
+    '''
+    Sends OCEAN to be burned, evaluates proposals, disburses funds to researchers (TODO) (acts as a treasury)
+    '''
     def __init__(self, name: str, USD: float, OCEAN: float,
                  receiving_agents : dict):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
