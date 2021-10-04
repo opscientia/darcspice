@@ -23,6 +23,10 @@ class KPIs(KPIsBase.KPIsBase):
         self._total_OCEAN_burned_USD__per_tick: List[float] = []
         self._sellers_revenue_per_tick: List[float] = []
         self._revenue_per_seller_per_s__per_tick: List[float] = []
+        # researcher kpis
+        self._total_grants_given_per_tick: List[float] = []
+        self._total_research_assets_created_per_tick: List[float] = []
+        self._total_researchers_funded_per_tick: List[float] = []
 
     def takeStep(self, state):
         super().takeStep(state) #parent e.g. increments self._tick
