@@ -59,7 +59,12 @@ class SimState(SimStateBase.SimStateBase):
 
         # 2. ResearcherAgent sends funds to OpsciMarketplaceAgent and to OCEANBurnerAgent
         new_agents.add(ResearcherAgent(
-            name = "researcher", USD=0.0, OCEAN=0.0,
+            name = "researcher0", USD=0.0, OCEAN=0.0,
+            receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
+                                "ocean_burner" : self.percentToBurn}))
+
+        new_agents.add(ResearcherAgent(
+            name = "researcher1", USD=0.0, OCEAN=0.0,
             receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
                                 "ocean_burner" : self.percentToBurn}))
 
