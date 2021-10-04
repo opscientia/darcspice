@@ -52,7 +52,7 @@ class SimState(SimStateBase.SimStateBase):
         # 1. MinterAgent sends funds to ResearcherAgent
         new_agents.add(MinterAgents.OCEANLinearMinterAgent(
             name = "minter",
-            receiving_agent_name = "researcher",
+            receiving_agent_name = "opsci_dao",
             total_OCEAN_to_mint = ss.UNMINTED_OCEAN_SUPPLY,
             s_between_mints = S_PER_DAY,
             n_mints = ss.TOTAL_MINTS))
