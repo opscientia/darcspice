@@ -57,7 +57,8 @@ class ResearcherAgent(AgentBase):
     
     def takeStep(self, state):
         self.proposal = self.createProposal()
-        self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
+        # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
+        self._spent_at_tick = self.OCEAN()
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)

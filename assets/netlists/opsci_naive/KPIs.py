@@ -9,217 +9,218 @@ from util.strutil import prettyBigNum
 
 @enforce_types
 class KPIs(KPIsBase.KPIsBase):
-    def __init__(self, time_step: int):
-        super().__init__(time_step)
+    pass
+#     def __init__(self, time_step: int):
+#         super().__init__(time_step)
                 
-        #for these, append a new value with each tick
-        self._total_assets_per_tick: List[float] = [] # how many assets are in the marketplace
-        self._n_sellers_per_tick: List[float] = []
-        self._marketplace_percent_toll_to_ocean__per_tick: List[float] = []
-        self._total_OCEAN_minted__per_tick: List[float] = []
-        self._total_OCEAN_burned__per_tick: List[float] = []
-        self._total_OCEAN_minted_USD__per_tick: List[float] = []
-        self._total_OCEAN_burned_USD__per_tick: List[float] = []
-        self._sellers_revenue_per_tick: List[float] = []
-        self._revenue_per_seller_per_s__per_tick: List[float] = []
-        # researcher kpis
-        self._total_grants_given_per_tick: List[float] = []
-        self._total_research_assets_created_per_tick: List[float] = []
-        self._total_researchers_funded_per_tick: List[float] = []
+#         #for these, append a new value with each tick
+#         self._total_assets_per_tick: List[float] = [] # how many assets are in the marketplace
+#         self._n_sellers_per_tick: List[float] = []
+#         self._marketplace_percent_toll_to_ocean__per_tick: List[float] = []
+#         self._total_OCEAN_minted__per_tick: List[float] = []
+#         self._total_OCEAN_burned__per_tick: List[float] = []
+#         self._total_OCEAN_minted_USD__per_tick: List[float] = []
+#         self._total_OCEAN_burned_USD__per_tick: List[float] = []
+#         self._sellers_revenue_per_tick: List[float] = []
+#         self._revenue_per_seller_per_s__per_tick: List[float] = []
+#         # researcher kpis
+#         self._total_grants_given_per_tick: List[float] = []
+#         self._total_research_assets_created_per_tick: List[float] = []
+#         self._total_researchers_funded_per_tick: List[float] = []
 
-    def takeStep(self, state):
-        super().takeStep(state) #parent e.g. increments self._tick
+#     def takeStep(self, state):
+#         super().takeStep(state) #parent e.g. increments self._tick
         
-        # am = state.getAgent("opsci_marketplace")
-        # self._total_assets_per_tick.append(
-        #     am.numAssets())
+#         # am = state.getAgent("opsci_marketplace")
+#         # self._total_assets_per_tick.append(
+#         #     am.numAssets())
 
-        am = state.getAgent("sellers")
-        self._revenue_per_seller_per_s__per_tick.append(
-            am.revenuePerSellerPerSecond())
-        self._n_sellers_per_tick.append(
-            am.numSellers())
-        self._sellers_revenue_per_tick.append(
-            am._revenue_per_tick)
+#         am = state.getAgent("sellers")
+#         self._revenue_per_seller_per_s__per_tick.append(
+#             am.revenuePerSellerPerSecond())
+#         self._n_sellers_per_tick.append(
+#             am.numSellers())
+#         self._sellers_revenue_per_tick.append(
+#             am._revenue_per_tick)
         
-        self._marketplace_percent_toll_to_ocean__per_tick.append(
-            state.marketplacePercentTollToOcean())
+#         self._marketplace_percent_toll_to_ocean__per_tick.append(
+#             state.marketplacePercentTollToOcean())
 
-        O_minted = state.totalOCEANminted()
-        O_burned = state.totalOCEANburned()
-        self._total_OCEAN_minted__per_tick.append(O_minted)
-        self._total_OCEAN_burned__per_tick.append(O_burned)
+#         O_minted = state.totalOCEANminted()
+#         O_burned = state.totalOCEANburned()
+#         self._total_OCEAN_minted__per_tick.append(O_minted)
+#         self._total_OCEAN_burned__per_tick.append(O_burned)
 
-        O_price = state.OCEANprice()
-        O_minted_USD = O_minted * O_price
-        O_burned_USD = state.totalOCEANburnedUSD()
-        self._total_OCEAN_minted_USD__per_tick.append(O_minted_USD)
-        self._total_OCEAN_burned_USD__per_tick.append(O_burned_USD)
+#         O_price = state.OCEANprice()
+#         O_minted_USD = O_minted * O_price
+#         O_burned_USD = state.totalOCEANburnedUSD()
+#         self._total_OCEAN_minted_USD__per_tick.append(O_minted_USD)
+#         self._total_OCEAN_burned_USD__per_tick.append(O_burned_USD)
 
-    def tick(self) -> int:
-        """# ticks since start of run"""
-        assert len(self._revenue_per_seller_per_s__per_tick) == self._tick
-        return self._tick
+#     def tick(self) -> int:
+#         """# ticks since start of run"""
+#         assert len(self._revenue_per_seller_per_s__per_tick) == self._tick
+#         return self._tick
         
-    #=======================================================================
-    #revenue numbers: 1 seller
-    def oneSellerMonthlyRevenueNow(self) -> float:
-        t2 = self.elapsedTime()
-        t1 = t2 - S_PER_MONTH
-        return self._oneSellerRevenueOverInterval(t1, t2)
+#     #=======================================================================
+#     #revenue numbers: 1 seller
+#     def oneSellerMonthlyRevenueNow(self) -> float:
+#         t2 = self.elapsedTime()
+#         t1 = t2 - S_PER_MONTH
+#         return self._oneSellerRevenueOverInterval(t1, t2)
     
-    def oneSellerAnnualRevenueNow(self) -> float:
-        t2 = self.elapsedTime()
-        t1 = t2 - S_PER_YEAR
-        return self._oneSellerRevenueOverInterval(t1, t2)
+#     def oneSellerAnnualRevenueNow(self) -> float:
+#         t2 = self.elapsedTime()
+#         t1 = t2 - S_PER_YEAR
+#         return self._oneSellerRevenueOverInterval(t1, t2)
     
-    def oneSellerAnnualRevenueOneYearAgo(self) -> float:
-        t2 = self.elapsedTime() - S_PER_YEAR
-        t1 = t2 - S_PER_YEAR
-        return self._oneSellerRevenueOverInterval(t1, t2)
+#     def oneSellerAnnualRevenueOneYearAgo(self) -> float:
+#         t2 = self.elapsedTime() - S_PER_YEAR
+#         t1 = t2 - S_PER_YEAR
+#         return self._oneSellerRevenueOverInterval(t1, t2)
             
-    def _oneSellerRevenueOverInterval(self, t1: int, t2:int) -> float:
-        return self._revenueOverInterval(t1, t2, self.oneSellerRevenuePerSecond)
+#     def _oneSellerRevenueOverInterval(self, t1: int, t2:int) -> float:
+#         return self._revenueOverInterval(t1, t2, self.oneSellerRevenuePerSecond)
 
-    def oneSellerRevenuePerSecond(self, tick) -> float:
-        """Returns oneSeller's revenue per second at a given tick"""
-        return self._revenue_per_seller_per_s__per_tick[tick]
+#     def oneSellerRevenuePerSecond(self, tick) -> float:
+#         """Returns oneSeller's revenue per second at a given tick"""
+#         return self._revenue_per_seller_per_s__per_tick[tick]
 
-    #=======================================================================
-    #revenue numbers: n sellers
-    def allSellersMonthlyRevenueNow(self) -> float:
-        t2 = self.elapsedTime()
-        t1 = t2 - S_PER_MONTH
-        return self._allSellersRevenueOverInterval(t1, t2)
+#     #=======================================================================
+#     #revenue numbers: n sellers
+#     def allSellersMonthlyRevenueNow(self) -> float:
+#         t2 = self.elapsedTime()
+#         t1 = t2 - S_PER_MONTH
+#         return self._allSellersRevenueOverInterval(t1, t2)
     
-    def allSellersAnnualRevenueNow(self) -> float:
-        t2 = self.elapsedTime()
-        t1 = t2 - S_PER_YEAR
-        return self._allSellersRevenueOverInterval(t1, t2)
+#     def allSellersAnnualRevenueNow(self) -> float:
+#         t2 = self.elapsedTime()
+#         t1 = t2 - S_PER_YEAR
+#         return self._allSellersRevenueOverInterval(t1, t2)
     
-    def allSellersAnnualRevenueOneYearAgo(self) -> float:
-        t2 = self.elapsedTime() - S_PER_YEAR
-        t1 = t2 - S_PER_YEAR
-        return self._allSellersRevenueOverInterval(t1, t2)
+#     def allSellersAnnualRevenueOneYearAgo(self) -> float:
+#         t2 = self.elapsedTime() - S_PER_YEAR
+#         t1 = t2 - S_PER_YEAR
+#         return self._allSellersRevenueOverInterval(t1, t2)
 
-    def allSellersRevenuePerSecond(self, tick) -> float:
-        """Returns allmkt's revenue per second at a given tick"""
-        return self._revenue_per_seller_per_s__per_tick[tick] \
-            * self._n_sellers_per_tick[tick]
+#     def allSellersRevenuePerSecond(self, tick) -> float:
+#         """Returns allmkt's revenue per second at a given tick"""
+#         return self._revenue_per_seller_per_s__per_tick[tick] \
+#             * self._n_sellers_per_tick[tick]
             
-    def _allSellersRevenueOverInterval(self, t1: int, t2:int) -> float:
-        return self._revenueOverInterval(t1, t2, self.allSellersRevenuePerSecond)
+#     def _allSellersRevenueOverInterval(self, t1: int, t2:int) -> float:
+#         return self._revenueOverInterval(t1, t2, self.allSellersRevenuePerSecond)
     
-#=======================================================================
-    #revenue numbers: ocean community
-    def oceanMonthlyRevenueNow(self) -> float:
-        t2 = self.elapsedTime()
-        t1 = t2 - S_PER_MONTH
-        return self._oceanRevenueOverInterval(t1, t2)
+# #=======================================================================
+#     #revenue numbers: ocean community
+#     def oceanMonthlyRevenueNow(self) -> float:
+#         t2 = self.elapsedTime()
+#         t1 = t2 - S_PER_MONTH
+#         return self._oceanRevenueOverInterval(t1, t2)
     
-    def oceanAnnualRevenueNow(self) -> float:
-        t2 = self.elapsedTime()
-        t1 = t2 - S_PER_YEAR
-        return self._oceanRevenueOverInterval(t1, t2)
+#     def oceanAnnualRevenueNow(self) -> float:
+#         t2 = self.elapsedTime()
+#         t1 = t2 - S_PER_YEAR
+#         return self._oceanRevenueOverInterval(t1, t2)
     
-    def oceanMonthlyRevenueOneMonthAgo(self) -> float:
-        t2 = self.elapsedTime() - S_PER_MONTH
-        t1 = t2 - S_PER_MONTH
-        return self._oceanRevenueOverInterval(t1, t2)
+#     def oceanMonthlyRevenueOneMonthAgo(self) -> float:
+#         t2 = self.elapsedTime() - S_PER_MONTH
+#         t1 = t2 - S_PER_MONTH
+#         return self._oceanRevenueOverInterval(t1, t2)
     
-    def oceanAnnualRevenueOneYearAgo(self) -> float:
-        t2 = self.elapsedTime() - S_PER_YEAR
-        t1 = t2 - S_PER_YEAR
-        return self._oceanRevenueOverInterval(t1, t2)
+#     def oceanAnnualRevenueOneYearAgo(self) -> float:
+#         t2 = self.elapsedTime() - S_PER_YEAR
+#         t1 = t2 - S_PER_YEAR
+#         return self._oceanRevenueOverInterval(t1, t2)
             
-    def _oceanRevenueOverInterval(self, t1: int, t2:int) -> float:
-        return self._revenueOverInterval(t1, t2, self.oceanRevenuePerSecond)
+#     def _oceanRevenueOverInterval(self, t1: int, t2:int) -> float:
+#         return self._revenueOverInterval(t1, t2, self.oceanRevenuePerSecond)
     
-    def oceanRevenuePerSecond(self, tick) -> float:
-        """Returns ocean's revenue per second at a given tick"""
-        return self._revenue_per_seller_per_s__per_tick[tick] \
-            * self._n_sellers_per_tick[tick] \
-            * self._marketplace_percent_toll_to_ocean__per_tick[tick]
+#     def oceanRevenuePerSecond(self, tick) -> float:
+#         """Returns ocean's revenue per second at a given tick"""
+#         return self._revenue_per_seller_per_s__per_tick[tick] \
+#             * self._n_sellers_per_tick[tick] \
+#             * self._marketplace_percent_toll_to_ocean__per_tick[tick]
     
-    #=======================================================================
-    def _revenueOverInterval(self, t1: int, t2:int, revenuePerSecondFunc) \
-        -> float:
-        """
-        Helper function for _{onemkt, allmkts, ocean}revenueOverInterval().
+#     #=======================================================================
+#     def _revenueOverInterval(self, t1: int, t2:int, revenuePerSecondFunc) \
+#         -> float:
+#         """
+#         Helper function for _{onemkt, allmkts, ocean}revenueOverInterval().
 
-        In time from t1 to t2 (both in # seconds since start), 
-        how much $ was earned, using the revenuePerSecondFunc.
-        """
-        assert t2 > t1
-        tick1: int = max(0, math.floor(t1 / self._time_step))
-        tick2: int = min(self.tick(), math.floor(t2 / self._time_step) + 1) 
-        rev = 0.0
-        for tick_i in range(tick1, tick2):
-            rev_this_s = revenuePerSecondFunc(tick_i)
+#         In time from t1 to t2 (both in # seconds since start), 
+#         how much $ was earned, using the revenuePerSecondFunc.
+#         """
+#         assert t2 > t1
+#         tick1: int = max(0, math.floor(t1 / self._time_step))
+#         tick2: int = min(self.tick(), math.floor(t2 / self._time_step) + 1) 
+#         rev = 0.0
+#         for tick_i in range(tick1, tick2):
+#             rev_this_s = revenuePerSecondFunc(tick_i)
             
-            start_s = max(t1, tick_i * self._time_step)
-            end_s = min(t2, (tick_i + 1) * self._time_step - 1)
-            n_s = end_s - start_s + 1
-            rev_this_tick = rev_this_s * n_s
+#             start_s = max(t1, tick_i * self._time_step)
+#             end_s = min(t2, (tick_i + 1) * self._time_step - 1)
+#             n_s = end_s - start_s + 1
+#             rev_this_tick = rev_this_s * n_s
             
-            rev += rev_this_tick
-        return rev
+#             rev += rev_this_tick
+#         return rev
         
-    #=======================================================================
-    #revenue growth numbers: ocean community
-    def oceanMonthlyRevenueGrowth(self) -> float:
-        rev1 = self.oceanMonthlyRevenueOneMonthAgo()
-        rev2 = self.oceanMonthlyRevenueNow()
-        if rev1 == 0.0:
-            return INF
-        g = rev2 / rev1 - 1.0
-        return g
+#     #=======================================================================
+#     #revenue growth numbers: ocean community
+#     def oceanMonthlyRevenueGrowth(self) -> float:
+#         rev1 = self.oceanMonthlyRevenueOneMonthAgo()
+#         rev2 = self.oceanMonthlyRevenueNow()
+#         if rev1 == 0.0:
+#             return INF
+#         g = rev2 / rev1 - 1.0
+#         return g
     
-    def oceanAnnualRevenueGrowth(self) -> float:
-        rev1 = self.oceanAnnualRevenueOneYearAgo()
-        rev2 = self.oceanAnnualRevenueNow()
-        if rev1 == 0.0:
-            return INF
-        g = rev2 / rev1 - 1.0
-        return g
+#     def oceanAnnualRevenueGrowth(self) -> float:
+#         rev1 = self.oceanAnnualRevenueOneYearAgo()
+#         rev2 = self.oceanAnnualRevenueNow()
+#         if rev1 == 0.0:
+#             return INF
+#         g = rev2 / rev1 - 1.0
+#         return g
         
-    @enforce_types
-    def valuationPS(self, p_s_ratio: float) -> float:
-        """Use Price/Sales ratio to compute valuation."""
-        annual_revenue = self.oceanAnnualRevenueNow()
-        v = valuation.firmValuationPS(annual_revenue, p_s_ratio)
-        return v
+#     @enforce_types
+#     def valuationPS(self, p_s_ratio: float) -> float:
+#         """Use Price/Sales ratio to compute valuation."""
+#         annual_revenue = self.oceanAnnualRevenueNow()
+#         v = valuation.firmValuationPS(annual_revenue, p_s_ratio)
+#         return v
 
-    #=======================================================================
-    #OCEAN minted & burned per month, as a count (#) and as USD ($)
-    def OCEANmintedPrevMonth(self) -> float:
-        return self._OCEANchangePrevMonth(self._total_OCEAN_minted__per_tick)
+#     #=======================================================================
+#     #OCEAN minted & burned per month, as a count (#) and as USD ($)
+#     def OCEANmintedPrevMonth(self) -> float:
+#         return self._OCEANchangePrevMonth(self._total_OCEAN_minted__per_tick)
            
-    def OCEANburnedPrevMonth(self) -> float:
-        return self._OCEANchangePrevMonth(self._total_OCEAN_burned__per_tick)
+#     def OCEANburnedPrevMonth(self) -> float:
+#         return self._OCEANchangePrevMonth(self._total_OCEAN_burned__per_tick)
     
-    def OCEANmintedInUSDPrevMonth(self) -> float:
-        return self._OCEANchangePrevMonth(self._total_OCEAN_minted_USD__per_tick)
+#     def OCEANmintedInUSDPrevMonth(self) -> float:
+#         return self._OCEANchangePrevMonth(self._total_OCEAN_minted_USD__per_tick)
     
-    def OCEANburnedInUSDPrevMonth(self) -> float:
-        return self._OCEANchangePrevMonth(self._total_OCEAN_burned_USD__per_tick)
+#     def OCEANburnedInUSDPrevMonth(self) -> float:
+#         return self._OCEANchangePrevMonth(self._total_OCEAN_burned_USD__per_tick)
 
-    def _OCEANchangePrevMonth(self, O_per_tick) -> float:
-        ticks_total = len(O_per_tick)
+#     def _OCEANchangePrevMonth(self, O_per_tick) -> float:
+#         ticks_total = len(O_per_tick)
 
-        if ticks_total == 0:
-            return 0.0
+#         if ticks_total == 0:
+#             return 0.0
         
-        ticks_1mo = self._ticksOneMonth()
-        if ticks_total <= ticks_1mo:
-            return O_per_tick[-1]
+#         ticks_1mo = self._ticksOneMonth()
+#         if ticks_total <= ticks_1mo:
+#             return O_per_tick[-1]
         
-        return O_per_tick[-1] - O_per_tick[-(ticks_1mo+1)]
+#         return O_per_tick[-1] - O_per_tick[-(ticks_1mo+1)]
 
-    def _ticksOneMonth(self) -> int:
-        """Number of ticks in one month"""
-        ticks: int = math.ceil(S_PER_MONTH / float(self._time_step))
-        return ticks
+#     def _ticksOneMonth(self) -> int:
+#         """Number of ticks in one month"""
+#         ticks: int = math.ceil(S_PER_MONTH / float(self._time_step))
+#         return ticks
 
 
 @enforce_types
@@ -229,87 +230,87 @@ def netlist_createLogData(state):
     dataheader = [] # for csv logging: list of string
     datarow = [] #for csv logging: list of float
     ###################################################################################################
-    F = False
-    ss = state.ss
-    kpis = state.kpis
+    # F = False
+    # ss = state.ss
+    # kpis = state.kpis
 
 
-    #SimEngine already logs: Tick, Second, Min, Hour, Day, Month, Year
-    #So we log other things...
+    # #SimEngine already logs: Tick, Second, Min, Hour, Day, Month, Year
+    # #So we log other things...
 
-    am = state.getAgent("sellers")
-    #s += ["; # mkts=%s" % prettyBigNum(am._n_sellers,F)]
-    dataheader += ["Num_sllr"]
-    datarow += [am._n_sellers]
+    # am = state.getAgent("sellers")
+    # #s += ["; # mkts=%s" % prettyBigNum(am._n_sellers,F)]
+    # dataheader += ["Num_sllr"]
+    # datarow += [am._n_sellers]
 
-    oneSeller_rev_mo = kpis.oneSellerMonthlyRevenueNow()
-    oneSeller_rev_yr = kpis.oneSellerAnnualRevenueNow()
-    #s += ["; 1Seller_rev/mo=$%s,/yr=$%s" %
-    #      (prettyBigNum(oneSeller_rev_mo,F), prettyBigNum(oneSeller_rev_yr,F))]
-    dataheader += ["oneSeller_rev/mo", "oneSeller_rev/yr"]
-    datarow += [oneSeller_rev_mo, oneSeller_rev_yr]
+    # oneSeller_rev_mo = kpis.oneSellerMonthlyRevenueNow()
+    # oneSeller_rev_yr = kpis.oneSellerAnnualRevenueNow()
+    # #s += ["; 1Seller_rev/mo=$%s,/yr=$%s" %
+    # #      (prettyBigNum(oneSeller_rev_mo,F), prettyBigNum(oneSeller_rev_yr,F))]
+    # dataheader += ["oneSeller_rev/mo", "oneSeller_rev/yr"]
+    # datarow += [oneSeller_rev_mo, oneSeller_rev_yr]
 
-    allSellers_rev_mo = kpis.allSellersMonthlyRevenueNow()
-    allSellers_rev_yr = kpis.allSellersAnnualRevenueNow()
-    #s += ["; allSellers_rev/mo=$%s,/yr=$%s" %
-    #      (prettyBigNum(allSellers_rev_mo,F), prettyBigNum(allSellers_rev_yr,F))]
-    dataheader += ["allSellers_rev/mo", "allSellers_rev/yr"]
-    datarow += [allSellers_rev_mo, allSellers_rev_yr]        
+    # allSellers_rev_mo = kpis.allSellersMonthlyRevenueNow()
+    # allSellers_rev_yr = kpis.allSellersAnnualRevenueNow()
+    # #s += ["; allSellers_rev/mo=$%s,/yr=$%s" %
+    # #      (prettyBigNum(allSellers_rev_mo,F), prettyBigNum(allSellers_rev_yr,F))]
+    # dataheader += ["allSellers_rev/mo", "allSellers_rev/yr"]
+    # datarow += [allSellers_rev_mo, allSellers_rev_yr]        
 
-    ocean_rev_mo = kpis.oceanMonthlyRevenueNow()
-    ocean_rev_yr = kpis.oceanAnnualRevenueNow()
-    #s += ["; ocean_rev/mo=$%sm,/yr=$%s" %
-    #      (prettyBigNum(ocean_rev_mo,F), prettyBigNum(ocean_rev_yr,F))]
-    s += ["; ocean_rev/mo=$%sm" % prettyBigNum(ocean_rev_mo,F)]
-    dataheader += ["ocean_rev/mo", "ocean_rev/yr"]
-    datarow += [ocean_rev_mo, ocean_rev_yr]
+    # ocean_rev_mo = kpis.oceanMonthlyRevenueNow()
+    # ocean_rev_yr = kpis.oceanAnnualRevenueNow()
+    # #s += ["; ocean_rev/mo=$%sm,/yr=$%s" %
+    # #      (prettyBigNum(ocean_rev_mo,F), prettyBigNum(ocean_rev_yr,F))]
+    # s += ["; ocean_rev/mo=$%sm" % prettyBigNum(ocean_rev_mo,F)]
+    # dataheader += ["ocean_rev/mo", "ocean_rev/yr"]
+    # datarow += [ocean_rev_mo, ocean_rev_yr]
 
-    dataheader += ["ocean_rev_growth/mo", "ocean_rev_growth/yr"]
-    datarow += [kpis.oceanMonthlyRevenueGrowth(),
-                kpis.oceanAnnualRevenueGrowth()]
+    # dataheader += ["ocean_rev_growth/mo", "ocean_rev_growth/yr"]
+    # datarow += [kpis.oceanMonthlyRevenueGrowth(),
+    #             kpis.oceanAnnualRevenueGrowth()]
 
-    ps30_valuation = kpis.valuationPS(30.0)
-    dataheader += ["ps30_valuation"]
-    datarow += [ps30_valuation]
+    # ps30_valuation = kpis.valuationPS(30.0)
+    # dataheader += ["ps30_valuation"]
+    # datarow += [ps30_valuation]
 
-    ov = state.overallValuation()
-    dataheader += ["overall_valuation", "fundamentals_valuation",
-                   "speculation_valuation"]
-    s += ["; valn=$%s" % prettyBigNum(ov,F)]
-    datarow += [ov, state.fundamentalsValuation(),
-                state.speculationValuation()]
+    # ov = state.overallValuation()
+    # dataheader += ["overall_valuation", "fundamentals_valuation",
+    #                "speculation_valuation"]
+    # s += ["; valn=$%s" % prettyBigNum(ov,F)]
+    # datarow += [ov, state.fundamentalsValuation(),
+    #             state.speculationValuation()]
 
-    tot_O_supply = state.OCEANsupply()
-    s += ["; #OCEAN=%s" % prettyBigNum(tot_O_supply)]
-    dataheader += ["tot_OCEAN_supply","tot_OCEAN_minted","tot_OCEAN_burned"]
-    datarow += [tot_O_supply,
-                state.totalOCEANminted(),
-                state.totalOCEANburned()]
+    # tot_O_supply = state.OCEANsupply()
+    # s += ["; #OCEAN=%s" % prettyBigNum(tot_O_supply)]
+    # dataheader += ["tot_OCEAN_supply","tot_OCEAN_minted","tot_OCEAN_burned"]
+    # datarow += [tot_O_supply,
+    #             state.totalOCEANminted(),
+    #             state.totalOCEANburned()]
 
-    dataheader += ["OCEAN_minted/mo","OCEAN_burned/mo"]
-    datarow += [kpis.OCEANmintedPrevMonth(),
-                kpis.OCEANburnedPrevMonth()]
+    # dataheader += ["OCEAN_minted/mo","OCEAN_burned/mo"]
+    # datarow += [kpis.OCEANmintedPrevMonth(),
+    #             kpis.OCEANburnedPrevMonth()]
 
-    dataheader += ["OCEAN_minted_USD/mo","OCEAN_burned_USD/mo"]
-    datarow += [kpis.OCEANmintedInUSDPrevMonth(),
-                kpis.OCEANburnedInUSDPrevMonth()]
+    # dataheader += ["OCEAN_minted_USD/mo","OCEAN_burned_USD/mo"]
+    # datarow += [kpis.OCEANmintedInUSDPrevMonth(),
+    #             kpis.OCEANburnedInUSDPrevMonth()]
 
-    O_price = state.OCEANprice()
-    if O_price <= 10.0:
-        s += ["; $OCEAN=$%.3f" % O_price]
-    else:
-        s += ["; $OCEAN=$%s" % prettyBigNum(O_price,F)]
-    dataheader += ["OCEAN_price"]
-    datarow += [O_price]
+    # O_price = state.OCEANprice()
+    # if O_price <= 10.0:
+    #     s += ["; $OCEAN=$%.3f" % O_price]
+    # else:
+    #     s += ["; $OCEAN=$%s" % prettyBigNum(O_price,F)]
+    # dataheader += ["OCEAN_price"]
+    # datarow += [O_price]
 
-    dao = state.getAgent("opsci_dao")
-    dao_USD = dao.monthlyUSDreceived(state)
-    dao_OCEAN = dao.monthlyOCEANreceived(state)
-    dao_OCEAN_in_USD = dao_OCEAN * O_price
-    dao_total_in_USD = dao_USD + dao_OCEAN_in_USD
-    dataheader += ["dao_USD/mo", "dao_OCEAN/mo", "dao_OCEAN_in_USD/mo",
-                   "dao_total_in_USD/mo"]
-    datarow += [dao_USD, dao_OCEAN, dao_OCEAN_in_USD, dao_total_in_USD]
+    # dao = state.getAgent("opsci_dao")
+    # dao_USD = dao.monthlyUSDreceived(state)
+    # dao_OCEAN = dao.monthlyOCEANreceived(state)
+    # dao_OCEAN_in_USD = dao_OCEAN * O_price
+    # dao_total_in_USD = dao_USD + dao_OCEAN_in_USD
+    # dataheader += ["dao_USD/mo", "dao_OCEAN/mo", "dao_OCEAN_in_USD/mo",
+    #                "dao_total_in_USD/mo"]
+    # datarow += [dao_USD, dao_OCEAN, dao_OCEAN_in_USD, dao_total_in_USD]
     ###################################################################################################
 
     opsci_dao = state.getAgent("opsci_dao")
@@ -317,15 +318,15 @@ def netlist_createLogData(state):
     dataheader += ["opsci_dao_OCEAN"]
     datarow += [opsci_dao.OCEAN()]
 
+    researcher0 = state.getAgent("researcher0")
+    s += ["; researcher0 OCEAN=%s" % prettyBigNum(researcher0.OCEAN(),False)]
+    dataheader += ["researcher0_OCEAN"]
+    datarow += [researcher0.OCEAN()]
+
     researcher1 = state.getAgent("researcher1")
     s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
     dataheader += ["researcher1_OCEAN"]
     datarow += [researcher1.OCEAN()]
-
-    researcher2 = state.getAgent("researcher2")
-    s += ["; researcher2 OCEAN=%s" % prettyBigNum(researcher2.OCEAN(),False)]
-    dataheader += ["researcher2_OCEAN"]
-    datarow += [researcher2.OCEAN()]
 
     opsci_market = state.getAgent("opsci_market")
     s += ["; opsci_market OCEAN=%s" % prettyBigNum(opsci_market.OCEAN(),False)]
@@ -359,28 +360,28 @@ def netlist_plotInstructions(header: List[str], values):
     x = arrayToFloatList(values[:,header.index("Day")])
     
     y_params = [
-        YParam(["opsci_dao_OCEAN","researcher1_OCEAN","researcher2_OCEAN","opsci_market_OCEAN", "sellers_OCEAN"],
-        ["opsci_dao","researcher1","researcher2","opsci_market", "sellers"],"Agents OCEAN",LINEAR,MULT1,COUNT),
-        YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
-        #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
-        YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],
-              ["Overall", "Fundamentals (P/S=30)", "Speculation"], "Valuation", LOG, DIV1M, DOLLAR),
-        YParam(["dao_USD/mo", "dao_OCEAN_in_USD/mo", "dao_total_in_USD/mo"],
-              ["Income as USD (ie network revenue)", "Income as OCEAN (ie from 51%; priced in USD)", "Total Income"],
-              "Monthly OpscientiaDAO Income", LOG, DIV1M, DOLLAR),
-        YParam(["ocean_rev/yr","allSellers_rev/yr"], ["Ocean", "All sellers"],
-              "Annual Revenue", LOG, DIV1M, DOLLAR),
-        YParam(["tot_OCEAN_supply", "tot_OCEAN_minted", "tot_OCEAN_burned"],
-              ["Total supply","Tot # Minted","Tot # Burned"], "OCEAN Token Count", BOTH, DIV1M, COUNT),
-        YParam(["OCEAN_minted/mo", "OCEAN_burned/mo"], ["# Minted/mo", "# Burned/mo"],
-              "Monthly # OCEAN Minted & Burned", BOTH, DIV1M, COUNT),
+        YParam(["opsci_dao_OCEAN","researcher0_OCEAN","researcher1_OCEAN","opsci_market_OCEAN", "sellers_OCEAN"],
+        ["opsci_dao","researcher0","researcher1","opsci_market", "sellers"],"Agents OCEAN",LINEAR,MULT1,COUNT),
+        # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
+        # #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
+        # YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],
+        #       ["Overall", "Fundamentals (P/S=30)", "Speculation"], "Valuation", LOG, DIV1M, DOLLAR),
+        # YParam(["dao_USD/mo", "dao_OCEAN_in_USD/mo", "dao_total_in_USD/mo"],
+        #       ["Income as USD (ie network revenue)", "Income as OCEAN (ie from 51%; priced in USD)", "Total Income"],
+        #       "Monthly OpscientiaDAO Income", LOG, DIV1M, DOLLAR),
+        # YParam(["ocean_rev/yr","allSellers_rev/yr"], ["Ocean", "All sellers"],
+        #       "Annual Revenue", LOG, DIV1M, DOLLAR),
+        # YParam(["tot_OCEAN_supply", "tot_OCEAN_minted", "tot_OCEAN_burned"],
+        #       ["Total supply","Tot # Minted","Tot # Burned"], "OCEAN Token Count", BOTH, DIV1M, COUNT),
+        # YParam(["OCEAN_minted/mo", "OCEAN_burned/mo"], ["# Minted/mo", "# Burned/mo"],
+        #       "Monthly # OCEAN Minted & Burned", BOTH, DIV1M, COUNT),
         
-        YParam(["OCEAN_burned_USD/mo", "OCEAN_minted_USD/mo"],
-               ["$ of OCEAN Burned/mo", "$ of OCEAN Minted/mo"],
-              "Monthly OCEAN (in USD) Minted & Burned", LOG, DIV1M, DOLLAR),
-        YParam(["OCEAN_burned_USD/mo", "ocean_rev/mo", "allSellers_rev/mo"],
-              ["$ OCEAN Burned monthly", "Ocean monthly revenue", "Sellers monthly revenue"],
-              "Monthly OCEAN Burned & Seller Revenues", LOG, DIV1M, DOLLAR),
+        # YParam(["OCEAN_burned_USD/mo", "OCEAN_minted_USD/mo"],
+        #        ["$ of OCEAN Burned/mo", "$ of OCEAN Minted/mo"],
+        #       "Monthly OCEAN (in USD) Minted & Burned", LOG, DIV1M, DOLLAR),
+        # YParam(["OCEAN_burned_USD/mo", "ocean_rev/mo", "allSellers_rev/mo"],
+        #       ["$ OCEAN Burned monthly", "Ocean monthly revenue", "Sellers monthly revenue"],
+        #       "Monthly OCEAN Burned & Seller Revenues", LOG, DIV1M, DOLLAR),
     ]
 
     return (x, y_params)

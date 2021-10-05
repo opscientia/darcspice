@@ -77,7 +77,7 @@ class OpscientiaDAOAgent(AgentBase):
         
         if do_disburse:
             self.proposal_evaluation = self.evaluateProposal(state)
-            self._disburseFunds(state)
+            self._disburseFunds()
             self._tick_last_disburse = state.tick
         
         #disburse it all, as soon as agent has it
@@ -87,9 +87,9 @@ class OpscientiaDAOAgent(AgentBase):
             self._disburseOCEAN(state)
 
     def _disburseFunds(self):
-        #same amount each time        
-        OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
-        self._transferUSD(self.proposal_evaluation['winner'], OCEAN)
+        if self.proposal_evaluation != None:        
+            OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
+            self._transferUSD(self.proposal_evaluation['winner'], OCEAN)
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()
