@@ -19,7 +19,6 @@ class SellerAgent(AgentBase):
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
                  n_sellers: float,
-                 revenue_per_seller_per_s: float,
                  time_step: int,):
         super().__init__(name, USD, OCEAN)
 
