@@ -55,9 +55,9 @@ class OpscientiaDAOAgent(AgentBase):
             r1_score = (r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['assets_generated']
 
             if r0_score < r1_score:
-                return {'winner': 'researcher0', 'amount': r0['grant_requested']}
+                return {'winner': "researcher0", 'amount': r0.proposal['grant_requested']}
             else:
-                return {'winner': 'researcher1', 'amount': r1['grant_requested']}
+                return {'winner': "researcher1", 'amount': r1.proposal['grant_requested']}
 
 
     def takeStep(self, state) -> None:
@@ -77,7 +77,8 @@ class OpscientiaDAOAgent(AgentBase):
         
         if do_disburse:
             self.proposal_evaluation = self.evaluateProposal(state)
-            self._disburseFunds()
+            print(f'PROPOSAL EVALUATION {self.proposal_evaluation}')
+            self._disburseFunds(state)
             self._tick_last_disburse = state.tick
         
         #disburse it all, as soon as agent has it
@@ -86,10 +87,11 @@ class OpscientiaDAOAgent(AgentBase):
         if self.OCEAN() > 0:
             self._disburseOCEAN(state)
 
-    def _disburseFunds(self):
+    def _disburseFunds(self, state):
         if self.proposal_evaluation != None:        
             OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
-            self._transferUSD(self.proposal_evaluation['winner'], OCEAN)
+            agent = state.getAgent(self.proposal_evaluation['winner'])
+            self._transferOCEAN(agent, OCEAN)
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()
