@@ -49,15 +49,8 @@ class SimState(SimStateBase.SimStateBase):
 
         #################### Wiring of agents that send OCEAN ####################
         
-        # 1. MinterAgent sends funds to ResearcherAgent
-        new_agents.add(MinterAgents.OCEANLinearMinterAgent(
-            name = "minter",
-            receiving_agent_name = "opsci_dao",
-            total_OCEAN_to_mint = ss.UNMINTED_OCEAN_SUPPLY,
-            s_between_mints = S_PER_DAY,
-            n_mints = ss.TOTAL_MINTS))
-
-        # 2. ResearcherAgent sends funds to OpsciMarketplaceAgent and to OCEANBurnerAgent
+        # 1. ResearcherAgents create proposals & send funds to OpsciMarketplaceAgent and to OCEANBurnerAgent
+        # (representing buying data/compute/algorithm assets & doing work, respectively)
         new_agents.add(ResearcherAgent(
             name = "researcher0", USD=0.0, OCEAN=0.0,
             receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
@@ -68,7 +61,7 @@ class SimState(SimStateBase.SimStateBase):
             receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
                                 "ocean_burner" : self.percentToBurn}))
 
-        # 3. OpsciMarketplaceAgent sends funds to OpscientiaDAOAgent and to all instances of SellerAgent
+        # 2. OpsciMarketplaceAgent sends funds to OpscientiaDAOAgent and to all instances of SellerAgent
         new_agents.add(OpsciMarketplaceAgent(
             name = "opsci_market", USD=0.0, OCEAN=0.0,
             receiving_agents = {"opsci_dao" : self.percentToOpsciDAO,
@@ -77,13 +70,13 @@ class SimState(SimStateBase.SimStateBase):
             revenue_per_asset_per_s = 20e3 / S_PER_MONTH, #magic number
             time_step = self.ss.time_step))
 
-        # 4. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent
+        # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
         new_agents.add(OpscientiaDAOAgent(
             name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_OCEAN,
             receiving_agents = {"ocean_burner": self.percentToBurn},
             s_between_grants = S_PER_MONTH))
 
-        # 5. OCEANBurnerAgent burns all funds in wallet
+        # 4. OCEANBurnerAgent burns all funds in wallet
         new_agents.add(TokenBurnerAgent(
             name = "ocean_burner", USD=0.0, OCEAN=0.0))
         
