@@ -32,6 +32,7 @@ class OpsciMarketplaceAgent(AgentBase):
         self._n_assets: float = n_assets
         self._revenue_per_asset_per_s: float = revenue_per_asset_per_s
         self._time_step: int = time_step
+        self._OCEAN_at_tick = 0.0
 
     def numAssets(self) -> float:
         return self._n_assets
@@ -41,8 +42,10 @@ class OpsciMarketplaceAgent(AgentBase):
         return self._revenue_per_asset_per_s
         
     def takeStep(self, state):
+
+        self._OCEAN_at_tick = self.OCEAN()
         
-        self._n_assets += 1.0 
+        self._n_assets += 1.0
         # self._revenue_per_asset_per_s *= (1.0 + mkts_growth_rate_per_tick)
 
         #compute sales -> toll -> send funds accordingly

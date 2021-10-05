@@ -40,7 +40,7 @@ class ResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         if self.proposal != None:
-            no_ticks = constants.S_PER_MONTH / 3600
+            no_ticks = constants.S_PER_DAY / 3600
             disburse_per_tick = self.proposal['grant_requested'] / no_ticks
         for name, computePercent in self._receiving_agents.items():
             self._transferUSD(state.getAgent(name), computePercent() * disburse_per_tick)
@@ -49,11 +49,11 @@ class ResearcherAgent(AgentBase):
         '''
         1 tick = 1 hour
         '''
-        if self.proposal != None:
-            no_ticks = constants.S_PER_MONTH / 3600
-            disburse_per_tick = self.proposal['grant_requested'] / no_ticks
+        OCEAN = self.OCEAN()
+        if OCEAN != 0:
+            OCEAN_DISBURSE = OCEAN / 5 # arbitrary number so that researchers don't spend everything at once
         for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent() * disburse_per_tick)
+            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
     
     def takeStep(self, state):
         self.proposal = self.createProposal()

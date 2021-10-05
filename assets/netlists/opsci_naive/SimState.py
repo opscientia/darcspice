@@ -74,7 +74,7 @@ class SimState(SimStateBase.SimStateBase):
 
         # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
         new_agents.add(OpscientiaDAOAgent(
-            name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_USD,
+            name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_OCEAN,
             receiving_agents = {"ocean_burner": self.percentToBurn},
             s_between_grants = S_PER_DAY))
 

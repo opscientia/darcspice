@@ -77,7 +77,6 @@ class OpscientiaDAOAgent(AgentBase):
         
         if do_disburse:
             self.proposal_evaluation = self.evaluateProposal(state)
-            print(f'PROPOSAL EVALUATION {self.proposal_evaluation}')
             self._disburseFunds(state)
             self._tick_last_disburse = state.tick
         

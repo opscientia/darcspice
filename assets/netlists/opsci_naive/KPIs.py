@@ -320,18 +320,18 @@ def netlist_createLogData(state):
 
     researcher0 = state.getAgent("researcher0")
     s += ["; researcher0 OCEAN=%s" % prettyBigNum(researcher0.OCEAN(),False)]
-    dataheader += ["researcher0_OCEAN"]
-    datarow += [researcher0.OCEAN()]
+    dataheader += ["researcher0_OCEAN_spent"]
+    datarow += [researcher0._spent_at_tick]
 
     researcher1 = state.getAgent("researcher1")
     s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
-    dataheader += ["researcher1_OCEAN"]
-    datarow += [researcher1.OCEAN()]
+    dataheader += ["researcher1_OCEAN_spent"]
+    datarow += [researcher1._spent_at_tick]
 
     opsci_market = state.getAgent("opsci_market")
     s += ["; opsci_market OCEAN=%s" % prettyBigNum(opsci_market.OCEAN(),False)]
-    dataheader += ["opsci_market_OCEAN"]
-    datarow += [opsci_market.OCEAN()]
+    dataheader += ["opsci_market_OCEAN_flow"]
+    datarow += [opsci_market._OCEAN_at_tick]
 
     sellers = state.getAgent("sellers")
     s += ["; sellers OCEAN=%s" % prettyBigNum(sellers.OCEAN(),False)]
@@ -360,7 +360,7 @@ def netlist_plotInstructions(header: List[str], values):
     x = arrayToFloatList(values[:,header.index("Day")])
     
     y_params = [
-        YParam(["opsci_dao_OCEAN","researcher0_OCEAN","researcher1_OCEAN","opsci_market_OCEAN", "sellers_OCEAN"],
+        YParam(["opsci_dao_OCEAN","researcher0_OCEAN_spent","researcher1_OCEAN_spent","opsci_market_OCEAN_flow", "sellers_OCEAN"],
         ["opsci_dao","researcher0","researcher1","opsci_market", "sellers"],"Agents OCEAN",LINEAR,MULT1,COUNT),
         # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
         # #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
