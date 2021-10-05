@@ -14,8 +14,7 @@ class OpscientiaDAOAgent(AgentBase):
     Sends OCEAN to be burned, evaluates proposals, disburses funds to researchers (TODO) (acts as a treasury)
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
-                 receiving_agents : dict, s_between_grants: int,  
-                 n_actions: int):
+                 receiving_agents : dict, s_between_grants: int):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
         The dict values are methods, not floats, so that the return value
         can change over time. E.g. percent_burn changes.
