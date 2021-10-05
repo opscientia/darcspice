@@ -70,6 +70,11 @@ class OpscientiaDAOAgent(AgentBase):
 
 
     def takeStep(self, state) -> None:
+
+        #record what we had up until this point
+        self._USD_per_tick.append(self.USD())
+        self._OCEAN_per_tick.append(self.OCEAN())
+        
         do_disburse = False
         if self._tick_last_disburse is None:
             do_disburse = True
@@ -83,17 +88,17 @@ class OpscientiaDAOAgent(AgentBase):
             self.proposal_evaluation = self.evaluateProposal(state)
             self._disburseFunds(state)
             self._tick_last_disburse = state.tick
-
-        
-        #record what we had up until this point
-        self._USD_per_tick.append(self.USD())
-        self._OCEAN_per_tick.append(self.OCEAN())
         
         #disburse it all, as soon as agent has it
         if self.USD() > 0:
             self._disburseUSD(state)
         if self.OCEAN() > 0:
             self._disburseOCEAN(state)
+
+    def _disburseFunds(self):
+        #same amount each time        
+        OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
+        self._transferUSD(self.proposal_evaluation['winner'], OCEAN)
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()
@@ -105,19 +110,19 @@ class OpscientiaDAOAgent(AgentBase):
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
 
-    def monthlyUSDreceived(self, state) -> float:
-        """Amount of USD received in the past month. 
-        Assumes that it disburses USD as soon as it gets it."""
-        tick1 = self._tickOneMonthAgo(state)
-        tick2 = state.tick
-        return float(sum(self._USD_per_tick[tick1:tick2+1]))
+    # def monthlyUSDreceived(self, state) -> float:
+    #     """Amount of USD received in the past month. 
+    #     Assumes that it disburses USD as soon as it gets it."""
+    #     tick1 = self._tickOneMonthAgo(state)
+    #     tick2 = state.tick
+    #     return float(sum(self._USD_per_tick[tick1:tick2+1]))
     
-    def monthlyOCEANreceived(self, state) -> float:
-        """Amount of OCEAN received in the past month. 
-        Assumes that it disburses OCEAN as soon as it gets it."""
-        tick1 = self._tickOneMonthAgo(state)
-        tick2 = state.tick
-        return float(sum(self._OCEAN_per_tick[tick1:tick2+1]))
+    # def monthlyOCEANreceived(self, state) -> float:
+    #     """Amount of OCEAN received in the past month. 
+    #     Assumes that it disburses OCEAN as soon as it gets it."""
+    #     tick1 = self._tickOneMonthAgo(state)
+    #     tick2 = state.tick
+    #     return float(sum(self._OCEAN_per_tick[tick1:tick2+1]))
 
     def _tickOneMonthAgo(self, state) -> int:
         t2 = state.tick * state.ss.time_step
