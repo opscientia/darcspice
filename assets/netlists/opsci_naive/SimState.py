@@ -48,6 +48,8 @@ class SimState(SimStateBase.SimStateBase):
         new_agents: Set[AgentBase.AgentBase] = set()
 
         #################### Wiring of agents that send OCEAN ####################
+
+        
         
         # 1. ResearcherAgents create proposals & send funds to OpsciMarketplaceAgent and to OCEANBurnerAgent
         # (representing buying data/compute/algorithm assets & doing work, respectively)
@@ -72,7 +74,7 @@ class SimState(SimStateBase.SimStateBase):
 
         # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
         new_agents.add(OpscientiaDAOAgent(
-            name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_OCEAN,
+            name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_USD,
             receiving_agents = {"ocean_burner": self.percentToBurn},
             s_between_grants = S_PER_MONTH))
 

@@ -9,7 +9,6 @@ from util.strutil import prettyBigNum
 
 @enforce_types
 class KPIs(KPIsBase.KPIsBase):
-
     def __init__(self, time_step: int):
         super().__init__(time_step)
                 
@@ -226,13 +225,14 @@ class KPIs(KPIsBase.KPIsBase):
 @enforce_types
 def netlist_createLogData(state):
     """pass this to SimEngine.__init__() as argument `netlist_createLogData`"""
+    s = [] #for console logging
+    dataheader = [] # for csv logging: list of string
+    datarow = [] #for csv logging: list of float
+    ###################################################################################################
     F = False
     ss = state.ss
     kpis = state.kpis
 
-    s = [] #for console logging
-    dataheader = [] # for csv logging: list of string
-    datarow = [] #for csv logging: list of float
 
     #SimEngine already logs: Tick, Second, Min, Hour, Day, Month, Year
     #So we log other things...
@@ -302,28 +302,40 @@ def netlist_createLogData(state):
     dataheader += ["OCEAN_price"]
     datarow += [O_price]
 
-    # gt_rev = kpis.grantTakersMonthlyRevenueNow()
-    # #s += ["; r&d/mo=$%s" % prettyBigNum(gt_rev,F)]
-    # dataheader += ["RND/mo"]
-    # datarow += [gt_rev]
-
-    # ratio = kpis.mktsRNDToSalesRatio()
-    # growth = ss.annualMktsGrowthRate(ratio)
-    # #s += ["; r&d/sales ratio=%.2f, growth(ratio)=%.3f" % (ratio, growth)]
-    # dataheader += ["rnd_to_sales_ratio", "mkts_annual_growth_rate"]
-    # datarow += [ratio, growth]
-
     dao = state.getAgent("opsci_dao")
     dao_USD = dao.monthlyUSDreceived(state)
     dao_OCEAN = dao.monthlyOCEANreceived(state)
     dao_OCEAN_in_USD = dao_OCEAN * O_price
     dao_total_in_USD = dao_USD + dao_OCEAN_in_USD
-    #s += ["; dao:[$%s/mo,%s OCEAN/mo ($%s),total=$%s/mo]" %
-    #      (prettyBigNum(dao_USD,F), prettyBigNum(dao_OCEAN,F),
-    #       prettyBigNum(dao_OCEAN_in_USD,F), prettyBigNum(dao_total_in_USD,F))]
     dataheader += ["dao_USD/mo", "dao_OCEAN/mo", "dao_OCEAN_in_USD/mo",
                    "dao_total_in_USD/mo"]
     datarow += [dao_USD, dao_OCEAN, dao_OCEAN_in_USD, dao_total_in_USD]
+    ###################################################################################################
+
+    opsci_dao = state.getAgent("opsci_dao")
+    s += ["; opsci_dao OCEAN=%s" % prettyBigNum(opsci_dao.OCEAN(),False)]
+    dataheader += ["opsci_dao_OCEAN"]
+    datarow += [opsci_dao.OCEAN()]
+
+    researcher1 = state.getAgent("researcher1")
+    s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
+    dataheader += ["researcher1_OCEAN"]
+    datarow += [researcher1.OCEAN()]
+
+    researcher2 = state.getAgent("researcher2")
+    s += ["; researcher2 OCEAN=%s" % prettyBigNum(researcher2.OCEAN(),False)]
+    dataheader += ["researcher2_OCEAN"]
+    datarow += [researcher2.OCEAN()]
+
+    opsci_market = state.getAgent("opsci_market")
+    s += ["; opsci_market OCEAN=%s" % prettyBigNum(opsci_market.OCEAN(),False)]
+    dataheader += ["opsci_market_OCEAN"]
+    datarow += [opsci_market.OCEAN()]
+
+    sellers = state.getAgent("sellers")
+    s += ["; sellers OCEAN=%s" % prettyBigNum(sellers.OCEAN(),False)]
+    dataheader += ["sellers_OCEAN"]
+    datarow += [sellers.OCEAN()]
 
     #done
     return s, dataheader, datarow
@@ -347,6 +359,8 @@ def netlist_plotInstructions(header: List[str], values):
     x = arrayToFloatList(values[:,header.index("Day")])
     
     y_params = [
+        YParam(["opsci_dao_OCEAN","researcher1_OCEAN","researcher2_OCEAN","opsci_market_OCEAN", "sellers_OCEAN"],
+        ["opsci_dao","researcher1","researcher2","opsci_market", "sellers"],"Agents OCEAN",LINEAR,MULT1,COUNT),
         YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
         #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
         YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],

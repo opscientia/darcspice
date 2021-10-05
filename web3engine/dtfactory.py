@@ -22,6 +22,7 @@ class DTFactory:
                     from_wallet: web3wallet.Web3Wallet) -> str:        
         f = self.contract.functions.createToken(blob, name, symbol, cap_base)
         (tx_hash, tx_receipt) = web3wallet.buildAndSendTx(f, from_wallet)
+        print(f'SYMBOL: {symbol}, CONTRACT {self.contract.events}')
 
         warnings.filterwarnings("ignore") #ignore unwarranted warning up next
         rich_logs = getattr(self.contract.events, 'TokenCreated')().processReceipt(tx_receipt)

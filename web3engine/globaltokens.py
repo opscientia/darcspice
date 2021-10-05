@@ -29,6 +29,7 @@ def _minter(symbol:str):
     global _MINTERS
     if symbol not in _MINTERS:
         _MINTERS[symbol] = _Minter(symbol)
+        print(f'MINTERS: {_MINTERS}')
     return _MINTERS[symbol]
 
 @enforce_types
