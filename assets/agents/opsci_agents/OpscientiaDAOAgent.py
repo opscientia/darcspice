@@ -51,18 +51,17 @@ class OpscientiaDAOAgent(AgentBase):
         Params:
             grant_requested
             no_researchers
-            research_length_mo
             assets_generated
         -------
-        These parameters are then evaluated as ((grant_requested / no_researchers) / research_length_mo) / assets_generated.
+        These parameters are then evaluated as (grant_requested / no_researchers) / assets_generated.
         The proposal with the smaller score is accepted. 
         '''
         r0 = state.getAgent('researcher0')
         r1 = state.getAgent('researcher1')
 
         if r0.proposal != None and r1.proposal != None:
-            r0_score = ((r0.proposal['grant_requested'] / r0.proposal['no_researchers']) / r0.proposal['research_length_mo']) / r0.proposal['assets_generated']
-            r1_score = ((r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['research_length_mo']) / r1.proposal['assets_generated']
+            r0_score = (r0.proposal['grant_requested'] / r0.proposal['no_researchers']) / r0.proposal['assets_generated']
+            r1_score = (r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['assets_generated']
 
             if r0_score < r1_score:
                 return {'winner': 'researcher0', 'amount': r0['grant_requested']}
