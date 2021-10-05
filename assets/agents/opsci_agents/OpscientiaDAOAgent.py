@@ -14,7 +14,8 @@ class OpscientiaDAOAgent(AgentBase):
     Sends OCEAN to be burned, evaluates proposals, disburses funds to researchers (TODO) (acts as a treasury)
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
-                 receiving_agents : dict):
+                 receiving_agents : dict, s_between_grants: int,  
+                 n_actions: int):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
         The dict values are methods, not floats, so that the return value
         can change over time. E.g. percent_burn changes.
@@ -27,6 +28,12 @@ class OpscientiaDAOAgent(AgentBase):
         self._OCEAN_per_tick: List[float] = [] # ""
 
         self.proposal_evaluation = None
+
+        self._s_between_grants: int = s_between_grants
+        self._USD_per_grant: float = 0.0
+        self._OCEAN_per_grant: float = 0.0
+        
+        self._tick_last_disburse = None
             
     def isPendingProposal(self, state) -> bool:
         r0 = state.getAgent('researcher0')
@@ -58,15 +65,27 @@ class OpscientiaDAOAgent(AgentBase):
             r1_score = ((r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['research_length_mo']) / r1.proposal['assets_generated']
 
             if r0_score < r1_score:
-                return {'winner': 'researcher0'}
+                return {'winner': 'researcher0', 'amount': r0['grant_requested']}
             else:
-                return {'winner': 'researcher1'}
+                return {'winner': 'researcher1', 'amount': r1['grant_requested']}
 
 
     def takeStep(self, state) -> None:
-        if self.isPendingProposal(state):
+        do_disburse = False
+        if self._tick_last_disburse is None:
+            do_disburse = True
+        else:
+            n_ticks_since = state.tick - self._tick_last_disburse
+            n_s_since = n_ticks_since * state.ss.time_step
+            n_s_thr = self._s_between_grants            
+            do_disburse = (n_s_since >= n_s_thr)
+        
+        if do_disburse:
             self.proposal_evaluation = self.evaluateProposal(state)
+            self._disburseFunds(state)
+            self._tick_last_disburse = state.tick
 
+        
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
