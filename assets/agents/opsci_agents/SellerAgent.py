@@ -29,7 +29,7 @@ class SellerAgent(AgentBase):
 
         # time-dependent parameters
         self._n_sellers: float = n_sellers
-        self._revenue_per_seller_per_s: float = revenue_per_seller_per_s
+        self._revenue_per_seller_per_s: float = 0.0
         self._time_step: int = time_step
         self._revenue_per_tick: float = 0
 
@@ -37,7 +37,8 @@ class SellerAgent(AgentBase):
         return self._n_sellers
 
     def revenuePerSellerPerSecond(self) -> float:
-        return self._revenue_per_seller_per_s
+        # 1 tick = 1 hour = 3600 s
+        return self._OCEAN_per_tick * 3600
     
     def takeStep(self, state) -> None:
         #record what we had up until this point
