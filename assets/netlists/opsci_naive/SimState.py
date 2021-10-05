@@ -83,7 +83,6 @@ class SimState(SimStateBase.SimStateBase):
         new_agents.add(SellerAgent(
             name = "sellers", USD=0.0, OCEAN=0.0,
             n_sellers = float(ss.init_n_sellers),
-            revenue_per_seller_per_s= 20e3 / S_PER_MONTH, #magic number
             time_step= ss.time_step
         ))
 
