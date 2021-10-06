@@ -27,9 +27,11 @@ class ResearcherAgent(AgentBase):
         self._receiving_agents = receiving_agents
 
         self.proposal = None
-        # self._s_since_buy = 0 # seconds since bought data
-        # self._s_between_buys = 3 * constants.S_PER_DAY  # magic number
-        # self.profit_margin_on_consume = 0.2  # magic number
+
+        # metrics to track
+        self.no_proposals_submitted: int = 0
+        self.no_proposals_funded: int = 0
+        self.total_research_funds_received: float = 0.0
     
     def createProposal(self) -> dict:
         return {'grant_requested': random.randint(1000, 50000),
