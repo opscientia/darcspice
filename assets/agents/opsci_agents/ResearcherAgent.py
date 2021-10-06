@@ -20,13 +20,15 @@ class ResearcherAgent(AgentBase):
     - number of proposals funded
     - total funds received for research
     '''   
-    def __init__(self, name: str, USD: float, OCEAN: float, 
-                 receiving_agents : dict):
+    def __init__(self, name: str, USD: float, OCEAN: float,
+                 no_researchers: int, receiving_agents : dict):
         super().__init__(name, USD, OCEAN)
         self._spent_at_tick = 0.0 #USD and OCEAN (in USD) spent
         self._receiving_agents = receiving_agents
+        self.no_researchers = no_researchers
 
         self.proposal = None
+        self.knowledge_access: float = 0.0
 
         # metrics to track
         self.no_proposals_submitted: int = 0
@@ -34,9 +36,10 @@ class ResearcherAgent(AgentBase):
         self.total_research_funds_received: float = 0.0
     
     def createProposal(self) -> dict:
-        return {'grant_requested': random.randint(1000, 50000),
-                'no_researchers': random.randint(1, 10),
-                'assets_generated': random.randint(1, 10)}
+        return {'grant_requested': random.randint(10000, 50000), # Note: might be worth considering some distribution based on other params
+                'assets_generated': random.randint(1, 10), # Note: might be worth considering some distribution based on other params 
+                'no_researchers': self.no_researchers,
+                'knowledge_access': self.knowledge_access}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
