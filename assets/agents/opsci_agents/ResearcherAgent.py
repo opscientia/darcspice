@@ -14,7 +14,11 @@ log = logging.getLogger('agents')
 @enforce_types
 class ResearcherAgent(AgentBase):
     '''
-    So far only a combination of DataconsumerAgent and GrantTakingAgent
+    ResearcherAgent publishes proposals, creates knowledge assets and publishes them to a knowledge curator.
+    Also, it keeps track of the following metrics:
+    - number of proposals submitted
+    - number of proposals funded
+    - total funds received for research
     '''   
     def __init__(self, name: str, USD: float, OCEAN: float, 
                  receiving_agents : dict):
