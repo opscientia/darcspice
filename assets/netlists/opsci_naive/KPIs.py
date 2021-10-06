@@ -360,8 +360,10 @@ def netlist_plotInstructions(header: List[str], values):
     x = arrayToFloatList(values[:,header.index("Day")])
     
     y_params = [
-        YParam(["opsci_dao_OCEAN","researcher0_OCEAN_spent","researcher1_OCEAN_spent","opsci_market_OCEAN_flow", "sellers_OCEAN"],
-        ["opsci_dao","researcher0","researcher1","opsci_market", "sellers"],"Agents OCEAN",LINEAR,MULT1,COUNT),
+        YParam(["opsci_dao_OCEAN", "sellers_OCEAN"],
+        ["opsci_dao","sellers"],"Research grants and opsci seller revenue",LOG,MULT1,COUNT),
+        YParam(["researcher0_OCEAN_spent","researcher1_OCEAN_spent","opsci_market_OCEAN_flow"],
+        ["researcher0","researcher1","opsci_market"],"Researchers OCEAN and opsci market OCEAN flow",LINEAR,MULT1,COUNT),
         # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
         # #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
         # YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],

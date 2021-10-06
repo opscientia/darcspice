@@ -33,7 +33,7 @@ class SimState(SimStateBase.SimStateBase):
         
         #as ecosystem improves, these parameters may change / improve
         self._marketplace_percent_toll_to_ocean = 0.002 #magic number
-        self._percent_burn: float = 0.05 #to burning, vs to OpsciMarketplace #magic number
+        self._percent_burn: float = 0.0005 #to burning, vs to OpsciMarketplace #magic number
         self._percent_dao: float = 0.05 #to dao vs to sellers
 
         self._total_OCEAN_minted: float = 0.0
@@ -74,7 +74,7 @@ class SimState(SimStateBase.SimStateBase):
 
         # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
         new_agents.add(OpscientiaDAOAgent(
-            name = "opsci_dao", USD=0.0, OCEAN=ss.OPF_TREASURY_OCEAN,
+            name = "opsci_dao", USD=0.0, OCEAN=500000.0,
             receiving_agents = {"ocean_burner": self.percentToBurn},
             s_between_grants = S_PER_DAY))
 
