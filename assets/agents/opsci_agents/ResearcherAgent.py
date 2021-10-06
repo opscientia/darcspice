@@ -29,11 +29,15 @@ class ResearcherAgent(AgentBase):
 
         self.proposal = None
         self.knowledge_access: float = 0.0
+        self.ticks_since_proposal: int = 0
+        self.proposal_accepted = False
 
         # metrics to track
         self.no_proposals_submitted: int = 0
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
+
+        TICKS_BETWEEN_PROPOSALS = 6480 # 1tick = 1hour and a research project in this simulation lasts 9 months, so 9*30*24=6480
     
     def createProposal(self) -> dict:
         return {'grant_requested': random.randint(10000, 50000), # Note: might be worth considering some distribution based on other params
@@ -65,7 +69,19 @@ class ResearcherAgent(AgentBase):
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
     
     def takeStep(self, state):
-        self.proposal = self.createProposal()
+
+        # Proposal functionality: one problem is that the agent that evaluates proposals and gives grants is often
+        # the first one to takeStep, when there are no proposals yet.
+        if self.proposal is None:
+            self.proposal = self.createProposal()
+            self.no_proposals_submitted += 1
+        
+        if state.getAgent('university').proposal_evaluation['winner'] == self.name:
+            self.proposal_accepted = True
+        
+        if self.proposal_accepted:
+            self.ticks_since_proposal += 1
+        
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
         self._spent_at_tick = self.OCEAN()
 
