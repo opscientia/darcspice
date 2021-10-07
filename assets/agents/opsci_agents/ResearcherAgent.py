@@ -28,7 +28,7 @@ class ResearcherAgent(AgentBase):
         self.no_researchers = no_researchers
 
         self.proposal = None
-        self.knowledge_access: float = 0.0
+        self.knowledge_access: float = 1.0
         self.ticks_since_proposal: int = 0
         self.proposal_accepted = False
         self.tick_of_proposal = 0
@@ -54,11 +54,10 @@ class ResearcherAgent(AgentBase):
         '''
         1 tick = 1 hour
         '''
-        if self.proposal != None:
-            no_ticks = constants.S_PER_DAY / 3600
-            disburse_per_tick = self.proposal['grant_requested'] / no_ticks
-        for name, computePercent in self._receiving_agents.items():
-            self._transferUSD(state.getAgent(name), computePercent() * disburse_per_tick)
+        # in this naive model, it makes little difference whether the money from grants is spent in one tick or across many
+        if self.proposal != None and self.USD() != 0.0:
+            for name, computePercent in self._receiving_agents.items():
+                self._transferUSD(state.getAgent(name), computePercent())
     
     def _OCEANToDisbursePerTick(self, state) -> None:
         '''
@@ -95,6 +94,7 @@ class ResearcherAgent(AgentBase):
             elif state.getAgent('university').proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
                 self.no_proposals_funded += 1
+                self.knowledge_access += self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
             elif state.getAgent('university').proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
         
