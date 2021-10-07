@@ -317,15 +317,34 @@ def netlist_createLogData(state):
     s += ["; researcher0 USD=%s" % prettyBigNum(researcher0.USD(),False)]
     s += ["; researcher0 proposals=%s" % (researcher0.no_proposals_submitted,)]
     s += ["; researcher0 proposals funded=%s" % (researcher0.no_proposals_funded,)]
-    dataheader += ["researcher0_USD_spent"]
-    datarow += [researcher0._spent_at_tick]
+    dataheader += ["researcher0_knowledge_access"]
+    datarow += [researcher0.knowledge_access]
+
+    dataheader += ["researcher0_no_proposals"]
+    datarow += [researcher0.no_proposals_submitted]
+
+    dataheader += ["researcher0_no_proposals_funded"]
+    datarow += [researcher0.no_proposals_funded]
+
+    dataheader += ["researcher0_total_funding"]
+    datarow += [researcher0.total_research_funds_received]
+
 
     researcher1 = state.getAgent("researcher1")
     s += ["; researcher1 USD=%s" % prettyBigNum(researcher1.USD(),False)]
     s += ["; researcher1 proposals=%s" % (researcher1.no_proposals_submitted,)]
     s += ["; researcher1 proposals funded=%s" % (researcher1.no_proposals_funded,)]
-    dataheader += ["researcher1_USD_spent"]
-    datarow += [researcher1._spent_at_tick]
+    dataheader += ["researcher1_knowledge_access"]
+    datarow += [researcher1.knowledge_access]
+
+    dataheader += ["researcher1_no_proposals"]
+    datarow += [researcher1.no_proposals_submitted]
+
+    dataheader += ["researcher1_no_proposals_funded"]
+    datarow += [researcher1.no_proposals_funded]
+
+    dataheader += ["researcher1_total_funding"]
+    datarow += [researcher1.total_research_funds_received]
 
     uni = state.getAgent("university")
     s += ["; university USD=%s" % prettyBigNum(uni.USD(),False)]
@@ -356,13 +375,17 @@ def netlist_plotInstructions(header: List[str], values):
         MULT1, MULT100, DIV1M, DIV1B, \
         COUNT, DOLLAR, PERCENT
     
-    x = arrayToFloatList(values[:,header.index("Day")])
+    x = arrayToFloatList(values[:,header.index("Month")])
     
     y_params = [
-        YParam(["opsci_dao_USD", "sellers_USD"],
-        ["opsci_dao","sellers"],"Research grants and opsci seller revenue",LOG,MULT1,COUNT),
-        YParam(["researcher0_USD_spent","researcher1_USD_spent","opsci_market_USD_flow"],
-        ["researcher0","researcher1","opsci_market"],"Researchers USD and opsci market USD flow",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_no_proposals_funded","researcher1_no_proposals_funded"],
+        ["researcher0","researcher1"],"number of proposals",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_no_proposals","researcher1_no_proposals"],
+        ["researcher0","researcher1"],"number of proposals",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_total_funding","researcher1_total_funding"],
+        ["researcher0","researcher1"],"USD funding",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_knowledge_access","researcher1_knowledge_access"],
+        ["researcher0","researcher1"],"Knowledge access index",LINEAR,MULT1,COUNT),
         # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
         # #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
         # YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],

@@ -182,6 +182,8 @@ def _xyToPngs(header: List[str], values,
             xticks = [i for i in range(max_x+1) if (i%10)==0]
         elif max_x < 202:
             xticks = [i for i in range(max_x+1) if (i%20)==0]
+        elif max_x > 202:
+            xticks = [i for i in range(max_x+1) if (i%20)==0]
         pyplot.xticks(xticks)
 
         #pyplot.show() #popup
