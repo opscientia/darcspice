@@ -26,7 +26,7 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation = None
+        self.proposal_evaluation = {}
 
         self._s_between_grants: int = s_between_grants
         self._USD_per_grant: float = 0.0
@@ -66,21 +66,25 @@ class OpscientiaDAOAgent(AgentBase):
             else:
                 return {'winner': "researcher1", 'amount': r1.proposal['grant_requested']}
 
+    def proposalsReady(self, state):
+        if (state.getAgent('researcher0').proposal is not None) and (state.getAgent('researcher1').proposal is not None):
+            return True
 
     def takeStep(self, state) -> None:
+        can_fund = self.proposalsReady(state)
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
                 
-        if ((self.tick_proposal_funded - self.tick) % self.TICKS_BETWEEN_PROPOSALS) == 0:
+        if (((self.tick_proposal_funded - state.tick) % self.TICKS_BETWEEN_PROPOSALS) == 0) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
             self._disburseFundsUSD(state)
             self.tick_proposal_funded = state.tick
             self.proposal_funded = True
             self.no_proposals_received += 1
             self.total_research_funds_disbursed += self.proposal_evaluation['amount']
-        elif (self.tick == 1 or self.tick == 2) and self.proposal_funded is False:
+        elif (state.tick == 1 or state.tick == 2) and (self.proposal_funded is False) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
             self._disburseFundsUSD(state)
             self.tick_proposal_funded = state.tick

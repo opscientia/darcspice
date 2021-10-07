@@ -315,15 +315,15 @@ def netlist_createLogData(state):
 
     researcher0 = state.getAgent("researcher0")
     s += ["; researcher0 USD=%s" % prettyBigNum(researcher0.USD(),False)]
-    s += ["; researcher0 proposals=%s" (researcher0.no_proposals_submitted, False)]
-    s += ["; researcher0 proposals funded=%s" (researcher0.no_proposals_funded, False)]
+    s += ["; researcher0 proposals=%s" % (researcher0.no_proposals_submitted,)]
+    s += ["; researcher0 proposals funded=%s" % (researcher0.no_proposals_funded,)]
     dataheader += ["researcher0_USD_spent"]
     datarow += [researcher0._spent_at_tick]
 
     researcher1 = state.getAgent("researcher1")
     s += ["; researcher1 USD=%s" % prettyBigNum(researcher1.USD(),False)]
-    s += ["; researcher1 proposals=%s" (researcher1.no_proposals_submitted, False)]
-    s += ["; researcher1 proposals funded=%s" (researcher1.no_proposals_funded, False)]
+    s += ["; researcher1 proposals=%s" % (researcher1.no_proposals_submitted,)]
+    s += ["; researcher1 proposals funded=%s" % (researcher1.no_proposals_funded,)]
     dataheader += ["researcher1_USD_spent"]
     datarow += [researcher1._spent_at_tick]
 

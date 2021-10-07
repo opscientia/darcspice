@@ -54,10 +54,11 @@ class ResearcherAgent(AgentBase):
         '''
         1 tick = 1 hour
         '''
+        USD = self.USD()
         # in this naive model, it makes little difference whether the money from grants is spent in one tick or across many
         if self.proposal != None and self.USD() != 0.0:
             for name, computePercent in self._receiving_agents.items():
-                self._transferUSD(state.getAgent(name), computePercent() * self.USD())
+                self._transferUSD(state.getAgent(name), computePercent * USD) # NOTE: computePercent() should be used when it is a function in SimState.py
     
     def _OCEANToDisbursePerTick(self, state) -> None:
         '''
@@ -92,7 +93,7 @@ class ResearcherAgent(AgentBase):
         # Checking if proposal accepted (should only be checked at the tick right after the tick when createProposal() was called)
         if state.tick - self.tick_of_proposal == 1:
             # In case the funding is misaligned with the researchers
-            if state.getAgent('university').proposal_evaluation['winner'] == None:
+            if not state.getAgent('university').proposal_evaluation:
                 self.tick_of_proposal = state.tick
             elif state.getAgent('university').proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
