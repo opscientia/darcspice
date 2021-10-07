@@ -51,36 +51,18 @@ class SimState(SimStateBase.SimStateBase):
 
         
         
-        # 1. ResearcherAgents create proposals & send funds to OpsciMarketplaceAgent and to OCEANBurnerAgent
-        # (representing buying data/compute/algorithm assets & doing work, respectively)
         new_agents.add(ResearcherAgent(
             name = "researcher0", USD=0.0, OCEAN=0.0,
-            receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
-                                "ocean_burner" : self.percentToBurn}))
+            receiving_agents = {"seller" : 1.0}))
 
         new_agents.add(ResearcherAgent(
             name = "researcher1", USD=0.0, OCEAN=0.0,
-            receiving_agents = {"opsci_market" : self.percentToOpsciMrkt,
-                                "ocean_burner" : self.percentToBurn}))
-
-        # 2. OpsciMarketplaceAgent sends funds to OpscientiaDAOAgent and to all instances of SellerAgent
-        new_agents.add(OpsciMarketplaceAgent(
-            name = "opsci_market", USD=0.0, OCEAN=0.0,
-            receiving_agents = {"opsci_dao" : self.percentToOpsciDAO,
-                                "sellers" : self.percentToSellers},
-            n_assets = float(ss.init_n_assets),
-            revenue_per_asset_per_s = 20e3 / S_PER_MONTH, #magic number
-            time_step = self.ss.time_step))
+            receiving_agents = {"seller" : 1.0}))
 
         # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
         new_agents.add(OpscientiaDAOAgent(
-            name = "opsci_dao", USD=0.0, OCEAN=500000.0,
-            receiving_agents = {"ocean_burner": self.percentToBurn},
+            name = "university", USD=500000.0, OCEAN=0.0,
             s_between_grants = S_PER_DAY))
-
-        # 4. OCEANBurnerAgent burns all funds in wallet
-        new_agents.add(TokenBurnerAgent(
-            name = "ocean_burner", USD=0.0, OCEAN=0.0))
         
         new_agents.add(SellerAgent(
             name = "sellers", USD=0.0, OCEAN=0.0,
