@@ -57,7 +57,7 @@ class ResearcherAgent(AgentBase):
         # in this naive model, it makes little difference whether the money from grants is spent in one tick or across many
         if self.proposal != None and self.USD() != 0.0:
             for name, computePercent in self._receiving_agents.items():
-                self._transferUSD(state.getAgent(name), computePercent())
+                self._transferUSD(state.getAgent(name), computePercent() * self.USD())
     
     def _OCEANToDisbursePerTick(self, state) -> None:
         '''
@@ -70,6 +70,9 @@ class ResearcherAgent(AgentBase):
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
     
     def takeStep(self, state):
+
+        if self.proposal is not None:
+            self.ticks_since_proposal += 1
 
         # Proposal functionality: one problem is that the agent that evaluates proposals and gives grants is often
         # the first one to takeStep, when there are no proposals yet.
@@ -98,9 +101,6 @@ class ResearcherAgent(AgentBase):
                 self.knowledge_access += self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
             elif state.getAgent('university').proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
-        
-        if self.proposal is not None:
-            self.ticks_since_proposal += 1
         
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
         self._spent_at_tick = self.OCEAN()
