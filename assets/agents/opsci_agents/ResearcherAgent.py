@@ -77,6 +77,7 @@ class ResearcherAgent(AgentBase):
         if self.proposal is None:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
+            self.ticks_since_proposal = 0
 
         # checking to see whether it is time to submit a new proposal
         # POSSIBLE ERROR: both ResearcherAgent instances need to be aligned (not sure if that's going to work) 
@@ -84,21 +85,20 @@ class ResearcherAgent(AgentBase):
         if (self.ticks_since_proposal % self.TICKS_BETWEEN_PROPOSALS) == 0:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
-        
+            self.ticks_since_proposal = 0
+
         # Checking if proposal accepted (should only be checked at the tick right after the tick when createProposal() was called)
         if state.tick - self.tick_of_proposal == 1:
-            if state.getAgent('university').proposal_evaluation['winner'] == self.name:
+            # In case the funding is misaligned with the researchers
+            if state.getAgent('university').proposal_evaluation['winner'] == None:
+                self.tick_of_proposal = state.tick
+            elif state.getAgent('university').proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
                 self.no_proposals_funded += 1
-            # In case the funding is misaligned with the researchers
-            elif state.getAgent('university').proposal_evaluation['winner'] == None:
-                self.tick_of_proposal = state.tick
             elif state.getAgent('university').proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
         
-        
-        
-        if self.proposal_accepted:
+        if self.proposal is not None:
             self.ticks_since_proposal += 1
         
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
