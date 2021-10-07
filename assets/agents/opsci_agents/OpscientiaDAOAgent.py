@@ -32,7 +32,14 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
         
-        self._tick_last_disburse = None
+        self.proposal_funded = False
+        self.tick_proposal_funded = 0
+
+        # metrics to track (and to cross-correlate with ResearcherAgents)
+        self.no_proposals_received: int = 0
+        self.total_research_funds_disbursed: float = 0.0
+
+        self.TICKS_BETWEEN_PROPOSALS = 6480
 
     def evaluateProposal(self, state) -> dict:
         '''
@@ -51,8 +58,8 @@ class OpscientiaDAOAgent(AgentBase):
         r1 = state.getAgent('researcher1')
 
         if r0.proposal != None and r1.proposal != None:
-            r0_score = (r0.proposal['grant_requested'] / r0.proposal['no_researchers']) / r0.proposal['assets_generated']
-            r1_score = (r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['assets_generated']
+            r0_score = (r0.proposal['grant_requested'] / r0.proposal['no_researchers']) / r0.proposal['assets_generated'] / r0.proposal['knowledge_access']
+            r1_score = (r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['assets_generated'] / r1.proposal['knowledge_access']
 
             if r0_score < r1_score:
                 return {'winner': "researcher0", 'amount': r0.proposal['grant_requested']}
@@ -65,32 +72,39 @@ class OpscientiaDAOAgent(AgentBase):
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
-        
-        do_disburse = False
-        if self._tick_last_disburse is None:
-            do_disburse = True
-        else:
-            n_ticks_since = state.tick - self._tick_last_disburse
-            n_s_since = n_ticks_since * state.ss.time_step
-            n_s_thr = self._s_between_grants            
-            do_disburse = (n_s_since >= n_s_thr)
-        
-        if do_disburse:
+                
+        if ((self.tick_proposal_funded - self.tick) % self.TICKS_BETWEEN_PROPOSALS) == 0:
             self.proposal_evaluation = self.evaluateProposal(state)
-            self._disburseFunds(state)
-            self._tick_last_disburse = state.tick
+            self._disburseFundsUSD(state)
+            self.tick_proposal_funded = state.tick
+            self.proposal_funded = True
+            self.no_proposals_received += 1
+            self.total_research_funds_disbursed += self.proposal_evaluation['amount']
+        elif (self.tick == 1 or self.tick == 2) and self.proposal_funded is False:
+            self.proposal_evaluation = self.evaluateProposal(state)
+            self._disburseFundsUSD(state)
+            self.tick_proposal_funded = state.tick
+            self.proposal_funded = True
+            self.no_proposals_received += 1
+            self.total_research_funds_disbursed += self.proposal_evaluation['amount']
         
-        #disburse it all, as soon as agent has it
+        # Used for transferring funds to any other agent (not ResearcherAgent)
         if self.USD() > 0:
             self._disburseUSD(state)
         if self.OCEAN() > 0:
             self._disburseOCEAN(state)
 
-    def _disburseFunds(self, state):
+    def _disburseFundsOCEAN(self, state):
         if self.proposal_evaluation != None:        
             OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
             agent = state.getAgent(self.proposal_evaluation['winner'])
             self._transferOCEAN(agent, OCEAN)
+    
+    def _disburseFundsUSD(self, state):
+        if self.proposal_evaluation != None:        
+            USD = min(self.USD(), self.proposal_evaluation['amount'])
+            agent = state.getAgent(self.proposal_evaluation['winner'])
+            self._transferUSD(agent, USD)
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()
@@ -101,20 +115,6 @@ class OpscientiaDAOAgent(AgentBase):
         OCEAN = self.OCEAN()
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
-
-    # def monthlyUSDreceived(self, state) -> float:
-    #     """Amount of USD received in the past month. 
-    #     Assumes that it disburses USD as soon as it gets it."""
-    #     tick1 = self._tickOneMonthAgo(state)
-    #     tick2 = state.tick
-    #     return float(sum(self._USD_per_tick[tick1:tick2+1]))
-    
-    # def monthlyOCEANreceived(self, state) -> float:
-    #     """Amount of OCEAN received in the past month. 
-    #     Assumes that it disburses OCEAN as soon as it gets it."""
-    #     tick1 = self._tickOneMonthAgo(state)
-    #     tick2 = state.tick
-    #     return float(sum(self._OCEAN_per_tick[tick1:tick2+1]))
 
     def _tickOneMonthAgo(self, state) -> int:
         t2 = state.tick * state.ss.time_step
