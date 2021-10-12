@@ -20,7 +20,8 @@ class KnowledgeMarketAgent(AgentBase):
         (basically the value of their research))
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
-                 s_between_grants: int, receiving_agents=None):
+                 s_between_grants: int, transaction_fees_percentage: float,
+                 receiving_agents=None):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
         The dict values are methods, not floats, so that the return value
         can change over time. E.g. percent_burn changes.
@@ -32,7 +33,19 @@ class KnowledgeMarketAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
+        self.OCEAN_last_tick = 0.0
+        self.transaction_fees_percentage = transaction_fees_percentage
+
+    def OCEANToDistribute(self):
+        received = self.OCEAN() - self.OCEAN_last_tick
+        if received > 0:
+            fees = received * self.transaction_fees_percentage
+            return fees
+        else:
+            return 0
+
     def takeStep(self, state) -> None:
+        #1. check if some agent funds to you
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
@@ -42,6 +55,8 @@ class KnowledgeMarketAgent(AgentBase):
             self._disburseUSD(state)
         if self.OCEAN() > 0:
             self._disburseOCEAN(state)
+
+        self.OCEAN_last_tick = self.OCEAN()
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()
