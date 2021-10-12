@@ -6,7 +6,7 @@ from typing import List
 import math
 
 from engine.AgentBase import AgentBase
-from util.constants import S_PER_MONTH
+from util.constants import S_PER_MONTH, TICKS_BETWEEN_PROPOSALS
 
 @enforce_types
 class KnowledgeMarketAgent(AgentBase):
@@ -36,6 +36,8 @@ class KnowledgeMarketAgent(AgentBase):
         self.OCEAN_last_tick = 0.0
         self.transaction_fees_percentage = transaction_fees_percentage
 
+        self.knowledge_assets = {}
+
     def _OCEANToDistribute(self):
         received = self.OCEAN() - self.OCEAN_last_tick
         if received > 0:
@@ -45,7 +47,7 @@ class KnowledgeMarketAgent(AgentBase):
             return 0
 
     def takeStep(self, state) -> None:
-        #1. check if some agent funds to you
+        #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
         fee = self._OCEANToDistribute()
 
         if fee > 0:
@@ -54,6 +56,17 @@ class KnowledgeMarketAgent(AgentBase):
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
+
+        # At the end of a research project, add knowledge assets
+        winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
+        proposal = state.getAgent(winner).proposal
+        if (((self.last_research_tick - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0):
+            self.knowledge_assets[winner] += proposal['assets_generated']
+            self.last_research_tick = state.tick
+        elif state.tick == 20: # arbitrary, just needs to happen after the research funds have been exhausted
+            self.knowledge_assets[winner] += proposal['assets_generated']
+            self.last_research_tick = state.tick
+
         
         if self.USD() > 0:
             self._disburseUSD(state)
