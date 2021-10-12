@@ -36,7 +36,7 @@ class KnowledgeMarketAgent(AgentBase):
         self.OCEAN_last_tick = 0.0
         self.transaction_fees_percentage = transaction_fees_percentage
 
-    def OCEANToDistribute(self):
+    def _OCEANToDistribute(self):
         received = self.OCEAN() - self.OCEAN_last_tick
         if received > 0:
             fees = received * self.transaction_fees_percentage
@@ -46,6 +46,7 @@ class KnowledgeMarketAgent(AgentBase):
 
     def takeStep(self, state) -> None:
         #1. check if some agent funds to you
+        fees = self._OCEANToDistribute()
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
