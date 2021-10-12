@@ -6,7 +6,7 @@ from typing import List
 import math
 
 from engine.AgentBase import AgentBase
-from util.constants import S_PER_MONTH
+from util.constants import S_PER_MONTH, TICKS_BETWEEN_PROPOSALS
 
 @enforce_types
 class OpscientiaDAOAgent(AgentBase):
@@ -38,8 +38,6 @@ class OpscientiaDAOAgent(AgentBase):
         # metrics to track (and to cross-correlate with ResearcherAgents)
         self.no_proposals_received: int = 0
         self.total_research_funds_disbursed: float = 0.0
-
-        self.TICKS_BETWEEN_PROPOSALS = 6480
 
     def evaluateProposal(self, state) -> dict:
         '''
@@ -77,7 +75,7 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
                 
-        if (((self.tick_proposal_funded - state.tick) % self.TICKS_BETWEEN_PROPOSALS) == 0) and can_fund:
+        if (((self.tick_proposal_funded - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
             self._disburseFundsUSD(state)
             self.tick_proposal_funded = state.tick
