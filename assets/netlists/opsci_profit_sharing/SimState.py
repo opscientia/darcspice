@@ -52,6 +52,11 @@ class SimState(SimStateBase.SimStateBase):
         
         
         # TODO
+        # 1. Note: the DAOTreasuryAgent has exactly the same functionality as the GrantFundingAgent in the baseline model
+        # Except in this case the funding will be given in OCEAN
+        new_agents.add(OpscientiaDAOAgent(
+            name = "dao_treasury", USD=0.0, OCEAN=500000.0,
+            s_between_grants = S_PER_DAY))
 
         for agent in new_agents:
             self.agents[agent.name] = agent
