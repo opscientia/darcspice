@@ -21,13 +21,13 @@ class KnowledgeMarketAgent(AgentBase):
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
                  s_between_grants: int, transaction_fees_percentage: float,
-                 receiving_agents=None):
+                 fee_receiving_agents=None):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
         The dict values are methods, not floats, so that the return value
         can change over time. E.g. percent_burn changes.
         """
         super().__init__(name, USD, OCEAN)
-        self._receiving_agents = receiving_agents
+        self._receiving_agents = fee_receiving_agents
 
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
@@ -46,7 +46,10 @@ class KnowledgeMarketAgent(AgentBase):
 
     def takeStep(self, state) -> None:
         #1. check if some agent funds to you
-        fees = self._OCEANToDistribute()
+        fee = self._OCEANToDistribute()
+
+        if fee > 0:
+            self._disburseFeesOCEAN(state, fee)
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
@@ -68,6 +71,10 @@ class KnowledgeMarketAgent(AgentBase):
         OCEAN = self.OCEAN()
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
+
+    def _disburseFeesOCEAN(self, state, fee) -> None:
+        for name, computePercent in self._receiving_agents.items():
+            self._transferOCEAN(state.getAgent(name), computePercent() * fee)
 
     def _tickOneMonthAgo(self, state) -> int:
         t2 = state.tick * state.ss.time_step
