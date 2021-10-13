@@ -35,14 +35,17 @@ class StakerspeculatorAgent(AgentBase):
         assert pool_agents, "need pools to be able to speculate"
         
         pool = random.choice(list(pool_agents)).pool
-        BPT = self.BPT(pool)
-        
-        if BPT > 0.0 and random.random() < 0.50: #magic number
-            BPT_sell = 0.10 * BPT #magic number
-            self.unstakeOCEAN(BPT_sell, pool)
+        # BPT = self.BPT(pool)
+
+        # if BPT > 0.0 and random.random() < 0.50: #magic number
+        #     BPT_sell = 0.10 * BPT #magic number
+        #     self.unstakeOCEAN(BPT_sell, pool)
             
-        else:
-            OCEAN_stake = 0.10 * self.OCEAN() #magic number
-            self.stakeOCEAN(OCEAN_stake, pool)
+        # else:
+        #     OCEAN_stake = 0.10 * self.OCEAN() #magic number
+
+        # In this model, staker always stakes everything to get more rewards
+        OCEAN_stake = self.OCEAN()
+        self.stakeOCEAN(OCEAN_stake, pool)
         
             
