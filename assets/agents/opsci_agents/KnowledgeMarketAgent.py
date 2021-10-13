@@ -38,6 +38,8 @@ class KnowledgeMarketAgent(AgentBase):
         self.OCEAN_last_tick = 0.0
         self.transaction_fees_percentage = transaction_fees_percentage
 
+        self.last_research_tick = 0
+
         self.knowledge_assets = {}
 
     def _FeesToDistribute(self):
@@ -49,6 +51,7 @@ class KnowledgeMarketAgent(AgentBase):
             return 0
 
     def takeStep(self, state) -> None:
+        self.last_research_tick += 1
         #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
         fee = self._FeesToDistribute()
 
