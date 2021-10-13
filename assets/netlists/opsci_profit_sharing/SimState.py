@@ -5,8 +5,7 @@ from assets.agents import MinterAgents
 from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
 from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from assets.agents.opsci_agents.SellerAgent import SellerAgent
-from assets.agents.opsci_agents.OpsciMarketplaceAgent import OpsciMarketplaceAgent
-from assets.agents.opsci_agents.TokenBurnerAgent import TokenBurnerAgent
+from assets.agents.StakerspeculatorAgent import StakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
 from util import valuation
@@ -38,6 +37,8 @@ class SimState(SimStateBase.SimStateBase):
         new_agents: Set[AgentBase.AgentBase] = set()
 
         #################### Wiring of agents that send OCEAN ####################
+        new_agents.add(StakerspeculatorAgent(
+            name = "staker", USD=0.0, OCEAN=10000.0))
 
         
         
