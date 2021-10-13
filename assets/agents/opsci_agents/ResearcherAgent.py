@@ -20,12 +20,13 @@ class ResearcherAgent(AgentBase):
     - number of proposals funded
     - total funds received for research
     '''   
-    def __init__(self, name: str, USD: float, OCEAN: float,
+    def __init__(self, name: str, evaluator: str, USD: float, OCEAN: float,
                  no_researchers: int, receiving_agents : dict):
         super().__init__(name, USD, OCEAN)
         self._spent_at_tick = 0.0 #USD and OCEAN (in USD) spent
         self._receiving_agents = receiving_agents
         self.no_researchers = no_researchers
+        self._evaluator = evaluator
 
         self.proposal = None
         self.knowledge_access: float = 1.0
@@ -90,14 +91,14 @@ class ResearcherAgent(AgentBase):
         # Checking if proposal accepted (should only be checked at the tick right after the tick when createProposal() was called)
         if state.tick - self.tick_of_proposal == 1:
             # In case the funding is misaligned with the researchers
-            if not state.getAgent('university').proposal_evaluation:
+            if not state.getAgent(self._evaluator).proposal_evaluation:
                 self.tick_of_proposal = state.tick
-            elif state.getAgent('university').proposal_evaluation['winner'] == self.name:
+            elif state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
                 self.no_proposals_funded += 1
                 self.total_research_funds_received += self.proposal['grant_requested']
                 self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
-            elif state.getAgent('university').proposal_evaluation['winner'] != self.name:
+            elif state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
         
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
