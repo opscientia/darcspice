@@ -24,21 +24,11 @@ class SimState(SimStateBase.SimStateBase):
             from .SimStrategy import SimStrategy
             self.ss = SimStrategy()
         ss = self.ss #for convenience as we go forward
-                        
-        #used to manage names
-        self._next_free_marketplace_number = 0
-
-        #used to add agents
-        self._marketplace_tick_previous_add = 0
-        
+                                
         #as ecosystem improves, these parameters may change / improve
         self._marketplace_percent_toll_to_ocean = 0.002 #magic number
         self._percent_burn: float = 0.0005 #to burning, vs to OpsciMarketplace #magic number
         self._percent_dao: float = 0.05 #to dao vs to sellers
-
-        self._total_OCEAN_minted: float = 0.0
-        self._total_OCEAN_burned: float = 0.0
-        self._total_OCEAN_burned_USD: float = 0.0
 
         self._speculation_valuation = 150e6 #in USD #magic number
         self._percent_increase_speculation_valuation_per_s = 0.10 / S_PER_YEAR # ""

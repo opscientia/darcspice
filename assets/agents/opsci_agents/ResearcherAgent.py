@@ -8,13 +8,14 @@ from assets.agents.PoolAgent import PoolAgent
 from engine.AgentBase import AgentBase
 from web3engine import bpool, datatoken, globaltokens
 from web3tools.web3util import fromBase18, toBase18
-from util import constants
+from util.constants import TICKS_BETWEEN_PROPOSALS
 log = logging.getLogger('agents')
 
 @enforce_types
 class ResearcherAgent(AgentBase):
     '''
     ResearcherAgent publishes proposals, creates knowledge assets and publishes them to a knowledge curator.
+    Has functionality of both PublisherAgent and DataconsumerAgent
     Also, it keeps track of the following metrics:
     - number of proposals submitted
     - number of proposals funded
@@ -39,7 +40,7 @@ class ResearcherAgent(AgentBase):
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
 
-        self.TICKS_BETWEEN_PROPOSALS = 6480 # 1tick = 1hour and a research project in this simulation lasts 9 months, so 9*30*24=6480
+        self._last_check_tick = 0
     
     def createProposal(self, state) -> dict:
         self.tick_of_proposal = state.tick
@@ -72,6 +73,7 @@ class ResearcherAgent(AgentBase):
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
     
     def takeStep(self, state):
+        self._last_check_tick += 1
 
         if self.proposal is not None:
             self.ticks_since_proposal += 1
@@ -83,7 +85,7 @@ class ResearcherAgent(AgentBase):
             self.ticks_since_proposal = 0
 
         # checking to see whether it is time to submit a new proposal
-        if (self.ticks_since_proposal % self.TICKS_BETWEEN_PROPOSALS) == 0:
+        if (self.ticks_since_proposal % TICKS_BETWEEN_PROPOSALS) == 0:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
             self.ticks_since_proposal = 0
@@ -101,6 +103,11 @@ class ResearcherAgent(AgentBase):
             elif state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
         
+        # If NOT a grant winner, buy and consume DT to gain knowledge_access point | DataconsumerAgent functionality
+        if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name) and (((self._last_check_tick % TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
+            # BuyAndConsumeDT and increment knowledge_access
+            self._last_check_tick = state.tick
+
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
         self._spent_at_tick = self.OCEAN()
 
