@@ -26,7 +26,7 @@ class KnowledgeMarketAgent(AgentBase):
     Also has properties of a PoolAgent
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
-                 s_between_grants: int, transaction_fees_percentage: float,
+                 transaction_fees_percentage: float,
                  fee_receiving_agents=None):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
         The dict values are methods, not floats, so that the return value

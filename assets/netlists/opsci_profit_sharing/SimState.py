@@ -4,7 +4,7 @@ from typing import Set
 from assets.agents import MinterAgents
 from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
 from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
-from assets.agents.opsci_agents.SellerAgent import SellerAgent
+from assets.agents.opsci_agents.KnowledgeMarketAgent import KnowledgeMarketAgent
 from assets.agents.StakerspeculatorAgent import StakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
@@ -37,17 +37,32 @@ class SimState(SimStateBase.SimStateBase):
         new_agents: Set[AgentBase.AgentBase] = set()
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.add(StakerspeculatorAgent(
-            name = "staker", USD=0.0, OCEAN=10000.0))
-
-        
-        
         # TODO
-        # 1. Note: the DAOTreasuryAgent has exactly the same functionality as the GrantFundingAgent in the baseline model
+        # 1. Note: the DAOTreasuryAgent has exactly the same functionality as university agent in the baseline model
         # Except in this case the funding will be given in OCEAN
         new_agents.add(OpscientiaDAOAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0,
             s_between_grants = S_PER_DAY))
+
+        new_agents.add(StakerspeculatorAgent(
+            name = "staker", USD=0.0, OCEAN=10000.0))
+
+        new_agents.add(ResearcherAgent(
+            name = "researcher0", evaluator = "dao_treasury",
+            USD=0.0, OCEAN=10000.0,
+            no_researchers = 10,
+            receiving_agents = {}))
+
+        new_agents.add(ResearcherAgent(
+            name = "researcher1", evaluator = "dao_treasury",
+            USD=0.0, OCEAN=100000.0,
+            no_researchers = 10,
+            receiving_agents = {}))
+
+        new_agents.add(KnowledgeMarketAgent(
+            name = "market", USD=0.0, OCEAN=10000.0,
+            transaction_fees_percentage=0.01,
+            fee_receiving_agents={"staker", "dao_treasury"}))
 
         for agent in new_agents:
             self.agents[agent.name] = agent
