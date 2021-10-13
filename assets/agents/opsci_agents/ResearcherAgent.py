@@ -75,16 +75,13 @@ class ResearcherAgent(AgentBase):
         if self.proposal is not None:
             self.ticks_since_proposal += 1
 
-        # Proposal functionality: one problem is that the agent that evaluates proposals and gives grants is often
-        # the first one to takeStep, when there are no proposals yet.
+        # Proposal functionality
         if self.proposal is None:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
             self.ticks_since_proposal = 0
 
         # checking to see whether it is time to submit a new proposal
-        # POSSIBLE ERROR: both ResearcherAgent instances need to be aligned (not sure if that's going to work) 
-        # AND it's also possible that there will be misalignment with the OpscientiaDAOAgent (grant giving agent in this case)
         if (self.ticks_since_proposal % self.TICKS_BETWEEN_PROPOSALS) == 0:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1

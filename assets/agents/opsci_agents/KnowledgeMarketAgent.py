@@ -18,6 +18,8 @@ class KnowledgeMarketAgent(AgentBase):
         - collects OCEAN (this will be a fixed ratio from the funding, 
         representing the researchers publishing their research papers on the platform 
         (basically the value of their research))
+    
+    Also has properties of a PoolAgent
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
                  s_between_grants: int, transaction_fees_percentage: float,
@@ -38,7 +40,7 @@ class KnowledgeMarketAgent(AgentBase):
 
         self.knowledge_assets = {}
 
-    def _OCEANToDistribute(self):
+    def _FeesToDistribute(self):
         received = self.OCEAN() - self.OCEAN_last_tick
         if received > 0:
             fees = received * self.transaction_fees_percentage
@@ -48,7 +50,7 @@ class KnowledgeMarketAgent(AgentBase):
 
     def takeStep(self, state) -> None:
         #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
-        fee = self._OCEANToDistribute()
+        fee = self._FeesToDistribute()
 
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
