@@ -71,6 +71,9 @@ class KnowledgeMarketAgent(AgentBase):
         pool_address = bfactory.BFactory().newBPool(from_wallet=wallet)
         pool = bpool.BPool(pool_address)
 
+        # Set swap fee
+        pool.setSwapFee(self.transaction_fees_percentage, from_wallet=wallet)
+
         #bind tokens & add initial liquidity
         OCEAN_bind_amt = self.OCEAN() #magic number: use all the OCEAN
         DT_bind_amt = 20.0 #magic number
