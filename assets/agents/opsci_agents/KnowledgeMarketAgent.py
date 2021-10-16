@@ -44,7 +44,8 @@ class KnowledgeMarketAgent(AgentBase):
 
         self.last_research_tick = 0
 
-        self.knowledge_assets = {}
+        self.knowledge_assets_per_researcher = {}
+        self.total_knowledge_assets: int = 0
 
     def _ToDistribute(self, state):
         received = self.OCEAN() - self.OCEAN_last_tick
@@ -75,10 +76,12 @@ class KnowledgeMarketAgent(AgentBase):
         winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
         proposal = state.getAgent(winner).proposal
         if (((self.last_research_tick - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0):
-            self.knowledge_assets[winner] += proposal['assets_generated']
+            self.knowledge_assets_per_researcher[winner] += proposal['assets_generated']
+            self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
         elif state.tick == 20: # arbitrary, just needs to happen after the research funds have been exhausted
-            self.knowledge_assets[winner] += proposal['assets_generated']
+            self.knowledge_assets_per_researcher[winner] += proposal['assets_generated']
+            self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
 
         
@@ -98,6 +101,19 @@ class KnowledgeMarketAgent(AgentBase):
         OCEAN = self.OCEAN()
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN)
+
+    def _disburseOCEANPayout(self, state, disburse) -> None:
+        '''
+        Send OCEAN payout according to the ownership of assets in the KnowledgeMarket
+        Receivers: ResearcherAgents
+        '''
+        ratios = {}
+        for agent, no_assets in self.knowledge_assets_per_researcher:
+            ratios[agent] = no_assets / self.total_knowledge_assets
+        assert(sum(self.knowledge_assets_per_researcher.values()) == self.total_knowledge_assets)
+        assert(sum(ratios.values()) == 1)
+        for name, ratio in ratios:
+            self._transferOCEAN(state.getAgent(name), disburse * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
         for name, computePercent in self._receiving_agents.items():
