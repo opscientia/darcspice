@@ -40,6 +40,8 @@ class ResearcherAgent(AgentBase):
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
 
+        self._ratio_funds_to_publish = 0.4 # arbitrary, could experiment with different values
+
         self._last_check_tick = 0
     
     def createProposal(self, state) -> dict:
@@ -62,15 +64,20 @@ class ResearcherAgent(AgentBase):
             for name, computePercent in self._receiving_agents.items():
                 self._transferUSD(state.getAgent(name), computePercent * USD) # NOTE: computePercent() should be used when it is a function in SimState.py
     
-    def _OCEANToDisbursePerTick(self, state) -> None:
+    def _BuyAndPublishAssets(self, state) -> None:
         '''
+        This is only for interaction with KnowledgeMarket. Whenever this is called,
+        it is presumed that at least a part of the funds are for buying assets in the marketplace.
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
         if OCEAN != 0:
-            OCEAN_DISBURSE = OCEAN / 5 # arbitrary number so that researchers don't spend everything at once
+            OCEAN_DISBURSE = self.proposal['grant_requested'] # arbitrary number so that researchers don't spend everything at once
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
+
+        self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
+
     
     def takeStep(self, state):
         self._last_check_tick += 1
@@ -95,11 +102,14 @@ class ResearcherAgent(AgentBase):
             # In case the funding is misaligned with the researchers
             if not state.getAgent(self._evaluator).proposal_evaluation:
                 self.tick_of_proposal = state.tick
+            # if I am the winner, send the funds received to KnowledgeMarket
             elif state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
                 self.no_proposals_funded += 1
                 self.total_research_funds_received += self.proposal['grant_requested']
-                self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
+                if self.OCEAN() >= self.proposal['grant_requested']:
+                    self._ratio_funds_to_publish = 0.4 # KnowledgeMarketAgent will check this parameter
+                    self._BuyAndPublishAssets(state)
             elif state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
         
@@ -113,7 +123,5 @@ class ResearcherAgent(AgentBase):
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)
-        if self.OCEAN() > 0:
-            self._OCEANToDisbursePerTick(state)
-
+        
         # self._s_since_buy += state.ss.time_step

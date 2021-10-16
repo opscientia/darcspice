@@ -51,18 +51,18 @@ class SimState(SimStateBase.SimStateBase):
             name = "researcher0", evaluator = "dao_treasury",
             USD=0.0, OCEAN=10000.0,
             no_researchers = 10,
-            receiving_agents = {}))
+            receiving_agents = {"market": 1.0}))
 
         new_agents.add(ResearcherAgent(
             name = "researcher1", evaluator = "dao_treasury",
             USD=0.0, OCEAN=100000.0,
             no_researchers = 10,
-            receiving_agents = {}))
+            receiving_agents = {"market": 1.0}))
 
         new_agents.add(KnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=10000.0,
             transaction_fees_percentage=0.01,
-            fee_receiving_agents={"staker", "dao_treasury"}))
+            fee_receiving_agents={"staker", "dao_treasury"})) # TODO
 
         for agent in new_agents:
             self.agents[agent.name] = agent
