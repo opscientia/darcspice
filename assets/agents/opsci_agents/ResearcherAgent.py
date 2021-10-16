@@ -39,6 +39,7 @@ class ResearcherAgent(AgentBase):
         self.no_proposals_submitted: int = 0
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
+        self.total_assets_in_mrkt: int = 0
 
         self.ratio_funds_to_publish = 0.4 # arbitrary, could experiment with different values
 
@@ -120,6 +121,7 @@ class ResearcherAgent(AgentBase):
             elif state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
                 self.no_proposals_funded += 1
+                self.total_assets_in_mrkt += self.proposal['assets_generated']
                 self.total_research_funds_received += self.proposal['grant_requested']
                 if self.OCEAN() >= self.proposal['grant_requested']:
                     self.ratio_funds_to_publish = 0.4 # KnowledgeMarketAgent will check this parameter
