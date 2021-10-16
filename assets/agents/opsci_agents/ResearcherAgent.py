@@ -72,12 +72,25 @@ class ResearcherAgent(AgentBase):
         '''
         OCEAN = self.OCEAN()
         if OCEAN != 0:
-            OCEAN_DISBURSE = self.proposal['grant_requested'] # arbitrary number so that researchers don't spend everything at once
+            OCEAN_DISBURSE = self.proposal['grant_requested']
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
 
         self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
+    def _BuyAssets(self, state) -> None:
+        '''
+        This is only for interaction with KnowledgeMarket. Whenever this is called,
+        it is presumed that at least a part of the funds are for buying assets in the marketplace.
+        1 tick = 1 hour
+        '''
+        OCEAN = self.OCEAN()
+        if OCEAN != 0:
+            OCEAN_DISBURSE =  1000 # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
+        for name, computePercent in self._receiving_agents.items():
+            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
+
+        self.knowledge_access += 1
     
     def takeStep(self, state):
         self._last_check_tick += 1
@@ -117,6 +130,8 @@ class ResearcherAgent(AgentBase):
         if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name) and (((self._last_check_tick % TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
             # BuyAndConsumeDT and increment knowledge_access
             self._last_check_tick = state.tick
+            self._ratio_funds_to_publish = 0.0 # not publishing
+            self._BuyAssets(state)
 
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
         self._spent_at_tick = self.OCEAN()
