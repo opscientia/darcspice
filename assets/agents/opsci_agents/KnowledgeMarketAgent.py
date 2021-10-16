@@ -68,6 +68,9 @@ class KnowledgeMarketAgent(AgentBase):
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
 
+        if disburse > 0:
+            self._disburseOCEANPayout(state, disburse)
+
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
@@ -116,8 +119,13 @@ class KnowledgeMarketAgent(AgentBase):
             self._transferOCEAN(state.getAgent(name), disburse * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
+        '''
+        Sends transaction fees to DAO Treasury and to Stakers
+        ratio of fees transferred is determined by the amount of OCEAN left in treasury vs. the amount 
+        of OCEAN staked by Stakers
+        '''
         for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent() * fee)
+            self._transferOCEAN(state.getAgent(name), computePercent() * fee) # TODO
 
     def _tickOneMonthAgo(self, state) -> int:
         t2 = state.tick * state.ss.time_step
