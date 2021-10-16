@@ -5,7 +5,7 @@ from assets.agents import MinterAgents
 from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
 from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from assets.agents.opsci_agents.KnowledgeMarketAgent import KnowledgeMarketAgent
-from assets.agents.StakerspeculatorAgent import StakerspeculatorAgent
+from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
 from util import valuation
@@ -44,7 +44,7 @@ class SimState(SimStateBase.SimStateBase):
             name = "dao_treasury", USD=0.0, OCEAN=500000.0,
             s_between_grants = S_PER_DAY))
 
-        new_agents.add(StakerspeculatorAgent(
+        new_agents.add(SimpleStakerspeculatorAgent(
             name = "staker", USD=0.0, OCEAN=10000.0))
 
         new_agents.add(ResearcherAgent(

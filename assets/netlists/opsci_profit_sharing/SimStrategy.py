@@ -27,8 +27,9 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         # DT parameters
         self.DT_init = 100.0
 
-        # pool
-        self.DT_stake = 20.0
-        self.pool_weight_DT    = 3.0
-        self.pool_weight_OCEAN = 7.0
-        assert (self.pool_weight_DT + self.pool_weight_OCEAN) == 10.0
+        # DATA TOKEN COMPATIBILITY WIP
+        # # pool
+        # self.DT_stake = 20.0
+        # self.pool_weight_DT    = 3.0
+        # self.pool_weight_OCEAN = 7.0
+        # assert (self.pool_weight_DT + self.pool_weight_OCEAN) == 10.0
