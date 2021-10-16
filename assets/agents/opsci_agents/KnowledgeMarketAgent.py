@@ -46,19 +46,23 @@ class KnowledgeMarketAgent(AgentBase):
 
         self.knowledge_assets = {}
 
-    def _FeesToDistribute(self):
+    def _ToDistribute(self, state):
         received = self.OCEAN() - self.OCEAN_last_tick
         if received > 0:
             fees = received * self.transaction_fees_percentage
-            return fees
+            if state.getAgent("researcher0").last_tick_spent == (state.tick or state.tick-1):
+                ratio = state.getAgent("researcher0").ratio_funds_to_publish
+                OCEAN_to_self = (received - fees) * ratio
+                OCEAN_to_researchers = (received - fees) - OCEAN_to_self
+                assert(OCEAN_to_self + OCEAN_to_researchers + fees == received)
+            return fees, OCEAN_to_self, OCEAN_to_researchers
         else:
-            return 0
-    
+            return 0, 0, 0
 
     def takeStep(self, state) -> None:
         self.last_research_tick += 1
         #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
-        fee = self._FeesToDistribute()
+        fee, keep, disburse = self.ToDistribute(state)
 
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)

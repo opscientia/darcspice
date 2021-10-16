@@ -40,9 +40,10 @@ class ResearcherAgent(AgentBase):
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
 
-        self._ratio_funds_to_publish = 0.4 # arbitrary, could experiment with different values
+        self.ratio_funds_to_publish = 0.4 # arbitrary, could experiment with different values
 
         self._last_check_tick = 0
+        self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
     
     def createProposal(self, state) -> dict:
         self.tick_of_proposal = state.tick
@@ -121,7 +122,8 @@ class ResearcherAgent(AgentBase):
                 self.no_proposals_funded += 1
                 self.total_research_funds_received += self.proposal['grant_requested']
                 if self.OCEAN() >= self.proposal['grant_requested']:
-                    self._ratio_funds_to_publish = 0.4 # KnowledgeMarketAgent will check this parameter
+                    self.ratio_funds_to_publish = 0.4 # KnowledgeMarketAgent will check this parameter
+                    self.last_tick_spent = state.tick
                     self._BuyAndPublishAssets(state)
             elif state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
@@ -130,7 +132,8 @@ class ResearcherAgent(AgentBase):
         if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name) and (((self._last_check_tick % TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
             # BuyAndConsumeDT and increment knowledge_access
             self._last_check_tick = state.tick
-            self._ratio_funds_to_publish = 0.0 # not publishing
+            self.ratio_funds_to_publish = 0.0 # not publishing
+            self.last_tick_spent = state.tick
             self._BuyAssets(state)
 
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
