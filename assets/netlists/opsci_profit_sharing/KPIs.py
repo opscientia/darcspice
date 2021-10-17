@@ -20,7 +20,7 @@ def netlist_createLogData(state):
     datarow = [] #for csv logging: list of float
 
     researcher0 = state.getAgent("researcher0")
-    s += ["; researcher0 USD=%s" % prettyBigNum(researcher0.USD(),False)]
+    s += ["; researcher0 OCEAN=%s" % prettyBigNum(researcher0.OCEAN(),False)]
     s += ["; researcher0 proposals=%s" % (researcher0.no_proposals_submitted,)]
     s += ["; researcher0 proposals funded=%s" % (researcher0.no_proposals_funded,)]
     dataheader += ["researcher0_knowledge_access"]
@@ -37,7 +37,7 @@ def netlist_createLogData(state):
 
 
     researcher1 = state.getAgent("researcher1")
-    s += ["; researcher1 USD=%s" % prettyBigNum(researcher1.USD(),False)]
+    s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
     s += ["; researcher1 proposals=%s" % (researcher1.no_proposals_submitted,)]
     s += ["; researcher1 proposals funded=%s" % (researcher1.no_proposals_funded,)]
     dataheader += ["researcher1_knowledge_access"]
@@ -52,15 +52,15 @@ def netlist_createLogData(state):
     dataheader += ["researcher1_total_funding"]
     datarow += [researcher1.total_research_funds_received]
 
-    uni = state.getAgent("university")
-    s += ["; university USD=%s" % prettyBigNum(uni.USD(),False)]
-    dataheader += ["university_USD"]
-    datarow += [uni.USD()]
+    treasury = state.getAgent("dao_treasury")
+    s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
+    dataheader += ["dao_treasury_OCEAN"]
+    datarow += [treasury.OCEAN()]
 
-    sellers = state.getAgent("sellers")
-    s += ["; sellers USD=%s" % prettyBigNum(sellers.USD(),False)]
-    dataheader += ["sellers_USD"]
-    datarow += [sellers.USD()]
+    staker = state.getAgent("staker")
+    s += ["; staker OCEAN=%s" % prettyBigNum(staker.OCEAN(),False)]
+    dataheader += ["staker_OCEAN"]
+    datarow += [staker.OCEAN()]
 
     #done
     return s, dataheader, datarow
@@ -89,7 +89,7 @@ def netlist_plotInstructions(header: List[str], values):
         YParam(["researcher0_no_proposals","researcher1_no_proposals"],
         ["researcher0","researcher1"],"number of proposals",LINEAR,MULT1,COUNT),
         YParam(["researcher0_total_funding","researcher1_total_funding"],
-        ["researcher0","researcher1"],"USD funding",LINEAR,MULT1,COUNT),
+        ["researcher0","researcher1"],"OCEAN funding",LINEAR,MULT1,COUNT),
         YParam(["researcher0_knowledge_access","researcher1_knowledge_access"],
         ["researcher0","researcher1"],"Knowledge access index",LINEAR,MULT1,COUNT),
         # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),

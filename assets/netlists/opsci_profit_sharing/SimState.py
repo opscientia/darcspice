@@ -55,7 +55,7 @@ class SimState(SimStateBase.SimStateBase):
 
         new_agents.add(ResearcherAgent(
             name = "researcher1", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=100000.0,
+            USD=0.0, OCEAN=10000.0,
             no_researchers = 10,
             receiving_agents = {"market": 1.0}))
 

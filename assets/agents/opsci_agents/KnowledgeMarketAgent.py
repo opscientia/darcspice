@@ -49,21 +49,28 @@ class KnowledgeMarketAgent(AgentBase):
 
     def _ToDistribute(self, state):
         received = self.OCEAN() - self.OCEAN_last_tick
-        if received > 0:
+        if received > 0 and state.tick > 0:
             fees = received * self.transaction_fees_percentage
             if state.getAgent("researcher0").last_tick_spent == (state.tick or state.tick-1):
                 ratio = state.getAgent("researcher0").ratio_funds_to_publish
                 OCEAN_to_self = (received - fees) * ratio
                 OCEAN_to_researchers = (received - fees) - OCEAN_to_self
                 assert(OCEAN_to_self + OCEAN_to_researchers + fees == received)
-            return fees, OCEAN_to_self, OCEAN_to_researchers
+                return fees, OCEAN_to_self, OCEAN_to_researchers
+            elif state.getAgent("researcher1").last_tick_spent == (state.tick or state.tick-1):
+                ratio = state.getAgent("researcher1").ratio_funds_to_publish
+                OCEAN_to_self = (received - fees) * ratio
+                OCEAN_to_researchers = (received - fees) - OCEAN_to_self
+                assert(OCEAN_to_self + OCEAN_to_researchers + fees == received)
+                return fees, OCEAN_to_self, OCEAN_to_researchers
+            return 0, 0, 0
         else:
             return 0, 0, 0
 
     def takeStep(self, state) -> None:
         self.last_research_tick += 1
         #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
-        fee, keep, disburse = self.ToDistribute(state)
+        fee, keep, disburse = self._ToDistribute(state)
 
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
@@ -76,22 +83,21 @@ class KnowledgeMarketAgent(AgentBase):
         self._OCEAN_per_tick.append(self.OCEAN())
 
         # At the end of a research project, add knowledge assets
-        winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
-        proposal = state.getAgent(winner).proposal
         if (((self.last_research_tick - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0):
-            self.knowledge_assets_per_researcher[winner] += proposal['assets_generated']
+            winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
+            proposal = state.getAgent(winner).proposal
+            if winner in self.knowledge_assets_per_researcher:
+                self.knowledge_assets_per_researcher[winner] += proposal['assets_generated']
+            else:
+                self.knowledge_assets_per_researcher[winner] = proposal['assets_generated']
             self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
         elif state.tick == 20: # arbitrary, just needs to happen after the research funds have been exhausted
-            self.knowledge_assets_per_researcher[winner] += proposal['assets_generated']
+            winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
+            proposal = state.getAgent(winner).proposal
+            self.knowledge_assets_per_researcher[winner] = proposal['assets_generated']
             self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
-
-        
-        if self.USD() > 0:
-            self._disburseUSD(state)
-        if self.OCEAN() > 0:
-            self._disburseOCEAN(state)
 
         self.OCEAN_last_tick = self.OCEAN()
 
@@ -111,12 +117,13 @@ class KnowledgeMarketAgent(AgentBase):
         Receivers: ResearcherAgents
         '''
         ratios = {}
-        for agent, no_assets in self.knowledge_assets_per_researcher:
+        for agent, no_assets in self.knowledge_assets_per_researcher.items():
             ratios[agent] = no_assets / self.total_knowledge_assets
         assert(sum(self.knowledge_assets_per_researcher.values()) == self.total_knowledge_assets)
-        assert(sum(ratios.values()) == 1)
-        for name, ratio in ratios.items():
-            self._transferOCEAN(state.getAgent(name), disburse * ratio)
+        if sum(ratios.values()) != 0:
+            assert(sum(ratios.values()) == 1)
+            for name, ratio in ratios.items():
+                self._transferOCEAN(state.getAgent(name), disburse * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
         '''
@@ -132,7 +139,7 @@ class KnowledgeMarketAgent(AgentBase):
         for name in self._receiving_agents.keys():
             agent_OCEAN = state.getAgent(name).OCEAN()
             ratios[name] = agent_OCEAN / total_stkholder_OCEAN
-        assert(int(sum.ratios.values()) == 1)
+        assert(int(sum(ratios.values())) == 1)
         for name, ratio in ratios.items():
             self._transferOCEAN(state.getAgent(name), ratio * fee)
 

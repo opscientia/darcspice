@@ -90,7 +90,7 @@ class ResearcherAgent(AgentBase):
         if OCEAN != 0:
             OCEAN_DISBURSE =  1000 # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
         for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
+            self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
 
         self.knowledge_access += 1
     
@@ -131,12 +131,13 @@ class ResearcherAgent(AgentBase):
                 self.proposal_accepted = False
         
         # If NOT a grant winner, buy and consume DT to gain knowledge_access point | DataconsumerAgent functionality
-        if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name) and (((self._last_check_tick % TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
-            # BuyAndConsumeDT and increment knowledge_access
-            self._last_check_tick = state.tick
-            self.ratio_funds_to_publish = 0.0 # not publishing
-            self.last_tick_spent = state.tick
-            self._BuyAssets(state)
+        if (((self._last_check_tick % TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
+            if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name):
+                # BuyAndConsumeDT and increment knowledge_access
+                self._last_check_tick = state.tick
+                self.ratio_funds_to_publish = 0.0 # not publishing
+                self.last_tick_spent = state.tick
+                self._BuyAssets(state)
 
         # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
         self._spent_at_tick = self.OCEAN()
