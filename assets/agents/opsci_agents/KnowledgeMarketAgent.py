@@ -55,12 +55,16 @@ class KnowledgeMarketAgent(AgentBase):
                 ratio = state.getAgent("researcher0").ratio_funds_to_publish
                 OCEAN_to_self = (received - fees) * ratio
                 OCEAN_to_researchers = (received - fees) - OCEAN_to_self
+                # for debugging
+                print(f'RECEIVED = {received} | OCEAN_TO_SELF = {OCEAN_to_self} | OCEAN TO RESEARCHERS = {OCEAN_to_researchers}| FEES= {fees} | SUM ={OCEAN_to_self + OCEAN_to_researchers + fees}')
                 assert(OCEAN_to_self + OCEAN_to_researchers + fees == received)
                 return fees, OCEAN_to_self, OCEAN_to_researchers
             elif state.getAgent("researcher1").last_tick_spent == (state.tick or state.tick-1):
                 ratio = state.getAgent("researcher1").ratio_funds_to_publish
                 OCEAN_to_self = (received - fees) * ratio
                 OCEAN_to_researchers = (received - fees) - OCEAN_to_self
+                # for debugging
+                print(f'RECEIVED = {received} | OCEAN_TO_SELF = {OCEAN_to_self} | OCEAN TO RESEARCHERS = {OCEAN_to_researchers}| FEES= {fees} | SUM ={OCEAN_to_self + OCEAN_to_researchers + fees}')
                 assert(OCEAN_to_self + OCEAN_to_researchers + fees == received)
                 return fees, OCEAN_to_self, OCEAN_to_researchers
             return 0, 0, 0
@@ -139,9 +143,10 @@ class KnowledgeMarketAgent(AgentBase):
         for name in self._receiving_agents.keys():
             agent_OCEAN = state.getAgent(name).OCEAN()
             ratios[name] = agent_OCEAN / total_stkholder_OCEAN
-        assert(int(sum(ratios.values())) == 1)
-        for name, ratio in ratios.items():
-            self._transferOCEAN(state.getAgent(name), ratio * fee)
+        if int(sum(ratios.values())) != 0:
+            assert(int(sum(ratios.values())) == 1)
+            for name, ratio in ratios.items():
+                self._transferOCEAN(state.getAgent(name), ratio * fee)
 
     def _tickOneMonthAgo(self, state) -> int:
         t2 = state.tick * state.ss.time_step

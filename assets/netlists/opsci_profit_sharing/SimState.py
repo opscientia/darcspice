@@ -45,7 +45,7 @@ class SimState(SimStateBase.SimStateBase):
             s_between_grants = S_PER_DAY))
 
         new_agents.add(SimpleStakerspeculatorAgent(
-            name = "staker", USD=0.0, OCEAN=10000.0))
+            name = "staker", USD=0.0, OCEAN=90000.0))
 
         new_agents.add(ResearcherAgent(
             name = "researcher0", evaluator = "dao_treasury",
@@ -61,7 +61,7 @@ class SimState(SimStateBase.SimStateBase):
 
         new_agents.add(KnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=10000.0,
-            transaction_fees_percentage=0.01,
+            transaction_fees_percentage=0.1,
             fee_receiving_agents={"staker": 0.0, "dao_treasury": 0.0}))
 
         for agent in new_agents:
