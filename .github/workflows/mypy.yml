@@ -35,6 +35,4 @@ jobs:
           
       - name: Run MyPy
         run: |
-          mypy --config-file mypy.ini ./ \
-          --exclude ./assets/netlists/opsci_naive/KPIs.py \
-          --exclude ./assets/netlists/opsci_profit_sharing/KPIs.py
+          mypy --config-file mypy.ini ./
