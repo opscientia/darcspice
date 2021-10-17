@@ -17,11 +17,9 @@ class SimpleStakerspeculatorAgent(AgentBase):
         self._s_between_speculates = 8 * constants.S_PER_HOUR #magic number
         
     def takeStep(self, state):
-        self._s_since_speculate += state.ss.time_step
-
-        if self._doSpeculateAction(state):
-            self._s_since_speculate = 0
-            self._speculateAction(state)
+        # the agent's wallet is automatically assumed to be "staked", so the staker only collects fees
+        # which are immediately restaked
+        pass
 
     def _doSpeculateAction(self, state):
         pool_agents = state.agents.filterToPool().values()
