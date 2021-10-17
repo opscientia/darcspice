@@ -76,7 +76,7 @@ class ResearcherAgent(AgentBase):
         if OCEAN != 0:
             OCEAN_DISBURSE = self.proposal['grant_requested']
         for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent() * OCEAN_DISBURSE)
+            self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
 
         self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 

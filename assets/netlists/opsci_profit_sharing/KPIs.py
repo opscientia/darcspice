@@ -35,6 +35,8 @@ def netlist_createLogData(state):
     dataheader += ["researcher0_total_funding"]
     datarow += [researcher0.total_research_funds_received]
 
+    dataheader += ["researcher0_OCEAN"]
+    datarow += [researcher0.OCEAN()]
 
     researcher1 = state.getAgent("researcher1")
     s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
@@ -52,6 +54,9 @@ def netlist_createLogData(state):
     dataheader += ["researcher1_total_funding"]
     datarow += [researcher1.total_research_funds_received]
 
+    dataheader += ["researcher1_OCEAN"]
+    datarow += [researcher1.OCEAN()]
+
     treasury = state.getAgent("dao_treasury")
     s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
     dataheader += ["dao_treasury_OCEAN"]
@@ -61,6 +66,14 @@ def netlist_createLogData(state):
     s += ["; staker OCEAN=%s" % prettyBigNum(staker.OCEAN(),False)]
     dataheader += ["staker_OCEAN"]
     datarow += [staker.OCEAN()]
+
+    market = state.getAgent("market")
+    s += ["; market OCEAN=%s" % prettyBigNum(market.OCEAN(),False)]
+    dataheader += ["market_OCEAN"]
+    datarow += [market.OCEAN()]
+
+    dataheader += ["market_assets"]
+    datarow += [market.total_knowledge_assets]
 
     #done
     return s, dataheader, datarow
@@ -85,13 +98,21 @@ def netlist_plotInstructions(header: List[str], values):
     
     y_params = [
         YParam(["researcher0_no_proposals_funded","researcher1_no_proposals_funded"],
-        ["researcher0","researcher1"],"number of proposals",LINEAR,MULT1,COUNT),
+        ["researcher0","researcher1"],"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
         YParam(["researcher0_no_proposals","researcher1_no_proposals"],
-        ["researcher0","researcher1"],"number of proposals",LINEAR,MULT1,COUNT),
+        ["researcher0","researcher1"],"#_proposals",LINEAR,MULT1,COUNT),
         YParam(["researcher0_total_funding","researcher1_total_funding"],
         ["researcher0","researcher1"],"OCEAN funding",LINEAR,MULT1,COUNT),
         YParam(["researcher0_knowledge_access","researcher1_knowledge_access"],
         ["researcher0","researcher1"],"Knowledge access index",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_OCEAN","researcher1_OCEAN"],
+        ["researcher0","researcher1"],"Researcher OCEAN",LINEAR,MULT1,COUNT),
+        YParam(["dao_treasury_OCEAN"],
+        ["dao_treasury"],"DAO_Treasury_OCEAN",LINEAR,MULT1,COUNT),
+        YParam(["staker_OCEAN", "market_OCEAN"],
+        ["staker", "market"],"Staker_X_KnowledgeMarket_OCEAN",LOG,MULT1,COUNT),
+        YParam(["staker_OCEAN"],
+        ["staker"],"Staker_OCEAN",LINEAR,MULT1,COUNT),
         # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
         # #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
         # YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],

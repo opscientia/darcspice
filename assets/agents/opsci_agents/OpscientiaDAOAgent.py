@@ -77,14 +77,14 @@ class OpscientiaDAOAgent(AgentBase):
                 
         if (((self.tick_proposal_funded - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
-            self._disburseFundsUSD(state)
+            self._disburseFundsOCEAN(state)
             self.tick_proposal_funded = state.tick
             self.proposal_funded = True
             self.no_proposals_received += 1
             self.total_research_funds_disbursed += self.proposal_evaluation['amount']
         elif (state.tick == 1 or state.tick == 2) and (self.proposal_funded is False) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
-            self._disburseFundsUSD(state)
+            self._disburseFundsOCEAN(state)
             self.tick_proposal_funded = state.tick
             self.proposal_funded = True
             self.no_proposals_received += 1
@@ -107,6 +107,11 @@ class OpscientiaDAOAgent(AgentBase):
             USD = min(self.USD(), self.proposal_evaluation['amount'])
             agent = state.getAgent(self.proposal_evaluation['winner'])
             self._transferUSD(agent, USD)
+    def _disburseFundsOCEAN(self, state):
+        if self.proposal_evaluation != None:        
+            OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
+            agent = state.getAgent(self.proposal_evaluation['winner'])
+            self._transferOCEAN(agent, OCEAN)
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()
