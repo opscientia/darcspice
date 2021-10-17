@@ -115,7 +115,7 @@ class KnowledgeMarketAgent(AgentBase):
             ratios[agent] = no_assets / self.total_knowledge_assets
         assert(sum(self.knowledge_assets_per_researcher.values()) == self.total_knowledge_assets)
         assert(sum(ratios.values()) == 1)
-        for name, ratio in ratios:
+        for name, ratio in ratios.items():
             self._transferOCEAN(state.getAgent(name), disburse * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
@@ -124,8 +124,17 @@ class KnowledgeMarketAgent(AgentBase):
         ratio of fees transferred is determined by the amount of OCEAN left in treasury vs. the amount 
         of OCEAN staked by Stakers
         '''
-        for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent() * fee) # TODO
+        total_stkholder_OCEAN = 0.0
+        ratios = {}
+        for name in self._receiving_agents.keys():
+            agent_OCEAN = state.getAgent(name).OCEAN()
+            total_stkholder_OCEAN += agent_OCEAN
+        for name in self._receiving_agents.keys():
+            agent_OCEAN = state.getAgent(name).OCEAN()
+            ratios[name] = agent_OCEAN / total_stkholder_OCEAN
+        assert(int(sum.ratios.values()) == 1)
+        for name, ratio in ratios.items():
+            self._transferOCEAN(state.getAgent(name), ratio * fee)
 
     def _tickOneMonthAgo(self, state) -> int:
         t2 = state.tick * state.ss.time_step

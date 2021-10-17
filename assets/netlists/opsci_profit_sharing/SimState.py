@@ -62,7 +62,7 @@ class SimState(SimStateBase.SimStateBase):
         new_agents.add(KnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=10000.0,
             transaction_fees_percentage=0.01,
-            fee_receiving_agents={"staker", "dao_treasury"})) # TODO
+            fee_receiving_agents={"staker": 0.0, "dao_treasury": 0.0}))
 
         for agent in new_agents:
             self.agents[agent.name] = agent
