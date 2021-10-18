@@ -37,6 +37,8 @@ class SimState(SimStateBase.SimStateBase):
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
         new_agents: Set[AgentBase.AgentBase] = set()
+        researcher_agents: Set[AgentBase.AgentBase] = set()
+        self.researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
         # TODO
@@ -67,6 +69,21 @@ class SimState(SimStateBase.SimStateBase):
 
         for agent in new_agents:
             self.agents[agent.name] = agent
+
+        researcher_agents.add(ResearcherAgent(
+            name = "researcher0", evaluator = "dao_treasury",
+            USD=0.0, OCEAN=10000.0,
+            no_researchers = 10,
+            receiving_agents = {"market": 1.0}))
+
+        researcher_agents.add(ResearcherAgent(
+            name = "researcher1", evaluator = "dao_treasury",
+            USD=0.0, OCEAN=10000.0,
+            no_researchers = 10,
+            receiving_agents = {"market": 1.0}))
+
+        for agent in researcher_agents:
+            self.researchers[agent.name] = agent
 
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)

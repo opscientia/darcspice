@@ -65,7 +65,7 @@ class OpscientiaDAOAgent(AgentBase):
         return {}
 
     def proposalsReady(self, state):
-        if (state.getAgent('researcher0').proposal is not None) and (state.getAgent('researcher1').proposal is not None):
+        if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
             return True
 
     def takeStep(self, state) -> None:
