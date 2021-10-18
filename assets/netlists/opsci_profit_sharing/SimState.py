@@ -13,7 +13,9 @@ from util.constants import S_PER_YEAR, S_PER_MONTH, S_PER_DAY
 
 @enforce_types
 class SimState(SimStateBase.SimStateBase):
-    
+    '''
+    SimState for the Web3 Open Science Profit Sharing Model
+    '''
     def __init__(self, ss=None):
         #initialize self.tick, ss, agents, kpis
         super().__init__(ss)
