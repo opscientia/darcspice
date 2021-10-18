@@ -54,13 +54,15 @@ class OpscientiaDAOAgent(AgentBase):
         r0 = state.getAgent('researcher0')
         r1 = state.getAgent('researcher1')
 
-        r0_score = (r0.proposal['grant_requested'] / r0.proposal['no_researchers']) / r0.proposal['assets_generated'] / r0.proposal['knowledge_access']
-        r1_score = (r1.proposal['grant_requested'] / r1.proposal['no_researchers']) / r1.proposal['assets_generated'] / r1.proposal['knowledge_access']
-
-        if r0_score < r1_score:
-            return {'winner': "researcher0", 'amount': r0.proposal['grant_requested'], 'loser': "researcher1"}
-        else:
-            return {'winner': "researcher1", 'amount': r1.proposal['grant_requested'], 'loser': "researcher0"}
+        scores = {}
+        for name in state.researchers.keys():
+            agent = state.getAgent(name)
+            scores[name] = agent.proposal['grant_requested'] / \
+                              agent.proposal['no_researchers'] /  \
+                              agent.proposal['assets_generated'] / \
+                              agent.proposal['knowledge_access']
+        winner = min(scores, key=scores.get)
+        return {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
 
     def proposalsReady(self, state):
         if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
