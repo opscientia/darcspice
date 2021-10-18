@@ -2,7 +2,7 @@ import logging
 log = logging.getLogger('agents')
 
 from enforce_typing import enforce_types
-from typing import List
+from typing import List, Dict, Union
 import math
 
 from engine.AgentBase import AgentBase
@@ -63,6 +63,7 @@ class OpscientiaDAOAgent(AgentBase):
                 return {'winner': "researcher0", 'amount': r0.proposal['grant_requested'], 'loser': "researcher1"}
             else:
                 return {'winner': "researcher1", 'amount': r1.proposal['grant_requested'], 'loser': "researcher0"}
+        return {}
 
     def proposalsReady(self, state):
         if (state.getAgent('researcher0').proposal is not None) and (state.getAgent('researcher1').proposal is not None):
@@ -107,11 +108,6 @@ class OpscientiaDAOAgent(AgentBase):
             USD = min(self.USD(), self.proposal_evaluation['amount'])
             agent = state.getAgent(self.proposal_evaluation['winner'])
             self._transferUSD(agent, USD)
-    def _disburseFundsOCEAN(self, state):
-        if self.proposal_evaluation != None:        
-            OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
-            agent = state.getAgent(self.proposal_evaluation['winner'])
-            self._transferOCEAN(agent, OCEAN)
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()

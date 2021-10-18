@@ -73,8 +73,8 @@ class ResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
-        if OCEAN != 0:
-            OCEAN_DISBURSE = self.proposal['grant_requested']
+        if OCEAN != 0 and self.proposal is not None:
+            OCEAN_DISBURSE: float = self.proposal['grant_requested']
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
 

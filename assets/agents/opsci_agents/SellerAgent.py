@@ -35,10 +35,6 @@ class SellerAgent(AgentBase):
     def numSellers(self) -> float:
         return self._n_sellers
 
-    def revenuePerSellerPerSecond(self) -> float:
-        # 1 tick = 1 hour = 3600 s
-        return self._OCEAN_per_tick * 3600
-    
     def takeStep(self, state) -> None:
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())

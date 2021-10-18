@@ -2,7 +2,7 @@ import logging
 log = logging.getLogger('agents')
 
 from enforce_typing import enforce_types
-from typing import List
+from typing import List, Dict
 import random
 import math
 
@@ -44,7 +44,7 @@ class KnowledgeMarketAgent(AgentBase):
 
         self.last_research_tick = 0
 
-        self.knowledge_assets_per_researcher = {}
+        self.knowledge_assets_per_researcher: Dict[str, int] = {}
         self.total_knowledge_assets: int = 0
 
     def _ToDistribute(self, state):
