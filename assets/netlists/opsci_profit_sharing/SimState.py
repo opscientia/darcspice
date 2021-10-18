@@ -94,47 +94,6 @@ class SimState(SimStateBase.SimStateBase):
 
     def percentToSellers(self) -> float:
         return 1.0 - self._percent_dao
-
-    #==============================================================
-    def OCEANprice(self) -> float:
-        """Estimated price of $OCEAN token, in USD"""
-        price = valuation.OCEANprice(self.overallValuation(),
-                                     self.OCEANsupply())
-        assert price > 0.0
-        return price
-    
-    #==============================================================
-    def overallValuation(self) -> float: #in USD
-        v = self.fundamentalsValuation() + \
-            self.speculationValuation()
-        assert v > 0.0
-        return v
-    
-    def fundamentalsValuation(self) -> float: #in USD
-        return self.kpis.valuationPS(30.0) #based on P/S=30
-    
-    def speculationValuation(self) -> float: #in USD
-        return self._speculation_valuation
-        
-    #==============================================================
-    def OCEANsupply(self) -> float:
-        """Current OCEAN token supply"""
-        return self.initialOCEAN() \
-            + self.totalOCEANminted() \
-            - self.totalOCEANburned()
-        
-    def initialOCEAN(self) -> float:
-        return self.ss.INIT_OCEAN_SUPPLY
-        
-    def totalOCEANminted(self) -> float:
-        return self._total_OCEAN_minted
-        
-    def totalOCEANburned(self) -> float:
-        return self._total_OCEAN_burned
-        
-    def totalOCEANburnedUSD(self) -> float:
-        return self._total_OCEAN_burned_USD
-    
     
 def funcOne():
     return 1.0
