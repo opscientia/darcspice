@@ -43,8 +43,7 @@ class SimState(SimStateBase.SimStateBase):
         # 1. Note: the DAOTreasuryAgent has exactly the same functionality as university agent in the baseline model
         # Except in this case the funding will be given in OCEAN
         new_agents.add(OpscientiaDAOAgent(
-            name = "dao_treasury", USD=0.0, OCEAN=500000.0,
-            s_between_grants = S_PER_DAY))
+            name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
         new_agents.add(SimpleStakerspeculatorAgent(
             name = "staker", USD=0.0, OCEAN=90000.0))
