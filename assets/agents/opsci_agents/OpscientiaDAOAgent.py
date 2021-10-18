@@ -2,7 +2,7 @@ import logging
 log = logging.getLogger('agents')
 
 from enforce_typing import enforce_types
-from typing import List, Dict, Union
+from typing import List, Dict
 import math
 
 from engine.AgentBase import AgentBase
@@ -26,7 +26,7 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation = {}
+        self.proposal_evaluation: Dict = {}
 
         self._s_between_grants: int = s_between_grants
         self._USD_per_grant: float = 0.0
