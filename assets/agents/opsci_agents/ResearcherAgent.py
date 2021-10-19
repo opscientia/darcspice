@@ -87,7 +87,7 @@ class ResearcherAgent(AgentBase):
         '''
         OCEAN = self.OCEAN()
         if OCEAN != 0:
-            OCEAN_DISBURSE =  1000 # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
+            OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
         for name, computePercent in self._receiving_agents.items():
             self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
 
@@ -128,7 +128,7 @@ class ResearcherAgent(AgentBase):
                     self._BuyAndPublishAssets(state)
             elif state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name:
                 self.proposal_accepted = False
-        
+
         # If NOT a grant winner, buy and consume DT to gain knowledge_access point | DataconsumerAgent functionality
         if (((self._last_check_tick % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
             if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name):
