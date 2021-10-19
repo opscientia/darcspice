@@ -51,9 +51,6 @@ class OpscientiaDAOAgent(AgentBase):
         These parameters are then evaluated as (grant_requested / no_researchers) / assets_generated.
         The proposal with the smaller score is accepted. 
         '''
-        r0 = state.getAgent('researcher0')
-        r1 = state.getAgent('researcher1')
-
         scores = {}
         for name in state.researchers.keys():
             agent = state.getAgent(name)
