@@ -1,5 +1,6 @@
 from enforce_typing import enforce_types
 from typing import Set
+import random
 
 from assets.agents import MinterAgents
 from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
@@ -53,13 +54,11 @@ class SimState(SimStateBase.SimStateBase):
         new_agents.add(ResearcherAgent(
             name = "researcher0", evaluator = "dao_treasury",
             USD=0.0, OCEAN=10000.0,
-            no_researchers = 10,
             receiving_agents = {"market": 1.0}))
 
         new_agents.add(ResearcherAgent(
             name = "researcher1", evaluator = "dao_treasury",
             USD=0.0, OCEAN=10000.0,
-            no_researchers = 10,
             receiving_agents = {"market": 1.0}))
 
         new_agents.add(KnowledgeMarketAgent(
@@ -73,14 +72,13 @@ class SimState(SimStateBase.SimStateBase):
         researcher_agents.add(ResearcherAgent(
             name = "researcher0", evaluator = "dao_treasury",
             USD=0.0, OCEAN=10000.0,
-            no_researchers = 10,
             receiving_agents = {"market": 1.0}))
 
         researcher_agents.add(ResearcherAgent(
             name = "researcher1", evaluator = "dao_treasury",
             USD=0.0, OCEAN=10000.0,
-            no_researchers = 10,
             receiving_agents = {"market": 1.0}))
+
 
         for agent in researcher_agents:
             self.researchers[agent.name] = agent
