@@ -16,6 +16,8 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
 
         #===new attributes specific to this netlist===
 
+        self.TICKS_BETWEEN_PROPOSALS = 6480
+
         self.OPF_TREASURY_USD = 2e6 #(not the true number)
         self.OPF_TREASURY_OCEAN = 200e6 #(not the true number)
         self.OPF_TREASURY_OCEAN_FOR_OCEAN_DAO = 100e6 #(not the true number)
