@@ -35,8 +35,6 @@ S_PER_WEEK  = S_PER_DAY * 7
 S_PER_MONTH = S_PER_DAY * 30
 S_PER_YEAR  = S_PER_DAY * 365
 
-TICKS_BETWEEN_PROPOSALS = 6480
-
 #Number of half-lives that bitcoin stops after.
 # https://en.bitcoin.it/wiki/Controlled_supply#Projected_Bitcoins_Long_Term
 BITCOIN_NUM_HALF_LIVES = 34

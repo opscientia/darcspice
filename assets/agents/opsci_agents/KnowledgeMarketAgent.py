@@ -10,7 +10,7 @@ from assets.agents.PoolAgent import PoolAgent
 from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
 from engine.AgentBase import AgentBase
 from web3tools.web3util import toBase18
-from util.constants import S_PER_MONTH, TICKS_BETWEEN_PROPOSALS
+from util.constants import S_PER_MONTH
 
 @enforce_types
 class KnowledgeMarketAgent(AgentBase):
@@ -87,7 +87,7 @@ class KnowledgeMarketAgent(AgentBase):
         self._OCEAN_per_tick.append(self.OCEAN())
 
         # At the end of a research project, add knowledge assets
-        if (((self.last_research_tick - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0):
+        if (((self.last_research_tick - state.tick) % state.ss.TICKS_BETWEEN_PROPOSALS) == 0):
             winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
             proposal = state.getAgent(winner).proposal
             if winner in self.knowledge_assets_per_researcher:

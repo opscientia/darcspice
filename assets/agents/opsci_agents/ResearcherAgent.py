@@ -8,7 +8,6 @@ from assets.agents.PoolAgent import PoolAgent
 from engine.AgentBase import AgentBase
 from web3engine import bpool, datatoken, globaltokens
 from web3tools.web3util import fromBase18, toBase18
-from util.constants import TICKS_BETWEEN_PROPOSALS
 log = logging.getLogger('agents')
 
 @enforce_types
@@ -107,7 +106,7 @@ class ResearcherAgent(AgentBase):
             self.ticks_since_proposal = 0
 
         # checking to see whether it is time to submit a new proposal
-        if (self.ticks_since_proposal % TICKS_BETWEEN_PROPOSALS) == 0:
+        if (self.ticks_since_proposal % state.ss.TICKS_BETWEEN_PROPOSALS) == 0:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
             self.ticks_since_proposal = 0
@@ -131,7 +130,7 @@ class ResearcherAgent(AgentBase):
                 self.proposal_accepted = False
         
         # If NOT a grant winner, buy and consume DT to gain knowledge_access point | DataconsumerAgent functionality
-        if (((self._last_check_tick % TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
+        if (((self._last_check_tick % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
             if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name):
                 # BuyAndConsumeDT and increment knowledge_access
                 self._last_check_tick = state.tick

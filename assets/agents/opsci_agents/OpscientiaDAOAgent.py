@@ -6,7 +6,8 @@ from typing import List, Dict
 import math
 
 from engine.AgentBase import AgentBase
-from util.constants import S_PER_MONTH, TICKS_BETWEEN_PROPOSALS
+from util.constants import S_PER_MONTH
+# Note: TICKS_BETWEEN_PROPOSALS should not be in constants but rather in SimStrategy
 
 @enforce_types
 class OpscientiaDAOAgent(AgentBase):
@@ -72,7 +73,7 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
                 
-        if (((self.tick_proposal_funded - state.tick) % TICKS_BETWEEN_PROPOSALS) == 0) and can_fund:
+        if (((self.tick_proposal_funded - state.tick) % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
             self._disburseFundsOCEAN(state)
             self.tick_proposal_funded = state.tick
