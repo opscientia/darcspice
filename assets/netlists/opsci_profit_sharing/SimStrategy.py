@@ -15,17 +15,8 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.setMaxTime(10, 'years') #typical runs: 10 years, 20 years, 150 years
 
         #===new attributes specific to this netlist===
-
         self.TICKS_BETWEEN_PROPOSALS = 6480
         self.PRICE_OF_ASSETS = 1000
-
-        self.OPF_TREASURY_USD = 2e6 #(not the true number)
-        self.OPF_TREASURY_OCEAN = 200e6 #(not the true number)
-        self.OPF_TREASURY_OCEAN_FOR_OCEAN_DAO = 100e6 #(not the true number)
-        self.OPF_TREASURY_OCEAN_FOR_OPF_MGMT = self.OPF_TREASURY_OCEAN - self.OPF_TREASURY_OCEAN_FOR_OCEAN_DAO
-
-        self.BDB_TREASURY_USD = 2e6 #(not the true number)
-        self.BDB_TREASURY_OCEAN = 20e6  #(not the true number)
 
         # DT parameters
         self.DT_init = 100.0
