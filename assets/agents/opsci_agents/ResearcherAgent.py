@@ -38,7 +38,6 @@ class ResearcherAgent(AgentBase):
 
         self.ratio_funds_to_publish: float = 0.0
 
-        self._last_check_tick = 0
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
     
     def createProposal(self, state) -> dict:
@@ -95,7 +94,6 @@ class ResearcherAgent(AgentBase):
         self.knowledge_access += 1
     
     def takeStep(self, state):
-        self._last_check_tick += 1
 
         if self.proposal is not None:
             self.ticks_since_proposal += 1
