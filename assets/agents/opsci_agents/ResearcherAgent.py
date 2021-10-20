@@ -10,7 +10,6 @@ log = logging.getLogger('agents')
 class ResearcherAgent(AgentBase):
     '''
     ResearcherAgent publishes proposals, creates knowledge assets and publishes them to a knowledge curator.
-    Has functionality of both PublisherAgent and DataconsumerAgent
     Also, it keeps track of the following metrics:
     - number of proposals submitted
     - number of proposals funded
@@ -25,10 +24,10 @@ class ResearcherAgent(AgentBase):
         self.proposal_setup = proposal_setup
 
         self.proposal = None
+        self.new_proposal = False
         self.knowledge_access: float = 1.0
         self.ticks_since_proposal: int = 0
         self.proposal_accepted = False
-        self.tick_of_proposal = 0
 
         # metrics to track
         self.no_proposals_submitted: int = 0
@@ -41,7 +40,7 @@ class ResearcherAgent(AgentBase):
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
     
     def createProposal(self, state) -> dict:
-        self.tick_of_proposal = state.tick
+        self.new_proposal = True
         if self.proposal_setup is not None:
             self.proposal = self.proposal_setup
             self.proposal['knowledge_access'] = self.knowledge_access
@@ -72,12 +71,11 @@ class ResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
-        if OCEAN != 0 and self.proposal is not None:
+        if OCEAN != 0 and self.proposal:
             OCEAN_DISBURSE: float = self.proposal['grant_requested']
-        for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
-
-        self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
+            for name, computePercent in self._receiving_agents.items():
+                self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
+            self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
     def _BuyAssets(self, state) -> None:
         '''
@@ -86,12 +84,12 @@ class ResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
-        if OCEAN != 0:
+        if OCEAN != 0 and OCEAN > state.ss.PRICE_OF_ASSETS and self.proposal:
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
-        for name, computePercent in self._receiving_agents.items():
-            self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
+            self.knowledge_access += 1
+            for name, computePercent in self._receiving_agents.items():
+                self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
 
-        self.knowledge_access += 1
     
     def takeStep(self, state):
 
@@ -111,10 +109,8 @@ class ResearcherAgent(AgentBase):
             self.ticks_since_proposal = 0
 
         # Checking if proposal accepted (should only be checked at the tick right after the tick when createProposal() was called)
-        if (state.tick - self.tick_of_proposal == 1) and state.getAgent(self._evaluator).proposal_evaluation:
-            # # In case the funding is misaligned with the researchers
-            # if not state.getAgent(self._evaluator).proposal_evaluation:
-            #     self.tick_of_proposal = state.tick
+        if (self.ticks_since_proposal == 1) and state.getAgent(self._evaluator).proposal_evaluation:
+            self.new_proposal = False
             # if I am the winner, send the funds received to KnowledgeMarket
             if state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
@@ -131,9 +127,10 @@ class ResearcherAgent(AgentBase):
                 self.ratio_funds_to_publish = 0.0 # not publishing
                 self.last_tick_spent = state.tick
                 self._BuyAssets(state)
-        elif (state.tick - self.tick_of_proposal == 1) and not state.getAgent(self._evaluator).proposal_evaluation:
+        elif (self.ticks_since_proposal == 1) and not state.getAgent(self._evaluator).proposal_evaluation:
             # In case the funding is misaligned with the researchers
-            self.tick_of_proposal = state.tick
+            self.ticks_since_proposal = 0
+            self.new_proposal = True
 
         self._spent_at_tick = self.OCEAN()
 
