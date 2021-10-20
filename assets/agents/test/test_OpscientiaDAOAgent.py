@@ -1,5 +1,4 @@
 from enforce_typing import enforce_types
-import random
 
 from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from engine import AgentBase, SimStateBase, SimStrategyBase

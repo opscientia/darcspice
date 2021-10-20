@@ -85,7 +85,7 @@ class ResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
-        if OCEAN != 0 and OCEAN > state.ss.PRICE_OF_ASSETS and self.proposal:
+        if OCEAN != 0 and OCEAN >= state.ss.PRICE_OF_ASSETS and self.proposal:
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
             self.knowledge_access += 1
             for name, computePercent in self._receiving_agents.items():
