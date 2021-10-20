@@ -45,6 +45,11 @@ class SimState(SimStateBase.SimStateBase):
         # TODO
         # 1. Note: the DAOTreasuryAgent has exactly the same functionality as university agent in the baseline model
         # Except in this case the funding will be given in OCEAN
+        new_agents.add(KnowledgeMarketAgent(
+            name = "market", USD=0.0, OCEAN=10000.0,
+            transaction_fees_percentage=0.1,
+            fee_receiving_agents={"staker": 0.0, "dao_treasury": 0.0}))
+
         new_agents.add(OpscientiaDAOAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
@@ -60,11 +65,6 @@ class SimState(SimStateBase.SimStateBase):
             name = "researcher1", evaluator = "dao_treasury",
             USD=0.0, OCEAN=10000.0,
             receiving_agents = {"market": 1.0}))
-
-        new_agents.add(KnowledgeMarketAgent(
-            name = "market", USD=0.0, OCEAN=10000.0,
-            transaction_fees_percentage=0.1,
-            fee_receiving_agents={"staker": 0.0, "dao_treasury": 0.0}))
 
         for agent in new_agents:
             self.agents[agent.name] = agent

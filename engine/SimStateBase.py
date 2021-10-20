@@ -15,7 +15,7 @@ class SimStateBase(object):
         self.agents = AgentDict() #agent_name : Agent instance
 
         #extra-agenent state variables, to track metrics. Child of Kpis
-        self.kpis = None 
+        self.kpis = None
             
     def takeStep(self) -> None:
         """This happens once per tick"""
