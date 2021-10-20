@@ -2,12 +2,8 @@ import logging
 from enforce_typing import enforce_types
 import random
 from typing import List
-import math
 
-from assets.agents.PoolAgent import PoolAgent
 from engine.AgentBase import AgentBase
-from web3engine import bpool, datatoken, globaltokens
-from web3tools.web3util import fromBase18, toBase18
 log = logging.getLogger('agents')
 
 @enforce_types
@@ -40,7 +36,7 @@ class ResearcherAgent(AgentBase):
         self.total_research_funds_received: float = 0.0
         self.total_assets_in_mrkt: int = 0
 
-        self.ratio_funds_to_publish = 0.4 # arbitrary, could experiment with different values
+        self.ratio_funds_to_publish: float = 0.0
 
         self._last_check_tick = 0
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
@@ -117,36 +113,31 @@ class ResearcherAgent(AgentBase):
             self.ticks_since_proposal = 0
 
         # Checking if proposal accepted (should only be checked at the tick right after the tick when createProposal() was called)
-        if state.tick - self.tick_of_proposal == 1:
-            # In case the funding is misaligned with the researchers
-            if not state.getAgent(self._evaluator).proposal_evaluation:
-                self.tick_of_proposal = state.tick
+        if (state.tick - self.tick_of_proposal == 1) and state.getAgent(self._evaluator).proposal_evaluation:
+            # # In case the funding is misaligned with the researchers
+            # if not state.getAgent(self._evaluator).proposal_evaluation:
+            #     self.tick_of_proposal = state.tick
             # if I am the winner, send the funds received to KnowledgeMarket
-            elif state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:
+            if state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:
                 self.proposal_accepted = True
                 self.no_proposals_funded += 1
                 self.total_assets_in_mrkt += self.proposal['assets_generated']
                 self.total_research_funds_received += self.proposal['grant_requested']
                 if self.OCEAN() >= self.proposal['grant_requested']:
-                    self.ratio_funds_to_publish = 0.4 # KnowledgeMarketAgent will check this parameter
+                    self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
                     self.last_tick_spent = state.tick
                     self._BuyAndPublishAssets(state)
-            elif state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name:
+            else:
+                assert(state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name)
                 self.proposal_accepted = False
-
-        # If NOT a grant winner, buy and consume DT to gain knowledge_access point | DataconsumerAgent functionality
-        if (((self._last_check_tick % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) or state.tick == 10):
-            if (state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name):
-                # BuyAndConsumeDT and increment knowledge_access
-                self._last_check_tick = state.tick
                 self.ratio_funds_to_publish = 0.0 # not publishing
                 self.last_tick_spent = state.tick
                 self._BuyAssets(state)
+        elif (state.tick - self.tick_of_proposal == 1) and not state.getAgent(self._evaluator).proposal_evaluation:
+            # In case the funding is misaligned with the researchers
+            self.tick_of_proposal = state.tick
 
-        # self._spent_at_tick = self.USD() + self.OCEAN() * state.OCEANprice()
         self._spent_at_tick = self.OCEAN()
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)
-        
-        # self._s_since_buy += state.ss.time_step

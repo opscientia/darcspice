@@ -27,7 +27,7 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation: Dict = {}
+        self.proposal_evaluation: Dict = None
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
