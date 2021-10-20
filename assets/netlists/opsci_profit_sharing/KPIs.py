@@ -35,8 +35,11 @@ def netlist_createLogData(state):
     dataheader += ["researcher0_total_funding"]
     datarow += [researcher0.total_research_funds_received]
 
+    dataheader += ["researcher0_total_assets_mrkt"]
+    datarow += [researcher0.total_assets_in_mrkt]
+
     dataheader += ["researcher0_OCEAN"]
-    datarow += [researcher0.OCEAN()]
+    datarow += [researcher0.my_OCEAN]
 
     researcher1 = state.getAgent("researcher1")
     s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
@@ -54,8 +57,11 @@ def netlist_createLogData(state):
     dataheader += ["researcher1_total_funding"]
     datarow += [researcher1.total_research_funds_received]
 
+    dataheader += ["researcher1_total_assets_mrkt"]
+    datarow += [researcher1.total_assets_in_mrkt]
+
     dataheader += ["researcher1_OCEAN"]
-    datarow += [researcher1.OCEAN()]
+    datarow += [researcher1.my_OCEAN]
 
     treasury = state.getAgent("dao_treasury")
     s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
@@ -103,6 +109,8 @@ def netlist_plotInstructions(header: List[str], values):
         ["researcher0","researcher1"],"#_proposals",LINEAR,MULT1,COUNT),
         YParam(["researcher0_total_funding","researcher1_total_funding"],
         ["researcher0","researcher1"],"OCEAN funding",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_total_assets_mrkt","researcher1_total_assets_mrkt"],
+        ["researcher0","researcher1"],"Assets in Knowledge Market",LINEAR,MULT1,COUNT),
         YParam(["researcher0_knowledge_access","researcher1_knowledge_access"],
         ["researcher0","researcher1"],"Knowledge access index",LINEAR,MULT1,COUNT),
         YParam(["researcher0_OCEAN","researcher1_OCEAN"],

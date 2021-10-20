@@ -30,6 +30,7 @@ class ResearcherAgent(AgentBase):
         self.proposal_accepted = False
 
         # metrics to track
+        self.my_OCEAN: float = 0.0
         self.no_proposals_submitted: int = 0
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
@@ -127,6 +128,7 @@ class ResearcherAgent(AgentBase):
                 self.ratio_funds_to_publish = 0.0 # not publishing
                 self.last_tick_spent = state.tick
                 self._BuyAssets(state)
+            self.my_OCEAN = self.OCEAN()
         elif (self.ticks_since_proposal == 1) and not state.getAgent(self._evaluator).proposal_evaluation:
             # In case the funding is misaligned with the researchers
             self.ticks_since_proposal = 0

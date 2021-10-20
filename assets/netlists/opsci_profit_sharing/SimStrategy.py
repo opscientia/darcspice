@@ -17,6 +17,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         #===new attributes specific to this netlist===
         self.TICKS_BETWEEN_PROPOSALS = 6480
         self.PRICE_OF_ASSETS = 1000 # OCEAN
+        self.RATIO_FUNDS_TO_PUBLISH = 0.4 # 40% of grant funding will go towards "doing work" & publishing
         '''
         Some additional parameters that will enable more experimentation (not currently in use)
         '''
