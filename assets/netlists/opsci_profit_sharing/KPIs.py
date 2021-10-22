@@ -19,71 +19,29 @@ def netlist_createLogData(state):
     dataheader = [] # for csv logging: list of string
     datarow = [] #for csv logging: list of float
 
-    researcher0 = state.getAgent("researcher0")
-    s += ["; researcher0 OCEAN=%s" % prettyBigNum(researcher0.OCEAN(),False)]
-    s += ["; researcher0 proposals=%s" % (researcher0.no_proposals_submitted,)]
-    s += ["; researcher0 proposals funded=%s" % (researcher0.no_proposals_funded,)]
-    dataheader += ["researcher0_knowledge_access"]
-    datarow += [researcher0.knowledge_access]
+    r_dict = {}
+    for r in state.researchers.keys():
+        r_dict[r] = state.getAgent(r)
+        s += ["; %s OCEAN=%s" % (r , prettyBigNum(r_dict[r].OCEAN(),False))]
+        s += ["; %s proposals=%s" % (r, r_dict[r].no_proposals_submitted)]
+        s += ["; %s proposals funded=%s" % (r, r_dict[r].no_proposals_funded)]
+        dataheader += ["%s_knowledge_access" % r]
+        datarow += [r_dict[r].knowledge_access]
 
-    dataheader += ["researcher0_no_proposals"]
-    datarow += [researcher0.no_proposals_submitted]
+        dataheader += ["%s_no_proposals" % r]
+        datarow += [r_dict[r].no_proposals_submitted]
 
-    dataheader += ["researcher0_no_proposals_funded"]
-    datarow += [researcher0.no_proposals_funded]
+        dataheader += ["%s_no_proposals_funded" % r]
+        datarow += [r_dict[r].no_proposals_funded]
 
-    dataheader += ["researcher0_total_funding"]
-    datarow += [researcher0.total_research_funds_received]
+        dataheader += ["%s_total_funding" % r]
+        datarow += [r_dict[r].total_research_funds_received]
 
-    dataheader += ["researcher0_total_assets_mrkt"]
-    datarow += [researcher0.total_assets_in_mrkt]
+        dataheader += ["%s_total_assets_mrkt" % r]
+        datarow += [r_dict[r].total_assets_in_mrkt]
 
-    dataheader += ["researcher0_OCEAN"]
-    datarow += [researcher0.my_OCEAN]
-
-    researcher1 = state.getAgent("researcher1")
-    s += ["; researcher1 OCEAN=%s" % prettyBigNum(researcher1.OCEAN(),False)]
-    s += ["; researcher1 proposals=%s" % (researcher1.no_proposals_submitted,)]
-    s += ["; researcher1 proposals funded=%s" % (researcher1.no_proposals_funded,)]
-    dataheader += ["researcher1_knowledge_access"]
-    datarow += [researcher1.knowledge_access]
-
-    dataheader += ["researcher1_no_proposals"]
-    datarow += [researcher1.no_proposals_submitted]
-
-    dataheader += ["researcher1_no_proposals_funded"]
-    datarow += [researcher1.no_proposals_funded]
-
-    dataheader += ["researcher1_total_funding"]
-    datarow += [researcher1.total_research_funds_received]
-
-    dataheader += ["researcher1_total_assets_mrkt"]
-    datarow += [researcher1.total_assets_in_mrkt]
-
-    dataheader += ["researcher1_OCEAN"]
-    datarow += [researcher1.my_OCEAN]
-
-    researcher2 = state.getAgent("researcher2")
-    s += ["; researcher2 OCEAN=%s" % prettyBigNum(researcher2.OCEAN(),False)]
-    s += ["; researcher2 proposals=%s" % (researcher2.no_proposals_submitted,)]
-    s += ["; researcher2 proposals funded=%s" % (researcher2.no_proposals_funded,)]
-    dataheader += ["researcher2_knowledge_access"]
-    datarow += [researcher2.knowledge_access]
-
-    dataheader += ["researcher2_no_proposals"]
-    datarow += [researcher2.no_proposals_submitted]
-
-    dataheader += ["researcher2_no_proposals_funded"]
-    datarow += [researcher2.no_proposals_funded]
-
-    dataheader += ["researcher2_total_funding"]
-    datarow += [researcher2.total_research_funds_received]
-
-    dataheader += ["researcher2_total_assets_mrkt"]
-    datarow += [researcher2.total_assets_in_mrkt]
-
-    dataheader += ["researcher2_OCEAN"]
-    datarow += [researcher2.my_OCEAN]
+        dataheader += ["%s_OCEAN" % r]
+        datarow += [r_dict[r].my_OCEAN]
 
     treasury = state.getAgent("dao_treasury")
     s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
