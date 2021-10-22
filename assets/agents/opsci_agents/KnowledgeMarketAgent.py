@@ -58,18 +58,6 @@ class KnowledgeMarketAgent(AgentBase):
                     OCEAN_to_researchers = (received - fees) - OCEAN_to_self
                     assert(round(OCEAN_to_self + OCEAN_to_researchers + fees, 2) == round(received, 2)) # sometimes the sum is different from received by xE-12
                     return fees, OCEAN_to_self, OCEAN_to_researchers
-            # if state.getAgent("researcher0").last_tick_spent == (state.tick or state.tick-1):
-            #     ratio = state.getAgent("researcher0").ratio_funds_to_publish
-            #     OCEAN_to_self = (received - fees) * ratio
-            #     OCEAN_to_researchers = (received - fees) - OCEAN_to_self
-            #     assert(round(OCEAN_to_self + OCEAN_to_researchers + fees, 2) == round(received, 2)) # sometimes the sum is different from received by xE-12
-            #     return fees, OCEAN_to_self, OCEAN_to_researchers
-            # elif state.getAgent("researcher1").last_tick_spent == (state.tick or state.tick-1):
-            #     ratio = state.getAgent("researcher1").ratio_funds_to_publish
-            #     OCEAN_to_self = (received - fees) * ratio
-            #     OCEAN_to_researchers = (received - fees) - OCEAN_to_self
-            #     assert(round(OCEAN_to_self + OCEAN_to_researchers + fees, 2) == round(received, 2))
-            #     return fees, OCEAN_to_self, OCEAN_to_researchers
             return 0, 0, 0
         else:
             return 0, 0, 0
