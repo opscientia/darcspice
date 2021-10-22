@@ -82,9 +82,11 @@ class KnowledgeMarketAgent(AgentBase):
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
 
+        treasury = state.getAgent(state.ss.TREASURY)
+
         # At the end of a research project, add knowledge assets
-        if (((self.last_research_tick - state.tick) % state.ss.TICKS_BETWEEN_PROPOSALS) == 0):
-            winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
+        if (((self.last_research_tick - state.tick) % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) and treasury.proposal_evaluation:
+            winner = treasury.proposal_evaluation['winner']
             proposal = state.getAgent(winner).proposal
             if winner in self.knowledge_assets_per_researcher:
                 self.knowledge_assets_per_researcher[winner] += proposal['assets_generated']
@@ -93,7 +95,7 @@ class KnowledgeMarketAgent(AgentBase):
             self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
         elif state.tick == 20: # arbitrary, just needs to happen after the research funds have been exhausted
-            winner = state.getAgent('dao_treasury').proposal_evaluation['winner']
+            winner = treasury.proposal_evaluation['winner']
             proposal = state.getAgent(winner).proposal
             self.knowledge_assets_per_researcher[winner] = proposal['assets_generated']
             self.total_knowledge_assets += proposal['assets_generated']

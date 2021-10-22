@@ -67,7 +67,9 @@ class OpscientiaDAOAgent(AgentBase):
             return True
 
     def takeStep(self, state) -> None:
-        can_fund = self.proposalsReady(state)
+        can_fund = self.proposalsReady(state) and (self.OCEAN() > 0)
+        if not can_fund:
+            self.proposal_evaluation = None
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())

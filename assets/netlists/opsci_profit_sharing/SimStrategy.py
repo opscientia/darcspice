@@ -12,7 +12,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
 
         #===set base-class values we want for this netlist====
         self.setTimeStep(S_PER_HOUR)
-        self.setMaxTime(10, 'years') #typical runs: 10 years, 20 years, 150 years
+        self.setMaxTime(30, 'years') #typical runs: 10 years, 20 years, 150 years
 
         #===new attributes specific to this netlist===
         self.TICKS_BETWEEN_PROPOSALS = 6480
@@ -27,6 +27,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.PROPOSAL_SETUP = {'grant_requested': 1000, # can be used as a parameter in ResearcherAgent in SimState
                                'assets_generated': 1,
                                'no_researchers': 10}
+        self.TREASURY = 'dao_treasury'
 
         # DT parameters
         self.DT_init = 100.0
