@@ -63,6 +63,28 @@ def netlist_createLogData(state):
     dataheader += ["researcher1_OCEAN"]
     datarow += [researcher1.my_OCEAN]
 
+    researcher2 = state.getAgent("researcher2")
+    s += ["; researcher2 OCEAN=%s" % prettyBigNum(researcher2.OCEAN(),False)]
+    s += ["; researcher2 proposals=%s" % (researcher2.no_proposals_submitted,)]
+    s += ["; researcher2 proposals funded=%s" % (researcher2.no_proposals_funded,)]
+    dataheader += ["researcher2_knowledge_access"]
+    datarow += [researcher2.knowledge_access]
+
+    dataheader += ["researcher2_no_proposals"]
+    datarow += [researcher2.no_proposals_submitted]
+
+    dataheader += ["researcher2_no_proposals_funded"]
+    datarow += [researcher2.no_proposals_funded]
+
+    dataheader += ["researcher2_total_funding"]
+    datarow += [researcher2.total_research_funds_received]
+
+    dataheader += ["researcher2_total_assets_mrkt"]
+    datarow += [researcher2.total_assets_in_mrkt]
+
+    dataheader += ["researcher2_OCEAN"]
+    datarow += [researcher2.my_OCEAN]
+
     treasury = state.getAgent("dao_treasury")
     s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
     dataheader += ["dao_treasury_OCEAN"]
@@ -103,18 +125,18 @@ def netlist_plotInstructions(header: List[str], values):
     x = arrayToFloatList(values[:,header.index("Month")])
     
     y_params = [
-        YParam(["researcher0_no_proposals_funded","researcher1_no_proposals_funded"],
-        ["researcher0","researcher1"],"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_no_proposals_funded","researcher1_no_proposals_funded", "researcher2_no_proposals_funded"],
+        ["researcher0","researcher1", "researcher2"],"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
         YParam(["researcher0_no_proposals","researcher1_no_proposals"],
         ["researcher0","researcher1"],"#_proposals",LINEAR,MULT1,COUNT),
         YParam(["researcher0_total_funding","researcher1_total_funding"],
         ["researcher0","researcher1"],"OCEAN funding",LINEAR,MULT1,COUNT),
         YParam(["researcher0_total_assets_mrkt","researcher1_total_assets_mrkt"],
         ["researcher0","researcher1"],"Assets in Knowledge Market",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_knowledge_access","researcher1_knowledge_access"],
-        ["researcher0","researcher1"],"Knowledge access index",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_OCEAN","researcher1_OCEAN"],
-        ["researcher0","researcher1"],"Researcher OCEAN",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_knowledge_access","researcher1_knowledge_access", "researcher2_knowledge_access"],
+        ["researcher0","researcher1", "researcher2"],"Knowledge access index",LINEAR,MULT1,COUNT),
+        YParam(["researcher0_OCEAN","researcher1_OCEAN", "researcher2_OCEAN"],
+        ["researcher0","researcher1", "researcher2"],"Researcher OCEAN",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_OCEAN"],
         ["dao_treasury"],"DAO_Treasury_OCEAN",LINEAR,MULT1,COUNT),
         YParam(["staker_OCEAN", "market_OCEAN"],

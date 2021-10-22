@@ -118,7 +118,7 @@ class KnowledgeMarketAgent(AgentBase):
             ratios[agent] = no_assets / self.total_knowledge_assets
         assert(sum(self.knowledge_assets_per_researcher.values()) == self.total_knowledge_assets)
         if sum(ratios.values()) != 0:
-            assert(sum(ratios.values()) == 1)
+            assert(round(sum(ratios.values()), 1) == 1)
             for name, ratio in ratios.items():
                 self._transferOCEAN(state.getAgent(name), disburse * ratio)
 
