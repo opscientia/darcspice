@@ -48,7 +48,7 @@ class SimState(SimStateBase.SimStateBase):
         new_agents.add(KnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=10000.0,
             transaction_fees_percentage=0.1,
-            fee_receiving_agents={"staker": 0.0, "dao_treasury": 0.0}))
+            fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
 
         new_agents.add(OpscientiaDAOAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))

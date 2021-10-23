@@ -57,6 +57,8 @@ def netlist_createLogData(state):
     s += ["; market OCEAN=%s" % prettyBigNum(market.OCEAN(),False)]
     dataheader += ["market_OCEAN"]
     datarow += [market.OCEAN()]
+    dataheader += ["market_fees_OCEAN"]
+    datarow += [market.total_fees]
 
     dataheader += ["market_assets"]
     datarow += [market.total_knowledge_assets]
@@ -81,46 +83,41 @@ def netlist_plotInstructions(header: List[str], values):
         COUNT, DOLLAR, PERCENT
     
     x = arrayToFloatList(values[:,header.index("Month")])
+    r_list = [e for e in header if 'researcher' in e]
+    proposals = [p for p in r_list if 'proposals' in p[-9:]]
+    proposals_funded = [p for p in r_list if '_no_proposals_funded' in p]
+    knowledge_access = [k for k in r_list if 'knowledge_access' in k]
+    total_funding = [t for t in r_list if '_total_funding' in t]
+    total_OCEAN = [o for o in r_list if '_OCEAN' in o]
+    total_assets_mrkt = [m for m in r_list if 'total_assets_mrkt' in m]
+    researchers = []
+    i = [i for i in range(0, 200)]
+    for idx in i:
+        for r in r_list:
+            if ('researcher%x' % idx) in r:
+                if ('researcher%x' % idx) not in researchers:
+                    researchers.append('researcher%x' % idx)
+    researchers.reverse()
     
     y_params = [
-        YParam(["researcher0_no_proposals_funded","researcher1_no_proposals_funded", "researcher2_no_proposals_funded"],
-        ["researcher0","researcher1", "researcher2"],"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_no_proposals","researcher1_no_proposals"],
-        ["researcher0","researcher1"],"#_proposals",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_total_funding","researcher1_total_funding"],
-        ["researcher0","researcher1"],"OCEAN funding",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_total_assets_mrkt","researcher1_total_assets_mrkt"],
-        ["researcher0","researcher1"],"Assets in Knowledge Market",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_knowledge_access","researcher1_knowledge_access", "researcher2_knowledge_access"],
-        ["researcher0","researcher1", "researcher2"],"Knowledge access index",LINEAR,MULT1,COUNT),
-        YParam(["researcher0_OCEAN","researcher1_OCEAN", "researcher2_OCEAN"],
-        ["researcher0","researcher1", "researcher2"],"Researcher OCEAN",LINEAR,MULT1,COUNT),
+        YParam(proposals_funded,
+        researchers,"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
+        YParam(proposals,
+        researchers,"#_proposals",LINEAR,MULT1,COUNT),
+        YParam(total_funding,
+        researchers,"OCEAN funding",LINEAR,MULT1,COUNT),
+        YParam(total_assets_mrkt,
+        researchers,"Assets in Knowledge Market",LINEAR,MULT1,COUNT),
+        YParam(knowledge_access,
+        researchers,"Knowledge access index",LINEAR,MULT1,COUNT),
+        YParam(total_OCEAN,
+        researchers,"Researcher OCEAN",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_OCEAN"],
         ["dao_treasury"],"DAO_Treasury_OCEAN",LINEAR,MULT1,COUNT),
         YParam(["staker_OCEAN", "market_OCEAN"],
         ["staker", "market"],"Staker_X_KnowledgeMarket_OCEAN",LOG,MULT1,COUNT),
-        YParam(["staker_OCEAN"],
-        ["staker"],"Staker_OCEAN",LINEAR,MULT1,COUNT),
-        # YParam(["OCEAN_price"], [""], "OCEAN Price", LOG, MULT1, DOLLAR),
-        # #YParam(["ocean_rev_growth/yr"], [""], "Annual Ocean Revenue Growth", BOTH, MULT100, PERCENT),
-        # YParam(["overall_valuation", "fundamentals_valuation","speculation_valuation"],
-        #       ["Overall", "Fundamentals (P/S=30)", "Speculation"], "Valuation", LOG, DIV1M, DOLLAR),
-        # YParam(["dao_USD/mo", "dao_OCEAN_in_USD/mo", "dao_total_in_USD/mo"],
-        #       ["Income as USD (ie network revenue)", "Income as OCEAN (ie from 51%; priced in USD)", "Total Income"],
-        #       "Monthly OpscientiaDAO Income", LOG, DIV1M, DOLLAR),
-        # YParam(["ocean_rev/yr","allSellers_rev/yr"], ["Ocean", "All sellers"],
-        #       "Annual Revenue", LOG, DIV1M, DOLLAR),
-        # YParam(["tot_OCEAN_supply", "tot_OCEAN_minted", "tot_OCEAN_burned"],
-        #       ["Total supply","Tot # Minted","Tot # Burned"], "OCEAN Token Count", BOTH, DIV1M, COUNT),
-        # YParam(["OCEAN_minted/mo", "OCEAN_burned/mo"], ["# Minted/mo", "# Burned/mo"],
-        #       "Monthly # OCEAN Minted & Burned", BOTH, DIV1M, COUNT),
-        
-        # YParam(["OCEAN_burned_USD/mo", "OCEAN_minted_USD/mo"],
-        #        ["$ of OCEAN Burned/mo", "$ of OCEAN Minted/mo"],
-        #       "Monthly OCEAN (in USD) Minted & Burned", LOG, DIV1M, DOLLAR),
-        # YParam(["OCEAN_burned_USD/mo", "ocean_rev/mo", "allSellers_rev/mo"],
-        #       ["$ OCEAN Burned monthly", "Ocean monthly revenue", "Sellers monthly revenue"],
-        #       "Monthly OCEAN Burned & Seller Revenues", LOG, DIV1M, DOLLAR),
+        YParam(["staker_OCEAN", "market_fees_OCEAN"],
+        ["staker", "market"],"Staker_OCEAN_vs_total_Fees",LINEAR,MULT1,COUNT),
     ]
 
     return (x, y_params)
