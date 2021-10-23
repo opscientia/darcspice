@@ -146,14 +146,14 @@ def _xyToPngs(header: List[str], values,
 
         fig, ax = pyplot.subplots()
         
-        ax.set_xlabel("Day")
+        ax.set_xlabel("Month")
         
         for y, label in zip(ys, p.labels):
             if label == "":
                 ax.plot(x, y)
             else:
                 ax.plot(x, y, label=label)
-        if len(p.labels) > 1:
+        if len(p.labels) > 1 and len(p.labels) <= 5:
             ax.legend()
 
         mult_unit_s = _multUnitStr(p.mult, p.unit)
