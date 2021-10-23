@@ -42,9 +42,6 @@ class SimState(SimStateBase.SimStateBase):
         self.researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
-        # TODO
-        # 1. Note: the DAOTreasuryAgent has exactly the same functionality as university agent in the baseline model
-        # Except in this case the funding will be given in OCEAN
         new_agents.add(KnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=10000.0,
             transaction_fees_percentage=0.1,
@@ -56,39 +53,18 @@ class SimState(SimStateBase.SimStateBase):
         new_agents.add(SimpleStakerspeculatorAgent(
             name = "staker", USD=0.0, OCEAN=90000.0))
 
-        new_agents.add(ResearcherAgent(
-            name = "researcher0", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=10000.0,
-            receiving_agents = {"market": 1.0}))
-
-        new_agents.add(ResearcherAgent(
-            name = "researcher1", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=10000.0,
-            receiving_agents = {"market": 1.0}))
-        
-        new_agents.add(ResearcherAgent(
-            name = "researcher2", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=10000.0,
-            receiving_agents = {"market": 1.0}))
+        for i in range(ss.NUMBER_OF_RESEARCHERS):
+            new_agents.add(ResearcherAgent(
+                name = "researcher%x" % i, evaluator = "dao_treasury",
+                USD=0.0, OCEAN=10000.0,
+                receiving_agents = {"market": 1.0}))
+            researcher_agents.add(ResearcherAgent(
+                name = "researcher%x" % i, evaluator = "dao_treasury",
+                USD=0.0, OCEAN=10000.0,
+                receiving_agents = {"market": 1.0}))
 
         for agent in new_agents:
             self.agents[agent.name] = agent
-
-        researcher_agents.add(ResearcherAgent(
-            name = "researcher0", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=10000.0,
-            receiving_agents = {"market": 1.0}))
-
-        researcher_agents.add(ResearcherAgent(
-            name = "researcher1", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=10000.0,
-            receiving_agents = {"market": 1.0}))
-        
-        researcher_agents.add(ResearcherAgent(
-            name = "researcher2", evaluator = "dao_treasury",
-            USD=0.0, OCEAN=10000.0,
-            receiving_agents = {"market": 1.0}))
-
 
         for agent in researcher_agents:
             self.researchers[agent.name] = agent
