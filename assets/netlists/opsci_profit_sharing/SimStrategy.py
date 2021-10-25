@@ -20,7 +20,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.RATIO_FUNDS_TO_PUBLISH = 0.4 # 40% of grant funding will go towards "doing work" & publishing
         self.TRANSACTION_FEES = 0.1
         self.FEES_TO_STAKERS = 0.1
-        self.NUMBER_OF_RESEARCHERS = 3
+        self.NUMBER_OF_RESEARCHERS = 2
         '''
         Some additional parameters that will enable more experimentation (not currently in use)
         '''
