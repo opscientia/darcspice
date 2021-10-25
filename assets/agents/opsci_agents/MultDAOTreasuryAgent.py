@@ -88,14 +88,16 @@ class MultDAOTreasuryAgent(AgentBase):
             self.tick_proposal_funded = state.tick
             self.proposal_funded = True
             self.no_proposals_received += 1
-            self.total_research_funds_disbursed += self.proposal_evaluation['amount']
+            for ev in self.proposal_evaluation.keys():
+                self.total_research_funds_disbursed += self.proposal_evaluation[ev]['amount']
         elif (state.tick == 1 or state.tick == 2) and (self.proposal_funded is False) and can_fund:
             self.proposal_evaluation = self.evaluateProposal(state)
             self._disburseFundsOCEAN(state)
             self.tick_proposal_funded = state.tick
             self.proposal_funded = True
             self.no_proposals_received += 1
-            self.total_research_funds_disbursed += self.proposal_evaluation['amount']
+            for ev in self.proposal_evaluation.keys():
+                self.total_research_funds_disbursed += self.proposal_evaluation[ev]['amount']
         
         # Used for transferring funds to any other agent (not ResearcherAgent)
         # if self.USD() > 0:
@@ -104,10 +106,11 @@ class MultDAOTreasuryAgent(AgentBase):
         #     self._disburseOCEAN(state)
 
     def _disburseFundsOCEAN(self, state):
-        if self.proposal_evaluation != None:        
-            OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
-            agent = state.getAgent(self.proposal_evaluation['winner'])
-            self._transferOCEAN(agent, OCEAN)
+        if self.proposal_evaluation != None:
+            for ev in self.proposal_evaluation.keys():
+                OCEAN = min(self.OCEAN(), self.proposal_evaluation[ev]['amount'])
+                agent = state.getAgent(self.proposal_evaluation[ev]['winner'])
+                self._transferOCEAN(agent, OCEAN)
     
     def _disburseFundsUSD(self, state):
         if self.proposal_evaluation != None:        
