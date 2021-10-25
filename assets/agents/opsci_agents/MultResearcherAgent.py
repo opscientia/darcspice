@@ -125,7 +125,7 @@ class MultResearcherAgent(AgentBase):
                     self.last_tick_spent = state.tick
                     self._BuyAndPublishAssets(state)
             else:
-                assert(not all(state.getAgent(self._evaluator).proposal_evaluation[i]['winner'] != self.name for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
+                assert(all(state.getAgent(self._evaluator).proposal_evaluation[i]['winner'] != self.name for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
                 self.proposal_accepted = False
                 self.ratio_funds_to_publish = 0.0 # not publishing
                 self.last_tick_spent = state.tick
