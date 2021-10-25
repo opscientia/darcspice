@@ -25,7 +25,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         Some additional parameters that will enable more experimentation (not currently in use)
         '''
         self.FUNDING_TIME_DEPENDENCE = True # meaning that TICKS_BETWEEN_PROPOSALS should be used
-        self.MAX_PROPOSALS_FUNDED_AT_A_TIME = 1 # this would be used if FUNDING_TIME_DEPENDENCE = False, <=> funding as projects finish
+        self.PROPOSALS_FUNDED_AT_A_TIME = 1 # this would be used if FUNDING_TIME_DEPENDENCE = False, <=> funding as projects finish
         self.PROPOSAL_SETUP = {'grant_requested': 1000, # can be used as a parameter in ResearcherAgent in SimState
                                'assets_generated': 1,
                                'no_researchers': 10}
