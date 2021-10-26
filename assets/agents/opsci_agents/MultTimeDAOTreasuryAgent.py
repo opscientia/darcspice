@@ -43,19 +43,23 @@ class MultTimeDAOTreasuryAgent(AgentBase):
     def evaluateProposal(self, state) -> dict:
         '''
         Function that evaluates proposals from all researcher agents.
-        A proposal has 4 parameters that will be used to evaluate it.
+        A proposal has 5 parameters that will be used to evaluate it.
         -------
         Params:
             grant_requested
             no_researchers
             assets_generated
+            time
+            knwoledge_access
         -------
-        These parameters are then evaluated as (grant_requested / no_researchers) / assets_generated.
         The proposal with the smaller score is accepted. 
         '''            
         scores = {}
         evaluation = {}
         for name in state.researchers.keys():
+            # I don't want to fund proposals that are already in proposal_evaluation
+            if name in self.proposal_evaluation.values().values():
+                continue
             agent = state.getAgent(name)
             scores[name] = agent.proposal['grant_requested'] / \
                               agent.proposal['no_researchers'] /  \
