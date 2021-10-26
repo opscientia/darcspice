@@ -73,6 +73,12 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         assert (len(evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME)
         return evaluation
 
+    def checkProposalState(self, state):
+        '''Checks the currently funded proposals to see whether it is finished or not'''
+        for i, proposal in self.proposal_evaluation.items():
+            if state.getAgent(proposal['winner']).research_finished:
+                del self.proposal_evaluation[i]
+
     def proposalsReady(self, state):
         if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
             self._proposals_to_evaluate = [state.getAgent(name).proposal for name in state.researchers.keys()]
@@ -82,7 +88,8 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
         if not can_fund:
             self.proposal_evaluation = None
-
+        if self.proposal_evaluation:
+            self.checkProposalState()
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
