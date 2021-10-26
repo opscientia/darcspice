@@ -90,6 +90,11 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             self.proposal_evaluation = None
         if self.proposal_evaluation:
             self.checkProposalState()
+            if len(self.proposal_evaluation) < state.ss.PROPOSALS_FUNDED_AT_A_TIME:
+                if can_fund:
+                    self.evaluateProposal(state)
+        
+        
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
