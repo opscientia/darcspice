@@ -32,8 +32,6 @@ class MultTimeDAOTreasuryAgent(AgentBase):
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
-        
-        self.proposal_funded = False
 
         # metrics to track (and to cross-correlate with ResearcherAgents)
         self.total_research_funds_disbursed: float = 0.0
