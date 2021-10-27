@@ -115,9 +115,10 @@ class MultTimeResearcherAgent(AgentBase):
                 assert(all(state.getAgent(self._evaluator).proposal_evaluation[i]['winner'] != self.name for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
                 self.proposal_accepted = False
                 self.ratio_funds_to_publish = 0.0 # not publishing
-                self.last_tick_spent = state.tick
-                self._BuyAssets(state)
-
+                if state.getAgent(self._evaluator).update > 0:
+                    self.last_tick_spent = state.tick
+                    for _ in range(state.getAgent(self._evaluator).update):
+                        self._BuyAssets(state)
     
     def takeStep(self, state):
 
