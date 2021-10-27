@@ -91,6 +91,7 @@ class MultTimeResearcherAgent(AgentBase):
         if OCEAN != 0 and OCEAN >= state.ss.PRICE_OF_ASSETS and self.proposal:
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
             self.knowledge_access += 1
+            self.proposal['knowledge_access'] = self.knowledge_access
             for name, computePercent in self._receiving_agents.items():
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
     
