@@ -21,7 +21,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.TRANSACTION_FEES = 0.1
         self.FEES_TO_STAKERS = 0.1
         self.NUMBER_OF_RESEARCHERS = 4
-        self.PROPOSALS_FUNDED_AT_A_TIME = 4 # this would be used if FUNDING_TIME_DEPENDENCE = False, <=> funding as projects finish
+        self.PROPOSALS_FUNDED_AT_A_TIME = 2 # this would be used if FUNDING_TIME_DEPENDENCE = False, <=> funding as projects finish
         self.PROPOSAL_SETUP = {'grant_requested': 1000, # can be used as a parameter in ResearcherAgent in SimState
                                'assets_generated': 1,
                                'no_researchers': 10}

@@ -28,7 +28,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation: Dict = None
+        self.proposal_evaluation: Dict = {}
         self.update: int = 0
 
         self._USD_per_grant: float = 0.0
@@ -55,8 +55,9 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         # Ensure that scores and names consist of research proposals NOT currently funded
         for name in state.researchers.keys():
             # I don't want to fund proposals that are already in proposal_evaluation
-            if name in self.proposal_evaluation.values().values():
-                continue
+            if self.proposal_evaluation:
+                if name in list(self.proposal_evaluation.values())[0].values():
+                    continue
             agent = state.getAgent(name)
             scores[name] = agent.proposal['grant_requested'] / \
                               agent.proposal['no_researchers'] /  \
@@ -64,7 +65,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                               agent.proposal['time'] / \
                               agent.proposal['knowledge_access']
 
-        start_idx = self.proposal_evaluation.keys()[-1] if self.proposal_evaluation else 0
+        start_idx = list(self.proposal_evaluation.keys())[-1] if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get)
             self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
@@ -83,7 +84,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
 
     def checkProposalState(self, state):
         '''Checks the currently funded proposals to see whether it is finished or not'''
-        for i, proposal in self.proposal_evaluation.items():
+        for i, proposal in list(self.proposal_evaluation.items()):
             if state.getAgent(proposal['winner']).research_finished:
                 del self.proposal_evaluation[i]
 
@@ -96,13 +97,13 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
         self.update = 0 # if no evaluateProposal is called this will remain 0
         if not can_fund:
-            self.proposal_evaluation = None
+            self.proposal_evaluation = {}
         
         if (not self.proposal_evaluation) and can_fund:
             self.evaluateProposal(state)
         # should run only if a proposal_evaluation exists
         if self.proposal_evaluation:
-            self.checkProposalState()
+            self.checkProposalState(state)
             if len(self.proposal_evaluation) < state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 if can_fund:
                     self.evaluateProposal(state)
