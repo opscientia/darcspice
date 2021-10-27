@@ -87,6 +87,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         for i, proposal in list(self.proposal_evaluation.items()):
             if state.getAgent(proposal['winner']).research_finished:
                 del self.proposal_evaluation[i]
+                print(self.proposal_evaluation)
 
     def proposalsReady(self, state):
         if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
@@ -96,6 +97,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
     def takeStep(self, state) -> None:
         can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
         self.update = 0 # if no evaluateProposal is called this will remain 0
+        # This is an issue if there are multiple research proposals funded
         if not can_fund:
             self.proposal_evaluation = {}
         

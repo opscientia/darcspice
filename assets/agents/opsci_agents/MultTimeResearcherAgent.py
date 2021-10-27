@@ -44,6 +44,7 @@ class MultTimeResearcherAgent(AgentBase):
     
     def createProposal(self, state) -> dict:
         self.new_proposal = True
+        self.research_finished = False
         if self.proposal_setup is not None:
             self.proposal = self.proposal_setup
             self.proposal['knowledge_access'] = self.knowledge_access
@@ -124,6 +125,12 @@ class MultTimeResearcherAgent(AgentBase):
 
         self._checkIfFunded(state)
 
+        # Proposal functionality
+        if self.proposal is None:
+            self.proposal = self.createProposal(state)
+            self.no_proposals_submitted += 1
+            self.ticks_since_proposal = 0
+
         if self.proposal is not None:
             self.ticks_since_proposal += 1
             # tracking the research progress for winning researchers
@@ -132,12 +139,6 @@ class MultTimeResearcherAgent(AgentBase):
                     self.research_finished = True
                     self.proposal = None
                     self.proposal_accepted = False
-
-        # Proposal functionality
-        if self.proposal is None:
-            self.proposal = self.createProposal(state)
-            self.no_proposals_submitted += 1
-            self.ticks_since_proposal = 0
 
         self.my_OCEAN = self.OCEAN()
 
