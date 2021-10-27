@@ -29,6 +29,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         self._OCEAN_per_tick: List[float] = [] # ""
 
         self.proposal_evaluation: Dict = None
+        self.update: int = 0
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
@@ -72,6 +73,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             # immediately disburse funds to new winner
             self._disburseFundsOCEAN(state, i)
             self.total_research_funds_disbursed += self.proposal_evaluation[i]['amount']
+            self.update += 1
             # check if enough OCEAN for next grant
             if self.OCEAN() < 10000: # arbitrary number
                 break
@@ -92,6 +94,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
 
     def takeStep(self, state) -> None:
         can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
+        self.update = 0 # if no evaluateProposal is called this will remain 0
         if not can_fund:
             self.proposal_evaluation = None
         
