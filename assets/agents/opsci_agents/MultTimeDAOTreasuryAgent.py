@@ -40,7 +40,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         self.no_proposals_received: int = 0
         self.total_research_funds_disbursed: float = 0.0
 
-    def evaluateProposal(self, state) -> dict:
+    def evaluateProposal(self, state) -> None:
         '''
         Function that evaluates proposals from all researcher agents.
         A proposal has 5 parameters that will be used to evaluate it.
@@ -55,7 +55,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         The proposal with the smaller score is accepted. 
         '''            
         scores = {}
-        evaluation = {}
+        # Ensure that scores and names consist of research proposals NOT currently funded
         for name in state.researchers.keys():
             # I don't want to fund proposals that are already in proposal_evaluation
             if name in self.proposal_evaluation.values().values():
@@ -66,12 +66,15 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                               agent.proposal['assets_generated'] / \
                               agent.proposal['time'] / \
                               agent.proposal['knowledge_access']
-        for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME):
+
+        start_idx = self.proposal_evaluation.keys()[-1] if self.proposal_evaluation else 0
+        for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get)
-            evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
+            self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
             del scores[winner]
-        assert (len(evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME)
-        return evaluation
+            if len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME:
+                break
+        assert (len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def checkProposalState(self, state):
         '''Checks the currently funded proposals to see whether it is finished or not'''
@@ -88,6 +91,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
         if not can_fund:
             self.proposal_evaluation = None
+        # should run only if a proposal_evaluation exists
         if self.proposal_evaluation:
             self.checkProposalState()
             if len(self.proposal_evaluation) < state.ss.PROPOSALS_FUNDED_AT_A_TIME:
