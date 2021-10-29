@@ -76,7 +76,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             self.total_research_funds_disbursed += self.proposal_evaluation[i]['amount']
             self.update += 1
             # check if enough OCEAN for next grant
-            if self.OCEAN() < 10000: # arbitrary number
+            if self.OCEAN() < state.ss.FUNDING_BOUNDARY: # arbitrary number
                 break
             if len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 break
@@ -95,7 +95,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             return True
 
     def takeStep(self, state) -> None:
-        can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
+        can_fund = self.proposalsReady(state) and (self.OCEAN() > state.ss.FUNDING_BOUNDARY)
         self.update = 0 # if no evaluateProposal is called this will remain 0
         # This is an issue if there are multiple research proposals funded
         if not can_fund:
