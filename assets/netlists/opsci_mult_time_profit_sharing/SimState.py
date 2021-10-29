@@ -5,7 +5,7 @@ import random
 from assets.agents import MinterAgents
 from assets.agents.opsci_agents.MultTimeResearcherAgent import MultTimeResearcherAgent
 from assets.agents.opsci_agents.MultTimeDAOTreasuryAgent import MultTimeDAOTreasuryAgent
-from assets.agents.opsci_agents.MultKnowledgeMarketAgent import MultKnowledgeMarketAgent
+from assets.agents.opsci_agents.MultTimeKnowledgeMarketAgent import MultTimeKnowledgeMarketAgent
 from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
@@ -42,7 +42,7 @@ class SimState(SimStateBase.SimStateBase):
         self.researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.add(MultKnowledgeMarketAgent(
+        new_agents.add(MultTimeKnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=10000.0,
             transaction_fees_percentage=0.1,
             fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))

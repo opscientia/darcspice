@@ -15,7 +15,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.setMaxTime(30, 'years') #typical runs: 10 years, 20 years, 150 years
 
         #===new attributes specific to this netlist===
-        self.TICKS_BETWEEN_PROPOSALS = 6480
+        # self.TICKS_BETWEEN_PROPOSALS = 6480
         self.PRICE_OF_ASSETS = 1000 # OCEAN
         self.RATIO_FUNDS_TO_PUBLISH = 0.4 # 40% of grant funding will go towards "doing work" & publishing
         self.TRANSACTION_FEES = 0.1
