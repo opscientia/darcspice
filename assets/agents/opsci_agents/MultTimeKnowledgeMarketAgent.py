@@ -13,7 +13,7 @@ from web3tools.web3util import toBase18
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class MultKnowledgeMarketAgent(AgentBase):
+class MultTimeKnowledgeMarketAgent(AgentBase):
     '''
     Works like MultKnowledgeMarketAgent but is adapted for the rolling basis funding
     Properties:
