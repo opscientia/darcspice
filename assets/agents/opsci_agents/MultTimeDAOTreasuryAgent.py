@@ -30,6 +30,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
 
         self.proposal_evaluation: Dict = {}
         self.update: int = 0
+        self.proposal_evaluation_update: Dict = {}
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
@@ -52,6 +53,8 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         The proposal with the smaller score is accepted. 
         '''            
         scores = {}
+        self.proposal_evaluation_update: Dict = {}
+
         # Ensure that scores and names consist of research proposals NOT currently funded
         for name in state.researchers.keys():
             # I don't want to fund proposals that are already in proposal_evaluation
@@ -74,6 +77,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             # immediately disburse funds to new winner
             self._disburseFundsOCEAN(state, i)
             self.total_research_funds_disbursed += self.proposal_evaluation[i]['amount']
+            self.proposal_evaluation_update[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
             self.update += 1
             # check if enough OCEAN for next grant
             if self.OCEAN() < state.ss.FUNDING_BOUNDARY: # arbitrary number

@@ -115,6 +115,7 @@ class MultTimeResearcherAgent(AgentBase):
             else:
                 assert(all(state.getAgent(self._evaluator).proposal_evaluation[i]['winner'] != self.name for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
                 self.proposal_accepted = False
+                self.proposal = self.createProposal(state) # just create new proposal to make sure we have the random element
                 self.ratio_funds_to_publish = 0.0 # not publishing
                 if state.getAgent(self._evaluator).update > 0:
                     self.last_tick_spent = state.tick
