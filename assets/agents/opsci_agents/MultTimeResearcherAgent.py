@@ -97,7 +97,7 @@ class MultTimeResearcherAgent(AgentBase):
         self.ratio_funds_to_publish = 0.0 # not publishing
         if OCEAN != 0 and OCEAN >= state.ss.PRICE_OF_ASSETS and self.proposal:
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
-            print(f'OCEAN DISBURSE: {OCEAN_DISBURSE} | TICK: {state.tick}')
+            # print(f'OCEAN DISBURSE: {OCEAN_DISBURSE} | TICK: {state.tick}')
             self.last_OCEAN_spent += OCEAN_DISBURSE
             self.knowledge_access += 1
             self.proposal['knowledge_access'] = self.knowledge_access
@@ -105,10 +105,12 @@ class MultTimeResearcherAgent(AgentBase):
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
     
     def _checkIfFunded(self, state) -> None:
+        prop_eval = state.getAgent(self._evaluator).proposal_evaluation
+        full_proposal: bool = len(prop_eval) == state.ss.PROPOSALS_FUNDED_AT_A_TIME
         # Checking if proposal accepted (should only be checked if the DAOTreasury evaluated the proposals and I am not a winner:
-        if state.getAgent(self._evaluator).proposal_evaluation and not self.proposal_accepted:
+        if (prop_eval != {}) and (not self.proposal_accepted) and full_proposal:
             self.new_proposal = False
-            prop_evaluation = state.getAgent(self._evaluator).proposal_evaluation
+            prop_evaluation = prop_eval
             # if I am the winner, send the funds received to KnowledgeMarket
             if any((prop_evaluation[i]['winner'] == self.name) for i in prop_evaluation.keys()):
                 self.proposal_accepted = True
@@ -119,11 +121,11 @@ class MultTimeResearcherAgent(AgentBase):
                 if self.OCEAN() >= self.proposal['grant_requested']:
                     self._BuyAndPublishAssets(state)
             else:
-                assert(all((prop_evaluation[i]['winner'] != self.name)for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
+                assert(all((prop_evaluation[i]['winner'] != self.name)for i in prop_eval.keys()))
                 self.proposal_accepted = False # this is kind of useless
                 self.proposal = self.createProposal(state) # just create new proposal to make sure we have the random element
                 if state.getAgent(self._evaluator).update > 0:
-                    print(f'{self.name} UPDATE: {state.getAgent(self._evaluator).update}')
+                    # print(f'{self.name} UPDATE: {state.getAgent(self._evaluator).update}')
                     for _ in range(state.getAgent(self._evaluator).update):
                         self._BuyAssets(state)
     

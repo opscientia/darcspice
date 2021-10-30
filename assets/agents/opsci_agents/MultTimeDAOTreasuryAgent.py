@@ -59,7 +59,9 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         for name in state.researchers.keys():
             # I don't want to fund proposals that are already in proposal_evaluation
             if self.proposal_evaluation:
-                if name in list(self.proposal_evaluation.values())[0].values():
+                skipping_rs = [r['winner'] for r in list(self.proposal_evaluation.values())]
+                if name in skipping_rs:
+                    print(f'GOT HERE: {name}')
                     continue
             agent = state.getAgent(name)
             scores[name] = agent.proposal['grant_requested'] / \
@@ -68,7 +70,8 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                               agent.proposal['time'] / \
                               agent.proposal['knowledge_access']
 
-        start_idx = list(self.proposal_evaluation.keys())[-1] if self.proposal_evaluation else 0
+        print(f'SCORES: {scores} TICK {state.tick}')
+        start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get)
             self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
@@ -84,14 +87,18 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                 break
             if len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 break
+        
+        print(f'PROPOSAL EVALUATION {self.proposal_evaluation} | TICK {state.tick}')
         assert (len(self.proposal_evaluation.keys()) <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def checkProposalState(self, state):
         '''Checks the currently funded proposals to see whether it is finished or not'''
         for i, proposal in list(self.proposal_evaluation.items()):
-            if state.getAgent(proposal['winner']).research_finished:
+            r = state.getAgent(proposal['winner'])
+            if r.research_finished:
+                print(f'RESEARCHER: {r.name} | FINISHED: {r.research_finished} | TICK: {state.tick} ')
                 del self.proposal_evaluation[i]
-                print(self.proposal_evaluation)
+                print(f'PROPOSAL EVALUATION AFTER DELETION{self.proposal_evaluation}')
 
     def proposalsReady(self, state):
         if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
@@ -101,23 +108,36 @@ class MultTimeDAOTreasuryAgent(AgentBase):
     def takeStep(self, state) -> None:
         can_fund = self.proposalsReady(state) and (self.OCEAN() > state.ss.FUNDING_BOUNDARY)
         self.update = 0 # if no evaluateProposal is called this will remain 0
-        # This is an issue if there are multiple research proposals funded
-        if not can_fund:
-            self.proposal_evaluation = {}
         
-        if (not self.proposal_evaluation) and can_fund:
-            self.evaluateProposal(state)
+        # This is an issue if there are multiple research proposals funded
+        if (self.OCEAN() < state.ss.FUNDING_BOUNDARY):
+            self.proposal_evaluation = {}
+
         # should run only if a proposal_evaluation exists
-        if self.proposal_evaluation:
+        if self.proposal_evaluation != {}:
             self.checkProposalState(state)
             if len(self.proposal_evaluation) < state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 if can_fund:
                     self.evaluateProposal(state)
+        
+        if (self.proposal_evaluation == {}) and can_fund:
+            self.evaluateProposal(state)
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
-                
+
+        # debugging
+        total_proposal_accepted = 0
+        for researcher in state.researchers.keys():
+            if state.getAgent(researcher).proposal_accepted == True:
+                total_proposal_accepted += 1
+        if total_proposal_accepted > 0:
+            if total_proposal_accepted > state.ss.PROPOSALS_FUNDED_AT_A_TIME:
+                for researcher in state.researchers.keys():
+                    print(f'RESEARCHER: {researcher} | PROPOSAL_ACCEPTED: {state.getAgent(researcher).proposal_accepted == True}')
+                print(f'{total_proposal_accepted} | TICK {state.tick}')
+            assert(total_proposal_accepted <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def _disburseFundsOCEAN(self, state, i):
         assert self.proposal_evaluation
