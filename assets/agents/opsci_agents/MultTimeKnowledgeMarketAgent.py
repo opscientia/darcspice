@@ -51,16 +51,34 @@ class MultTimeKnowledgeMarketAgent(AgentBase):
 
     def _ToDistribute(self, state):
         received = self.OCEAN() - self.OCEAN_last_tick
-        if received > 0 and state.tick > 0:
-            fees = received * self.transaction_fees_percentage
+        if received > 0:
+            fees = 0
+            OCEAN_to_self = 0
+            OCEAN_to_researchers = 0
+            sum_OCEAN_received = 0.0
+
+            # iterate through all researchers
             for researcher in state.researchers.keys():
-                if state.getAgent(researcher).last_tick_spent == (state.tick or state.tick-1):
-                    ratio = state.getAgent(researcher).ratio_funds_to_publish
-                    OCEAN_to_self = (received - fees) * ratio
-                    OCEAN_to_researchers = (received - fees) - OCEAN_to_self
-                    assert(round(OCEAN_to_self + OCEAN_to_researchers + fees, 2) == round(received, 2)) # sometimes the sum is different from received by xE-12
-                    return fees, OCEAN_to_self, OCEAN_to_researchers
-            return 0, 0, 0
+                r = state.getAgent(researcher)
+                # if r.last_tick_spent == (state.tick-1) or r.last_tick_spent == state.tick or r.last_tick_spent == (state.tick - 2):
+
+                    # get the OCEAN received by this agent (add it to total for assertion later)
+                received_from_r = r.last_OCEAN_spent
+                sum_OCEAN_received += received_from_r
+                ratio = r.ratio_funds_to_publish
+                # print(f"RESEARCHER: {r.name} | received_from {received_from_r} | RATIO: {ratio}")
+
+                    # calculate fee for this transaction
+                r_fee = received_from_r * self.transaction_fees_percentage
+                fees += r_fee # append it to total fees
+
+                    # add the appropriate amount to self and researchers
+                OCEAN_to_self += (received_from_r - r_fee) * ratio
+                OCEAN_to_researchers += (received_from_r - r_fee) - (received_from_r - r_fee) * ratio
+            
+            assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
+            assert round(fees, 5) == round(received * self.transaction_fees_percentage, 5) # same logic
+            return fees, OCEAN_to_self, OCEAN_to_researchers
         else:
             return 0, 0, 0
 
@@ -68,6 +86,11 @@ class MultTimeKnowledgeMarketAgent(AgentBase):
         self.last_research_tick += 1
         #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
         fee, keep, disburse = self._ToDistribute(state)
+        
+        # for debugging, delete later
+        if self.OCEAN_last_tick == self.OCEAN():
+            fee, disburse = 0, 0
+
 
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
@@ -94,6 +117,8 @@ class MultTimeKnowledgeMarketAgent(AgentBase):
                 self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
 
+        if fee != 0 and disburse == 0:
+            assert self.OCEAN_last_tick != self.OCEAN()
         self.OCEAN_last_tick = self.OCEAN()
 
     def _disburseUSD(self, state) -> None:

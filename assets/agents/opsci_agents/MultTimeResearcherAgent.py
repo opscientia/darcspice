@@ -41,6 +41,7 @@ class MultTimeResearcherAgent(AgentBase):
         self.ratio_funds_to_publish: float = 0.0
 
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
+        self.last_OCEAN_spent = 0.0
     
     def createProposal(self, state) -> dict:
         self.new_proposal = True
@@ -76,8 +77,11 @@ class MultTimeResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
+        self.last_tick_spent = state.tick
+        self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
         if OCEAN != 0 and self.proposal:
             OCEAN_DISBURSE: float = self.proposal['grant_requested']
+            self.last_OCEAN_spent += OCEAN_DISBURSE
             for name, computePercent in self._receiving_agents.items():
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
             self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
@@ -89,8 +93,12 @@ class MultTimeResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
+        self.last_tick_spent = state.tick
+        self.ratio_funds_to_publish = 0.0 # not publishing
         if OCEAN != 0 and OCEAN >= state.ss.PRICE_OF_ASSETS and self.proposal:
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
+            print(f'OCEAN DISBURSE: {OCEAN_DISBURSE} | TICK: {state.tick}')
+            self.last_OCEAN_spent += OCEAN_DISBURSE
             self.knowledge_access += 1
             self.proposal['knowledge_access'] = self.knowledge_access
             for name, computePercent in self._receiving_agents.items():
@@ -109,21 +117,19 @@ class MultTimeResearcherAgent(AgentBase):
                 self.total_assets_in_mrkt += self.proposal['assets_generated']
                 self.total_research_funds_received += self.proposal['grant_requested']
                 if self.OCEAN() >= self.proposal['grant_requested']:
-                    self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
-                    self.last_tick_spent = state.tick
                     self._BuyAndPublishAssets(state)
             else:
                 assert(all((prop_evaluation[i]['winner'] != self.name)for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
                 self.proposal_accepted = False # this is kind of useless
                 self.proposal = self.createProposal(state) # just create new proposal to make sure we have the random element
-                self.ratio_funds_to_publish = 0.0 # not publishing
                 if state.getAgent(self._evaluator).update > 0:
-                    self.last_tick_spent = state.tick
+                    print(f'{self.name} UPDATE: {state.getAgent(self._evaluator).update}')
                     for _ in range(state.getAgent(self._evaluator).update):
                         self._BuyAssets(state)
     
     def takeStep(self, state):
 
+        self.last_OCEAN_spent = 0.0
         self._checkIfFunded(state)
 
         # Proposal functionality
@@ -145,8 +151,8 @@ class MultTimeResearcherAgent(AgentBase):
 
         self._spent_at_tick = self.OCEAN()
 
-        if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
-            self._BuyAssets(state)
+        # if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
+        #     self._BuyAssets(state)
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)

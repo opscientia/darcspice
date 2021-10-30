@@ -37,35 +37,37 @@ class SimState(SimStateBase.SimStateBase):
 
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
-        new_agents: Set[AgentBase.AgentBase] = set()
-        researcher_agents: Set[AgentBase.AgentBase] = set()
+        # new_agents: Set[AgentBase.AgentBase] = set()
+        researcher_agents = []
         self.researchers: dict = {}
+        new_agents = []
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.add(MultTimeKnowledgeMarketAgent(
-            name = "market", USD=0.0, OCEAN=10000.0,
+        new_agents.append(MultTimeKnowledgeMarketAgent(
+            name = "market", USD=0.0, OCEAN=0.0,
             transaction_fees_percentage=0.1,
             fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
 
-        new_agents.add(MultTimeDAOTreasuryAgent(
+        new_agents.append(MultTimeDAOTreasuryAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
-        new_agents.add(SimpleStakerspeculatorAgent(
+        new_agents.append(SimpleStakerspeculatorAgent(
             name = "staker", USD=0.0, OCEAN=90000.0))
 
         for i in range(ss.NUMBER_OF_RESEARCHERS):
-            new_agents.add(MultTimeResearcherAgent(
+            new_agents.append(MultTimeResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
-            researcher_agents.add(MultTimeResearcherAgent(
+            researcher_agents.append(MultTimeResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
 
         for agent in new_agents:
-            self.agents[agent.name] = agent
+            self.agents[agent.name] = agent            
 
+        print(self.agents)
         for agent in researcher_agents:
             self.researchers[agent.name] = agent
 
