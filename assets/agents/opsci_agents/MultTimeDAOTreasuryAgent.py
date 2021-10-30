@@ -61,7 +61,6 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             if self.proposal_evaluation:
                 skipping_rs = [r['winner'] for r in list(self.proposal_evaluation.values())]
                 if name in skipping_rs:
-                    print(f'GOT HERE: {name}')
                     continue
             agent = state.getAgent(name)
             scores[name] = agent.proposal['grant_requested'] / \
@@ -70,7 +69,6 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                               agent.proposal['time'] / \
                               agent.proposal['knowledge_access']
 
-        print(f'SCORES: {scores} TICK {state.tick}')
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get)
@@ -88,7 +86,6 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             if len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 break
         
-        print(f'PROPOSAL EVALUATION {self.proposal_evaluation} | TICK {state.tick}')
         assert (len(self.proposal_evaluation.keys()) <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def checkProposalState(self, state):
@@ -96,9 +93,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         for i, proposal in list(self.proposal_evaluation.items()):
             r = state.getAgent(proposal['winner'])
             if r.research_finished:
-                print(f'RESEARCHER: {r.name} | FINISHED: {r.research_finished} | TICK: {state.tick} ')
                 del self.proposal_evaluation[i]
-                print(f'PROPOSAL EVALUATION AFTER DELETION{self.proposal_evaluation}')
 
     def proposalsReady(self, state):
         if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
@@ -133,10 +128,6 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             if state.getAgent(researcher).proposal_accepted == True:
                 total_proposal_accepted += 1
         if total_proposal_accepted > 0:
-            if total_proposal_accepted > state.ss.PROPOSALS_FUNDED_AT_A_TIME:
-                for researcher in state.researchers.keys():
-                    print(f'RESEARCHER: {researcher} | PROPOSAL_ACCEPTED: {state.getAgent(researcher).proposal_accepted == True}')
-                print(f'{total_proposal_accepted} | TICK {state.tick}')
             assert(total_proposal_accepted <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def _disburseFundsOCEAN(self, state, i):

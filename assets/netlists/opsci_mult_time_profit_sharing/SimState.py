@@ -67,7 +67,6 @@ class SimState(SimStateBase.SimStateBase):
         for agent in new_agents:
             self.agents[agent.name] = agent            
 
-        print(self.agents)
         for agent in researcher_agents:
             self.researchers[agent.name] = agent
 

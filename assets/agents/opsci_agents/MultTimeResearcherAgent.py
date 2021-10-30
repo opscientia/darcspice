@@ -97,7 +97,6 @@ class MultTimeResearcherAgent(AgentBase):
         self.ratio_funds_to_publish = 0.0 # not publishing
         if OCEAN != 0 and OCEAN >= state.ss.PRICE_OF_ASSETS and self.proposal:
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
-            # print(f'OCEAN DISBURSE: {OCEAN_DISBURSE} | TICK: {state.tick}')
             self.last_OCEAN_spent += OCEAN_DISBURSE
             self.knowledge_access += 1
             self.proposal['knowledge_access'] = self.knowledge_access
@@ -125,7 +124,6 @@ class MultTimeResearcherAgent(AgentBase):
                 self.proposal_accepted = False # this is kind of useless
                 self.proposal = self.createProposal(state) # just create new proposal to make sure we have the random element
                 if state.getAgent(self._evaluator).update > 0:
-                    # print(f'{self.name} UPDATE: {state.getAgent(self._evaluator).update}')
                     for _ in range(state.getAgent(self._evaluator).update):
                         self._BuyAssets(state)
     
