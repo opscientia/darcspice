@@ -53,7 +53,7 @@ class MultTimeResearcherAgent(AgentBase):
             return {'grant_requested': random.randint(10000, 50000), # Note: might be worth considering some distribution based on other params
                     'assets_generated': random.randint(1, 10), # Note: might be worth considering some distribution based on other params 
                     'no_researchers': 10,
-                    'time': random.randint(1000, 10000), # research length: random number of ticks
+                    'time': random.randint(5000, 15000), # research length: random number of ticks
                     'knowledge_access': self.knowledge_access}
 
     def spentAtTick(self) -> float:
@@ -113,8 +113,8 @@ class MultTimeResearcherAgent(AgentBase):
                     self.last_tick_spent = state.tick
                     self._BuyAndPublishAssets(state)
             else:
-                assert(all(state.getAgent(self._evaluator).proposal_evaluation[i]['winner'] != self.name for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
-                self.proposal_accepted = False
+                assert(all((prop_evaluation[i]['winner'] != self.name)for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME)))
+                self.proposal_accepted = False # this is kind of useless
                 self.proposal = self.createProposal(state) # just create new proposal to make sure we have the random element
                 self.ratio_funds_to_publish = 0.0 # not publishing
                 if state.getAgent(self._evaluator).update > 0:
@@ -144,6 +144,9 @@ class MultTimeResearcherAgent(AgentBase):
         self.my_OCEAN = self.OCEAN()
 
         self._spent_at_tick = self.OCEAN()
+
+        if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
+            self._BuyAssets(state)
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)
