@@ -23,6 +23,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.NUMBER_OF_RESEARCHERS = 5
         self.PROPOSALS_FUNDED_AT_A_TIME = 3 # this would be used if FUNDING_TIME_DEPENDENCE = False, <=> funding as projects finish
         self.FUNDING_BOUNDARY = 10000
+        self.RANDOM_BUYING = True
         self.PROPOSAL_SETUP = {'grant_requested': 1000, # can be used as a parameter in ResearcherAgent in SimState
                                'assets_generated': 1,
                                'no_researchers': 10,

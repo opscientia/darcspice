@@ -151,8 +151,9 @@ class MultTimeResearcherAgent(AgentBase):
 
         self._spent_at_tick = self.OCEAN()
 
-        # if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
-        #     self._BuyAssets(state)
+        if state.ss.RANDOM_BUYING:
+            if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
+                self._BuyAssets(state)
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)
