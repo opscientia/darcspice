@@ -158,7 +158,7 @@ class ResearcherBase(AgentBase):
             self._USDToDisbursePerTick(state)
 
     #### FUNCTIONS OF PrivateResearcherAgents ####
-    def _publishAssets(self, state) -> None:
+    def _privatePublishAssets(self, state) -> None:
         '''
         Used by private researchers to publish assets to the marketplace
         '''
@@ -172,7 +172,7 @@ class ResearcherBase(AgentBase):
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
             self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
-    def _buyPrivateAssets(self, state) -> None:
+    def _privateBuyAssets(self, state) -> None:
         '''
         Used by private data and algo providers
         1. choose private or public market
