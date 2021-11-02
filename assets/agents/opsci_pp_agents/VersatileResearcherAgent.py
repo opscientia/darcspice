@@ -61,8 +61,8 @@ class VersatileResearcherAgent(ResearcherBase):
         if self.research_type == 'public':
             self.multTimeTakeStep(state)
         else:
-            assert self.research_type == 'private':
-            
+            assert self.research_type == 'private'
+
             if random.random() < 0.1:
                 self._privateBuyAssets(state) # buys assets for research | does nothing if agent is compute provider
                 self._privatePublishAssets(state) # publishes results
