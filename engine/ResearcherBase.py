@@ -41,6 +41,7 @@ class ResearcherBase(AgentBase):
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
         self.last_OCEAN_spent = 0.0
     
+    #### FUNCTIONS of MultTimeResearcherAgent ####
     def createProposal(self, state) -> dict:
         self.new_proposal = True
         self.research_finished = False
@@ -125,7 +126,7 @@ class ResearcherBase(AgentBase):
                     for _ in range(state.getAgent(self._evaluator).update):
                         self._BuyAssets(state)
     
-    def takeStep(self, state):
+    def multTimeTakeStep(self, state):
 
         self.last_OCEAN_spent = 0.0
         self._checkIfFunded(state)
@@ -155,3 +156,38 @@ class ResearcherBase(AgentBase):
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)
+
+    #### FUNCTIONS OF PrivateResearcherAgents ####
+    def _publishAssets(self, state) -> None:
+        '''
+        Used by private researchers to publish assets to the marketplace
+        '''
+        OCEAN = self.OCEAN()
+        self.last_tick_spent = state.tick
+        self.ratio_funds_to_publish = 1.0 # KnowledgeMarketAgent will check this parameter
+        if OCEAN != 0 and self.proposal:
+            OCEAN_DISBURSE: float = state.ss.PRIVATE_PUBLISH_COST[self.asset_type]
+            self.last_OCEAN_spent += OCEAN_DISBURSE
+            for name, computePercent in self._receiving_agents.items():
+                self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
+            self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
+
+    def _buyPrivateAssets(self, state) -> None:
+        '''
+        Used by private data and algo providers
+        1. choose private or public market
+        2. for algo provider -> choose 'data' or 'compute'
+        3. for data provider -> buy 'algo' and 'compute'
+        '''
+        if self.OCEAN() > 0:
+            market = random.choose(['private_market', 'public_market'])
+
+            if self.asset_type == 'algo':
+                asset_to_buy = random.choose(['data', 'compute'])
+                for name, computePercent in self._receiving_agents.items():
+                    self._transferOCEAN(state.getAgent(name), computePercent * state.ss.ASSET_COSTS[market][asset_to_buy])
+            elif self.asset_type == 'data':
+                assets_to_buy = ['algo', 'compute']
+                for asset in assets_to_buy:
+                    for name, computePercent in self._receiving_agents.items():
+                        self._transferOCEAN(state.getAgent(name), computePercent * state.ss.ASSET_COSTS[market][asset])
