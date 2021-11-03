@@ -77,15 +77,15 @@ class ResearcherBase(AgentBase):
         1 tick = 1 hour
         '''
         # new functionality for VersatileAgent
-        market, asset_to_buy = self._getMarketAndAssets()
+        _, asset_to_buy = self._getMarketAndAssets()
 
         OCEAN = self.OCEAN()
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
         if OCEAN != 0 and self.proposal:
             OCEAN_DISBURSE: float = self.proposal['grant_requested']
-            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': market, 'asset_buy': asset_to_buy, 'publish': True, 'ratio': self.ratio_funds_to_publish}
-            self._transferOCEAN(state.getAgent(market), OCEAN_DISBURSE)
+            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': 'public_market', 'asset_buy': asset_to_buy, 'publish': True, 'ratio': self.ratio_funds_to_publish}
+            self._transferOCEAN(state.getAgent('public_market'), OCEAN_DISBURSE)
             self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
     def _BuyAssets(self, state) -> None:
