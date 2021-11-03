@@ -137,7 +137,6 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
         if self.OCEAN_last_tick == self.OCEAN():
             fee, disburse = 0, 0
 
-
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
 
