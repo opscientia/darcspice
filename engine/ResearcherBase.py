@@ -174,7 +174,7 @@ class ResearcherBase(AgentBase):
         self.ratio_funds_to_publish = 1.0 # KnowledgeMarketAgent will check this parameter
         if OCEAN != 0 and self.proposal:
             OCEAN_DISBURSE: float = state.ss.PRIVATE_PUBLISH_COST[self.asset_type]
-            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': None, 'asset_buy': None, 'publish': True, 'ratio': self.ratio_funds_to_publish}
+            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': 'private_market', 'asset_buy': None, 'publish': True, 'ratio': self.ratio_funds_to_publish}
             for name, computePercent in self._receiving_agents.items():
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
             self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
