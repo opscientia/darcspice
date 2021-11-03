@@ -8,12 +8,12 @@ import math
 
 from assets.agents.opsci_pp_agents import PublicMarket, PrivateMarket
 from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
-from engine.KnowledgeMarketBase import KnowledgeMarketBase
+from engine.AgentBase import AgentBase
 from web3tools.web3util import toBase18
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class PublicKnowledgeMarketAgent(KnowledgeMarketBase):
+class PublicKnowledgeMarketAgent(AgentBase):
     '''
     Public knowledge market. Stores all private knowledge assets (data, algorithms, compute),
     distributes rewards to asset owners, sends fees to DAOTreasury
@@ -32,7 +32,15 @@ class PublicKnowledgeMarketAgent(KnowledgeMarketBase):
         The dict values are methods, not floats, so that the return value
         can change over time. E.g. percent_burn changes.
         """
-        super().__init__(name, USD, OCEAN, transaction_fees_percentage, fee_receiving_agents)
+        super().__init__(name, USD, OCEAN)
+        self._receiving_agents = fee_receiving_agents
+
+        #track amounts over time
+        self._USD_per_tick: List[float] = [] #the next tick will record what's in self
+        self._OCEAN_per_tick: List[float] = [] # ""
+
+        self.OCEAN_last_tick = 0.0
+        self.transaction_fees_percentage = transaction_fees_percentage
 
         self.knowledge_assets_per_researcher = {}
         self.knowledge_assets = {}

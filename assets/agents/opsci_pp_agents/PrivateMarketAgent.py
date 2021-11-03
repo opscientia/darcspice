@@ -8,12 +8,12 @@ import math
 
 from assets.agents.opsci_pp_agents import PublicMarket, PrivateMarket
 from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
-from engine.KnowledgeMarketBase import KnowledgeMarketBase
+from engine.AgentBase import AgentBase
 from web3tools.web3util import toBase18
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
+class PrivateKnowledgeMarketAgent(AgentBase):
     '''
     Private knowledge market. Stores all private knowledge assets (data, algorithms, compute),
     distributes rewards to asset owners, sends fees to DAOTreasury
