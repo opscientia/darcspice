@@ -131,5 +131,23 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
 
     
     def takeStep(self, state):
-        # TODO
-        pass
+        fee, keep, disburse = self._ToDistribute(state)
+        
+        # for debugging, delete later
+        if self.OCEAN_last_tick == self.OCEAN():
+            fee, disburse = 0, 0
+
+
+        if fee > 0:
+            self._disburseFeesOCEAN(state, fee)
+
+        if disburse > 0:
+            self._disburseOCEANPayout(state, disburse)
+
+        #record what we had up until this point
+        self._USD_per_tick.append(self.USD())
+        self._OCEAN_per_tick.append(self.OCEAN())
+
+        if fee != 0 and disburse == 0:
+            assert self.OCEAN_last_tick != self.OCEAN()
+        self.OCEAN_last_tick = self.OCEAN()
