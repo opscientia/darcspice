@@ -36,6 +36,7 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
 
         self.knowledge_assets_per_researcher = {}
         self.knowledge_assets = {}
+        self.types = ['algo', 'data', 'compute']
 
     def _ToDistribute(self, state):
         received = self.OCEAN() - self.OCEAN_last_tick
@@ -99,14 +100,20 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
         Send OCEAN payout according to the ownership of assets in the KnowledgeMarket
         Receivers: ResearcherAgents
         '''
+        for t in self.knowledge_assets.keys():
+            assert sum(self.knowledge_assets_per_researcher[t].values() == self.knowledge_assets[t]) # assert the total is the same as the sum of all the individuals
+
+        # get the ratios of assets (differentiated by type) of all researchers
         ratios = {}
-        for agent, no_assets in self.knowledge_assets_per_researcher.items():
-            ratios[agent] = no_assets / self.total_knowledge_assets
-        assert(sum(self.knowledge_assets_per_researcher.values()) == self.total_knowledge_assets)
-        if sum(ratios.values()) != 0:
-            assert(round(sum(ratios.values()), 1) == 1)
-            for name, ratio in ratios.items():
-                self._transferOCEAN(state.getAgent(name), disburse * ratio)
+        for type, agents in self.knowledge_assets_per_researcher.items():
+            for agent, count in agents.items():
+                ratios[type][agent] = count / self.knowledge_assets[type]
+
+        for type in self.types:
+            if sum(ratios[type].values()) != 0:
+                assert round(sum(ratios[type].values()), 1) == 1
+                for name, ratio in ratios[type].items():
+                    self._transferOCEAN(state.getAgent(name), disburse[type] * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
         '''
