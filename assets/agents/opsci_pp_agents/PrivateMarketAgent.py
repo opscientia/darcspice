@@ -34,6 +34,9 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
         """
         super().__init__(name, USD, OCEAN, transaction_fees_percentage, fee_receiving_agents)
 
+        self.knowledge_assets_per_researcher = {}
+        self.knowledge_assets = {}
+
     def _ToDistribute(self, state):
         received = self.OCEAN() - self.OCEAN_last_tick
         if received > 0:
@@ -61,10 +64,16 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
 
                 # new publishing functionality | if the researcher is publishing assets to the marketplace
                 if received_from_r['publish']:
-                    if r in self.knowledge_assets[r.asset_type]: # check if this researcher already published sth
-                        self.knowledge_assets[r.asset_type][r] += 1
+                    # add total knowledge_assets
+                    if r.asset_type not in self.knowledge_assets.keys():
+                        self.knowledge_assets[r.asset_type] = 1
                     else:
-                        self.knowledge_assets[r.asset_type][r] = 1
+                        self.knowledge_assets[r.asset_type] += 1
+                    # keep track of ownership of knowledge_assets
+                    if r in self.knowledge_assets_per_researcher[r.asset_type]: # check if this researcher already published sth
+                        self.knowledge_assets_per_researcher[r.asset_type][r] += 1
+                    else:
+                        self.knowledge_assets_per_researcher[r.asset_type][r] = 1
 
                 # calculate fee for this transaction
                 r_fee = received_from_r['spent'] * self.transaction_fees_percentage
@@ -84,6 +93,34 @@ class PrivateKnowledgeMarketAgent(KnowledgeMarketBase):
             return fees, OCEAN_to_self, OCEAN_to_researchers
         else:
             return 0, 0, 0
+
+    def _disburseOCEANPayout(self, state, disburse) -> None:
+        '''
+        Send OCEAN payout according to the ownership of assets in the KnowledgeMarket
+        Receivers: ResearcherAgents
+        '''
+        ratios = {}
+        for agent, no_assets in self.knowledge_assets_per_researcher.items():
+            ratios[agent] = no_assets / self.total_knowledge_assets
+        assert(sum(self.knowledge_assets_per_researcher.values()) == self.total_knowledge_assets)
+        if sum(ratios.values()) != 0:
+            assert(round(sum(ratios.values()), 1) == 1)
+            for name, ratio in ratios.items():
+                self._transferOCEAN(state.getAgent(name), disburse * ratio)
+
+    def _disburseFeesOCEAN(self, state, fee) -> None:
+        '''
+        Sends transaction fees to DAO Treasury and to Stakers
+        ratio of fees transferred is determined by the amount of OCEAN left in treasury vs. the amount 
+        of OCEAN staked by Stakers
+        '''
+        self.total_fees += fee
+        total = 0
+        for percent in self._receiving_agents.values():
+            total += fee*percent
+        assert (round(total, 1) == round(fee, 1))
+        for name, computePercent in self._receiving_agents.items():
+            self._transferOCEAN(state.getAgent(name), computePercent * fee)
 
     
     def takeStep(self, state):
