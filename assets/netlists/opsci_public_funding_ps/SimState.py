@@ -3,9 +3,10 @@ from typing import Set
 import random
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_agents.MultTimeResearcherAgent import MultTimeResearcherAgent
+from assets.agents.opsci_pp_agents.VersatileResearcherAgent import VersatileResearcherAgent
 from assets.agents.opsci_agents.MultTimeDAOTreasuryAgent import MultTimeDAOTreasuryAgent
-from assets.agents.opsci_agents.MultTimeKnowledgeMarketAgent import MultTimeKnowledgeMarketAgent
+from assets.agents.opsci_pp_agents.PrivateMarketAgent import PrivateKnowledgeMarketAgent
+from assets.agents.opsci_pp_agents.PublicMarketAgent import PublicKnowledgeMarketAgent
 from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
@@ -43,23 +44,25 @@ class SimState(SimStateBase.SimStateBase):
         new_agents = []
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.append(MultTimeKnowledgeMarketAgent(
+        new_agents.append(PrivateKnowledgeMarketAgent(
             name = "market", USD=0.0, OCEAN=0.0,
             transaction_fees_percentage=0.1,
-            fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
+            fee_receiving_agents={"dao_treasury": 1.0}))
+        
+        new_agents.append(PublicKnowledgeMarketAgent(
+            name = "market", USD=0.0, OCEAN=0.0,
+            transaction_fees_percentage=0.1,
+            fee_receiving_agents={"dao_treasury": 1.0}))
 
         new_agents.append(MultTimeDAOTreasuryAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
-        new_agents.append(SimpleStakerspeculatorAgent(
-            name = "staker", USD=0.0, OCEAN=90000.0))
-
         for i in range(ss.NUMBER_OF_RESEARCHERS):
-            new_agents.append(MultTimeResearcherAgent(
+            new_agents.append(VersatileResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
-            researcher_agents.append(MultTimeResearcherAgent(
+            researcher_agents.append(VersatileResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
