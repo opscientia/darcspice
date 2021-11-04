@@ -29,6 +29,9 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
                                'no_researchers': 10,
                                'time': 1}
         self.TREASURY = 'dao_treasury'
+        self.PRIVATE_PUBLISH_COST: dict = {'data': 2000, 'algo': 2000, 'compute': 3000} # arbitrary
+        self.ASSET_COSTS: dict = {'private': {'data': 2000, 'algo': 2000, 'compute': 3000}, 'public': {'data': 1000, 'algo': 1000, 'compute': 2000}} # arbitrary
+
         '''
         Some additional parameters that will enable more experimentation (not currently in use)
         '''
