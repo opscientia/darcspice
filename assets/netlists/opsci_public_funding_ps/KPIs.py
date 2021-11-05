@@ -25,6 +25,7 @@ def netlist_createLogData(state):
         s += ["; %s OCEAN=%s" % (r , prettyBigNum(r_dict[r].OCEAN(),False))]
         s += ["; %s proposals=%s" % (r, r_dict[r].no_proposals_submitted)]
         s += ["; %s proposals funded=%s" % (r, r_dict[r].no_proposals_funded)]
+        s += ["; research type=%s; asset type=%s" % (r_dict[r].research_type, r_dict[r].asset_type)]
         dataheader += ["%s_knowledge_access" % r]
         datarow += [r_dict[r].knowledge_access]
 
@@ -48,20 +49,26 @@ def netlist_createLogData(state):
     dataheader += ["dao_treasury_OCEAN"]
     datarow += [treasury.OCEAN()]
 
-    staker = state.getAgent("staker")
-    s += ["; staker OCEAN=%s" % prettyBigNum(staker.OCEAN(),False)]
-    dataheader += ["staker_OCEAN"]
-    datarow += [staker.OCEAN()]
+    private_market = state.getAgent("private_market")
+    s += ["; private_market OCEAN=%s" % prettyBigNum(private_market.OCEAN(),False)]
+    dataheader += ["private_market_OCEAN"]
+    datarow += [private_market.OCEAN()]
+    dataheader += ["private_market_fees_OCEAN"]
+    datarow += [private_market.total_fees]
 
-    market = state.getAgent("market")
-    s += ["; market OCEAN=%s" % prettyBigNum(market.OCEAN(),False)]
-    dataheader += ["market_OCEAN"]
-    datarow += [market.OCEAN()]
-    dataheader += ["market_fees_OCEAN"]
-    datarow += [market.total_fees]
+    dataheader += ["private_market_assets"]
+    datarow += [private_market.total_knowledge_assets]
 
-    dataheader += ["market_assets"]
-    datarow += [market.total_knowledge_assets]
+    public_market = state.getAgent("public_market")
+    s += ["; public_market OCEAN=%s" % prettyBigNum(public_market.OCEAN(),False)]
+    dataheader += ["public_market_OCEAN"]
+    datarow += [public_market.OCEAN()]
+    dataheader += ["public_market_fees_OCEAN"]
+    datarow += [public_market.total_fees]
+
+    dataheader += ["public_market_assets"]
+    datarow += [public_market.total_knowledge_assets]
+
 
     #done
     return s, dataheader, datarow
@@ -114,10 +121,10 @@ def netlist_plotInstructions(header: List[str], values):
         researchers,"Researcher OCEAN",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_OCEAN"],
         ["dao_treasury"],"DAO_Treasury_OCEAN",LINEAR,MULT1,COUNT),
-        YParam(["staker_OCEAN", "market_OCEAN"],
-        ["staker", "market"],"Staker_X_KnowledgeMarket_OCEAN",LOG,MULT1,COUNT),
-        YParam(["staker_OCEAN", "market_fees_OCEAN"],
-        ["staker", "market"],"Staker_OCEAN_vs_total_Fees",LINEAR,MULT1,COUNT),
+        YParam(["private_market_OCEAN", "public_market_OCEAN"],
+        ["private_market", "public_market"],"Private vs Public Market OCEAN",LOG,MULT1,COUNT),
+        YParam(["private_market_fees_OCEAN", "public_market_fees_OCEAN"],
+        ["private_market", "public_market"],"Total fees collected through private vs public market",LINEAR,MULT1,COUNT),
     ]
 
     return (x, y_params)
