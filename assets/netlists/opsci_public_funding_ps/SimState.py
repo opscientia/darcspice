@@ -7,7 +7,6 @@ from assets.agents.opsci_pp_agents.VersatileResearcherAgent import VersatileRese
 from assets.agents.opsci_agents.MultTimeDAOTreasuryAgent import MultTimeDAOTreasuryAgent
 from assets.agents.opsci_pp_agents.PrivateMarketAgent import PrivateKnowledgeMarketAgent
 from assets.agents.opsci_pp_agents.PublicMarketAgent import PublicKnowledgeMarketAgent
-from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
 from util import valuation
@@ -45,12 +44,12 @@ class SimState(SimStateBase.SimStateBase):
 
         #################### Wiring of agents that send OCEAN ####################
         new_agents.append(PrivateKnowledgeMarketAgent(
-            name = "market", USD=0.0, OCEAN=0.0,
+            name = "private_market", USD=0.0, OCEAN=0.0,
             transaction_fees_percentage=0.1,
             fee_receiving_agents={"dao_treasury": 1.0}))
         
         new_agents.append(PublicKnowledgeMarketAgent(
-            name = "market", USD=0.0, OCEAN=0.0,
+            name = "public_market", USD=0.0, OCEAN=0.0,
             transaction_fees_percentage=0.1,
             fee_receiving_agents={"dao_treasury": 1.0}))
 

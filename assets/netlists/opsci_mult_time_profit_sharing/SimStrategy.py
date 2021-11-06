@@ -20,7 +20,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.RATIO_FUNDS_TO_PUBLISH = 0.4 # 40% of grant funding will go towards "doing work" & publishing
         self.TRANSACTION_FEES = 0.1
         self.FEES_TO_STAKERS = 0.1
-        self.NUMBER_OF_RESEARCHERS = 5
+        self.NUMBER_OF_RESEARCHERS = 10
         self.PROPOSALS_FUNDED_AT_A_TIME = 3 # this would be used if FUNDING_TIME_DEPENDENCE = False, <=> funding as projects finish
         self.FUNDING_BOUNDARY = 10000
         self.RANDOM_BUYING = True
