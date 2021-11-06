@@ -87,7 +87,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                 fees += r_fee # append it to total fees
 
                 # to self
-                OCEAN_to_self += (received_from_r - r_fee) * ratio
+                OCEAN_to_self += (received_from_r['spent'] - r_fee) * ratio
 
                 # add the appropriate amount to researchers
                 if received_from_r['asset_buy'] not in OCEAN_to_researchers:

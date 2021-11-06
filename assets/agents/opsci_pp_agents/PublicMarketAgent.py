@@ -86,14 +86,14 @@ class PublicKnowledgeMarketAgent(AgentBase):
                 fees += r_fee # append it to total fees
 
                 # to self
-                OCEAN_to_self += (received_from_r - r_fee) * ratio
+                OCEAN_to_self += (received_from_r['spent'] - r_fee) * ratio
                 fees += received_from_r -r_fee - OCEAN_to_self # since this is public, on top of the fees, the price for the asset also goes to the treasury
             
             assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
             assert round(fees, 5) == round(received * self.transaction_fees_percentage, 5) # same logic
             return fees, OCEAN_to_self
         else:
-            return 0, 0, 0
+            return 0, 0
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
         '''
