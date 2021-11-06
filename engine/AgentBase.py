@@ -21,7 +21,7 @@ class AgentBase(ABC, StrMixin):
 
         #postconditions
         assert self.USD() == USD
-        assert self.OCEAN() == OCEAN
+        assert round(self.OCEAN(), 1) == OCEAN
 
     #=======================================================================
     @abstractmethod

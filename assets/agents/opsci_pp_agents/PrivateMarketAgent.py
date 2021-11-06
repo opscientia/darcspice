@@ -74,16 +74,16 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                         # add total knowledge_assets
                         self.total_knowledge_assets += 1
                         if r.asset_type not in self.knowledge_assets.keys():
-                            self.knowledge_assets[r.asset_type] = 1
+                            self.knowledge_assets[r.asset_type] = received_from_r['assets_generated']
                         else:
-                            self.knowledge_assets[r.asset_type] += 1
+                            self.knowledge_assets[r.asset_type] += received_from_r['assets_generated']
                         # keep track of ownership of knowledge_assets
                         if r.asset_type not in self.knowledge_assets_per_researcher:
                             self.knowledge_assets_per_researcher[r.asset_type] = {}
                         if r in self.knowledge_assets_per_researcher[r.asset_type]: # check if this researcher already published sth
-                            self.knowledge_assets_per_researcher[r.asset_type][r] += 1
+                            self.knowledge_assets_per_researcher[r.asset_type][r] += received_from_r['assets_generated']
                         else:
-                            self.knowledge_assets_per_researcher[r.asset_type][r] = 1
+                            self.knowledge_assets_per_researcher[r.asset_type][r] = received_from_r['assets_generated']
 
                     # calculate fee for this transaction
                     r_fee = received_from_r['spent'] * self.transaction_fees_percentage
@@ -98,7 +98,6 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                     else:
                         OCEAN_to_researchers[received_from_r['asset_buy']] += (received_from_r['spent'] - r_fee) - (received_from_r['spent'] - r_fee) * ratio
 
-            print(f'SUM OCEAN RECEIVED {round(sum_OCEAN_received, 5)} RECEIVED {round(received, 5)}')    
             assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
             assert round(fees, 5) == round(received * self.transaction_fees_percentage, 5) # same logic
             return fees, OCEAN_to_self, OCEAN_to_researchers
@@ -127,6 +126,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                 if sum(ratios[type].values()) != 0:
                     assert round(sum(ratios[type].values()), 1) == 1
                     for name, ratio in ratios[type].items():
+                        print(f'PAID OUT HERERERERERERERE TO AGENT {name}')
                         self._transferOCEAN(state.getAgent(name), disburse[type] * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:

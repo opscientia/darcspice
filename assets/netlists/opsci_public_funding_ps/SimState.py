@@ -60,15 +60,15 @@ class SimState(SimStateBase.SimStateBase):
 
         new_agents.append(VersatileResearcherAgent(
                 name = "researcher0", evaluator = "dao_treasury",
-                USD=0.0, OCEAN=10000.0, research_type='private',
+                USD=0.0, OCEAN=200000.0, research_type='private',
                 receiving_agents = {"market": 1.0}))
         new_agents.append(VersatileResearcherAgent(
                 name = "researcher1", evaluator = "dao_treasury",
-                USD=0.0, OCEAN=10000.0, research_type='private',
+                USD=0.0, OCEAN=200000.0, research_type='private',
                 receiving_agents = {"market": 1.0}))
         new_agents.append(VersatileResearcherAgent(
                 name = "researcher2", evaluator = "dao_treasury",
-                USD=0.0, OCEAN=10000.0, research_type='private',
+                USD=0.0, OCEAN=200000.0, research_type='private',
                 receiving_agents = {"market": 1.0}))
         new_agents.append(VersatileResearcherAgent(
                 name = "researcher3", evaluator = "dao_treasury",
@@ -82,15 +82,15 @@ class SimState(SimStateBase.SimStateBase):
         # add to researcher_agents
         researcher_agents.append(VersatileResearcherAgent(
                 name = "researcher0", evaluator = "dao_treasury",
-                USD=0.0, OCEAN=10000.0, research_type='private',
+                USD=0.0, OCEAN=200000.0, research_type='private',
                 receiving_agents = {"market": 1.0}))
         researcher_agents.append(VersatileResearcherAgent(
                 name = "researcher1", evaluator = "dao_treasury",
-                USD=0.0, OCEAN=10000.0, research_type='private',
+                USD=0.0, OCEAN=200000.0, research_type='private',
                 receiving_agents = {"market": 1.0}))
         researcher_agents.append(VersatileResearcherAgent(
                 name = "researcher2", evaluator = "dao_treasury",
-                USD=0.0, OCEAN=10000.0, research_type='private',
+                USD=0.0, OCEAN=200000.0, research_type='private',
                 receiving_agents = {"market": 1.0}))
         researcher_agents.append(VersatileResearcherAgent(
                 name = "researcher3", evaluator = "dao_treasury",

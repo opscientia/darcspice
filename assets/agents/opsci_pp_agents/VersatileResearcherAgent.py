@@ -56,6 +56,8 @@ class VersatileResearcherAgent(AgentBase):
         self.proposal_accepted = False
         self.research_finished = False
 
+        self.private_bought_last_tick = False
+
         # metrics to track
         self.my_OCEAN: float = 0.0
         self.no_proposals_submitted: int = 0
@@ -198,10 +200,11 @@ class VersatileResearcherAgent(AgentBase):
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = 1.0 # KnowledgeMarketAgent will check this parameter
         if OCEAN >= state.ss.PRIVATE_PUBLISH_COST[self.asset_type]:
+            assets_generated = random.randint(1, 10)
+            self.total_assets_in_mrkt += assets_generated
             OCEAN_DISBURSE: float = state.ss.PRIVATE_PUBLISH_COST[self.asset_type]
-            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': 'private_market', 'asset_buy': None, 'publish': True, 'ratio': self.ratio_funds_to_publish}
+            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': 'private_market', 'asset_buy': None, 'publish': True, 'ratio': self.ratio_funds_to_publish, 'assets_generated': assets_generated}
             self._transferOCEAN(state.getAgent('private_market'), OCEAN_DISBURSE)
-            self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
     def _privateBuyAssets(self, state) -> None:
         '''
@@ -238,8 +241,10 @@ class VersatileResearcherAgent(AgentBase):
         else:
             assert self.research_type == 'private'
 
-            if random.random() < 0.1:
-                if random.random() < 0.5:
+            if state.getAgent(self._evaluator).update > 0:
+                if not self.private_bought_last_tick:
+                    self.private_bought_last_tick = True
                     self._privateBuyAssets(state) # buys assets for research | does nothing if agent is compute provider
                 else:
                     self._privatePublishAssets(state) # publishes results
+                    self.private_bought_last_tick = False
