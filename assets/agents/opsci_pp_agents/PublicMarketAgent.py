@@ -62,35 +62,36 @@ class PublicKnowledgeMarketAgent(AgentBase):
 
                 # get the OCEAN received by this agent (add it to total for assertion later)
                 received_from_r = r.last_OCEAN_spent
+                print(f'RECEIVED FROM RESEARCHER {received_from_r} | RESEARCHER OCEAN {r.OCEAN()}')
 
-                # make sure the researcher is really buying from this market
-                if received_from_r['market'] == 'private_market':
-                    continue
-                assert received_from_r['market'] == 'public_market'
+                if received_from_r != {}:
+                    # make sure the researcher is really buying from this market
+                    if received_from_r['market'] == 'private_market':
+                        continue
+                    assert received_from_r['market'] == 'public_market'
 
-                sum_OCEAN_received += received_from_r['spent']
-                ratio = received_from_r['ratio']
-                # print(f"RESEARCHER: {r.name} | received_from {received_from_r} | RATIO: {ratio}")
+                    sum_OCEAN_received += received_from_r['spent']
+                    ratio = received_from_r['ratio']
+                    # print(f"RESEARCHER: {r.name} | received_from {received_from_r} | RATIO: {ratio}")
 
-                # new publishing functionality | if the researcher is publishing assets to the marketplace
-                if received_from_r['publish'] and r.research_type == 'public':
-                    # add total knowledge_assets
-                    self.total_knowledge_assets += r.proposal['assets_generated']
-                    if r.asset_type not in self.knowledge_assets.keys():
-                        self.knowledge_assets[r.asset_type] = r.proposal['assets_generated']
-                    else:
-                        self.knowledge_assets[r.asset_type] += r.proposal['assets_generated']
+                    # new publishing functionality | if the researcher is publishing assets to the marketplace
+                    if received_from_r['publish'] and r.research_type == 'public':
+                        # add total knowledge_assets
+                        self.total_knowledge_assets += r.proposal['assets_generated']
+                        if r.asset_type not in self.knowledge_assets.keys():
+                            self.knowledge_assets[r.asset_type] = r.proposal['assets_generated']
+                        else:
+                            self.knowledge_assets[r.asset_type] += r.proposal['assets_generated']
 
-                # calculate fee for this transaction
-                r_fee = received_from_r['spent'] * self.transaction_fees_percentage
-                fees += r_fee # append it to total fees
+                    # calculate fee for this transaction
+                    r_fee = received_from_r['spent'] * self.transaction_fees_percentage
+                    fees += r_fee # append it to total fees
 
-                # to self
-                OCEAN_to_self += (received_from_r['spent'] - r_fee) * ratio
-                fees += received_from_r -r_fee - OCEAN_to_self # since this is public, on top of the fees, the price for the asset also goes to the treasury
-            
+                    # to self
+                    OCEAN_to_self += (received_from_r['spent'] - r_fee) * ratio
+                    fees += received_from_r['spent'] - r_fee - OCEAN_to_self # since this is public, on top of the fees, the price for the asset also goes to the treasury
+            print(f'SUM OCEAN RECEIVED {round(sum_OCEAN_received, 5)} RECEIVED {round(received, 5)}')    
             assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
-            assert round(fees, 5) == round(received * self.transaction_fees_percentage, 5) # same logic
             return fees, OCEAN_to_self
         else:
             return 0, 0
@@ -112,10 +113,6 @@ class PublicKnowledgeMarketAgent(AgentBase):
     
     def takeStep(self, state):
         fee, keep = self._ToDistribute(state)
-        
-        # for debugging, delete later
-        if self.OCEAN_last_tick == self.OCEAN():
-            fee, disburse = 0, 0
 
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
@@ -124,6 +121,4 @@ class PublicKnowledgeMarketAgent(AgentBase):
         self._USD_per_tick.append(self.USD())
         self._OCEAN_per_tick.append(self.OCEAN())
 
-        if fee != 0 and disburse == 0:
-            assert self.OCEAN_last_tick != self.OCEAN()
         self.OCEAN_last_tick = self.OCEAN()

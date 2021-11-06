@@ -59,42 +59,46 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                 # get the OCEAN received by this agent (add it to total for assertion later)
                 received_from_r = r.last_OCEAN_spent
 
-                # make sure the researcher is really buying from this market
-                if received_from_r['market'] == 'public_market':
-                    continue
-                assert received_from_r['market'] == 'private_market'
+                if received_from_r != {}:
+                    # make sure the researcher is really buying from this market
+                    if received_from_r['market'] == 'public_market':
+                        continue
+                    assert received_from_r['market'] == 'private_market'
 
-                sum_OCEAN_received += received_from_r['spent']
-                ratio = received_from_r['ratio']
-                # print(f"RESEARCHER: {r.name} | received_from {received_from_r} | RATIO: {ratio}")
+                    sum_OCEAN_received += received_from_r['spent']
+                    ratio = received_from_r['ratio']
+                    # print(f"RESEARCHER: {r.name} | received_from {received_from_r} | RATIO: {ratio}")
 
-                # new publishing functionality | if the researcher is publishing assets to the marketplace
-                if received_from_r['publish']:
-                    # add total knowledge_assets
-                    self.total_knowledge_assets += 1
-                    if r.asset_type not in self.knowledge_assets.keys():
-                        self.knowledge_assets[r.asset_type] = 1
+                    # new publishing functionality | if the researcher is publishing assets to the marketplace
+                    if received_from_r['publish']:
+                        # add total knowledge_assets
+                        self.total_knowledge_assets += 1
+                        if r.asset_type not in self.knowledge_assets.keys():
+                            self.knowledge_assets[r.asset_type] = 1
+                        else:
+                            self.knowledge_assets[r.asset_type] += 1
+                        # keep track of ownership of knowledge_assets
+                        if r.asset_type not in self.knowledge_assets_per_researcher:
+                            self.knowledge_assets_per_researcher[r.asset_type] = {}
+                        if r in self.knowledge_assets_per_researcher[r.asset_type]: # check if this researcher already published sth
+                            self.knowledge_assets_per_researcher[r.asset_type][r] += 1
+                        else:
+                            self.knowledge_assets_per_researcher[r.asset_type][r] = 1
+
+                    # calculate fee for this transaction
+                    r_fee = received_from_r['spent'] * self.transaction_fees_percentage
+                    fees += r_fee # append it to total fees
+
+                    # to self
+                    OCEAN_to_self += (received_from_r['spent'] - r_fee) * ratio
+
+                    # add the appropriate amount to researchers
+                    if received_from_r['asset_buy'] not in OCEAN_to_researchers:
+                        OCEAN_to_researchers[received_from_r['asset_buy']] = (received_from_r['spent'] - r_fee) - (received_from_r['spent'] - r_fee) * ratio
                     else:
-                        self.knowledge_assets[r.asset_type] += 1
-                    # keep track of ownership of knowledge_assets
-                    if r in self.knowledge_assets_per_researcher[r.asset_type]: # check if this researcher already published sth
-                        self.knowledge_assets_per_researcher[r.asset_type][r] += 1
-                    else:
-                        self.knowledge_assets_per_researcher[r.asset_type][r] = 1
+                        OCEAN_to_researchers[received_from_r['asset_buy']] += (received_from_r['spent'] - r_fee) - (received_from_r['spent'] - r_fee) * ratio
 
-                # calculate fee for this transaction
-                r_fee = received_from_r['spent'] * self.transaction_fees_percentage
-                fees += r_fee # append it to total fees
-
-                # to self
-                OCEAN_to_self += (received_from_r['spent'] - r_fee) * ratio
-
-                # add the appropriate amount to researchers
-                if received_from_r['asset_buy'] not in OCEAN_to_researchers:
-                    OCEAN_to_researchers[received_from_r['asset_buy']] = (received_from_r['spent'] - r_fee) - (received_from_r['spent'] - r_fee) * ratio
-                else:
-                    OCEAN_to_researchers[received_from_r['asset_buy']] += (received_from_r['spent'] - r_fee) - (received_from_r['spent'] - r_fee) * ratio
-            
+            print(f'SUM OCEAN RECEIVED {round(sum_OCEAN_received, 5)} RECEIVED {round(received, 5)}')    
             assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
             assert round(fees, 5) == round(received * self.transaction_fees_percentage, 5) # same logic
             return fees, OCEAN_to_self, OCEAN_to_researchers
@@ -107,19 +111,23 @@ class PrivateKnowledgeMarketAgent(AgentBase):
         Receivers: ResearcherAgents
         '''
         for t in self.knowledge_assets.keys():
-            assert sum(self.knowledge_assets_per_researcher[t].values() == self.knowledge_assets[t]) # assert the total is the same as the sum of all the individuals
+            assert sum(self.knowledge_assets_per_researcher[t].values()) == self.knowledge_assets[t] # assert the total is the same as the sum of all the individuals
 
         # get the ratios of assets (differentiated by type) of all researchers
         ratios = {}
         for type, agents in self.knowledge_assets_per_researcher.items():
+            if type not in ratios:
+                ratios[type] = {}
             for agent, count in agents.items():
-                ratios[type][agent] = count / self.knowledge_assets[type]
+                if agent.name not in ratios[type]:
+                    ratios[type][agent.name] = count / self.knowledge_assets[type]
 
-        for type in self.types:
-            if sum(ratios[type].values()) != 0:
-                assert round(sum(ratios[type].values()), 1) == 1
-                for name, ratio in ratios[type].items():
-                    self._transferOCEAN(state.getAgent(name), disburse[type] * ratio)
+        for type in disburse.keys():
+            if type in ratios:
+                if sum(ratios[type].values()) != 0:
+                    assert round(sum(ratios[type].values()), 1) == 1
+                    for name, ratio in ratios[type].items():
+                        self._transferOCEAN(state.getAgent(name), disburse[type] * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
         '''
@@ -141,12 +149,12 @@ class PrivateKnowledgeMarketAgent(AgentBase):
         
         # for debugging, delete later
         if self.OCEAN_last_tick == self.OCEAN():
-            fee, disburse = 0, 0
+            fee, disburse = 0, {}
 
         if fee > 0:
             self._disburseFeesOCEAN(state, fee)
 
-        if disburse > 0:
+        if disburse != {}:
             self._disburseOCEANPayout(state, disburse)
 
         if fee != 0 and disburse == 0:

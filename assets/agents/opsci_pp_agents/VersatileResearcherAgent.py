@@ -67,7 +67,6 @@ class VersatileResearcherAgent(AgentBase):
 
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
         self.last_OCEAN_spent = {}
-        self.last_OCEAN_spent_1 = {}
     
     #### FUNCTIONS of MultTimeResearcherAgent ####
     def createProposal(self, state) -> dict:
@@ -134,7 +133,7 @@ class VersatileResearcherAgent(AgentBase):
             self.knowledge_access += 1
             self.proposal['knowledge_access'] = self.knowledge_access
             self._transferOCEAN(state.getAgent(market), OCEAN_DISBURSE)
-    
+
     def _checkIfFunded(self, state) -> None:
         prop_eval = state.getAgent(self._evaluator).proposal_evaluation
         full_proposal: bool = len(prop_eval) == state.ss.PROPOSALS_FUNDED_AT_A_TIME
@@ -162,7 +161,6 @@ class VersatileResearcherAgent(AgentBase):
     def multTimeTakeStep(self, state):
         # takeStep for MultTimeResearcherAgent (and now public VersatileResearcherAgent)
 
-        self.last_OCEAN_spent = {}
         self._checkIfFunded(state)
 
         # Proposal functionality
@@ -184,9 +182,9 @@ class VersatileResearcherAgent(AgentBase):
 
         self._spent_at_tick = self.OCEAN()
 
-        if state.ss.RANDOM_BUYING:
-            if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
-                self._BuyAssets(state)
+        # if state.ss.RANDOM_BUYING:
+        #     if not self.proposal_accepted and random.random() >= 0.6: # arbitrary
+        #         self._BuyAssets(state)
 
         if self.USD() > 0:
             self._USDToDisbursePerTick(state)
@@ -199,11 +197,10 @@ class VersatileResearcherAgent(AgentBase):
         OCEAN = self.OCEAN()
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = 1.0 # KnowledgeMarketAgent will check this parameter
-        if OCEAN != 0 and self.proposal:
+        if OCEAN >= state.ss.PRIVATE_PUBLISH_COST[self.asset_type]:
             OCEAN_DISBURSE: float = state.ss.PRIVATE_PUBLISH_COST[self.asset_type]
             self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': 'private_market', 'asset_buy': None, 'publish': True, 'ratio': self.ratio_funds_to_publish}
-            for name, computePercent in self._receiving_agents.items():
-                self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
+            self._transferOCEAN(state.getAgent('private_market'), OCEAN_DISBURSE)
             self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
     def _privateBuyAssets(self, state) -> None:
@@ -211,21 +208,19 @@ class VersatileResearcherAgent(AgentBase):
         Used by private data and algo providers
         1. choose private or public market
         2. for algo provider -> choose 'data' or 'compute'
-        3. for data provider -> buy 'algo' and 'compute'
+        3. for data provider -> buy 'algo'
         '''
         if self.OCEAN() > 0:
             market, asset_to_buy = self._getMarketAndAssets()
 
-            if self.asset_type == 'algo':
-                self.last_OCEAN_spent = {'tick': state.tick, 'spent': state.ss.ASSET_COSTS[market][asset_to_buy], 'market': market, 'asset_buy': asset_to_buy, 'publish': False, 'ratio': 0}
-                self._transferOCEAN(state.getAgent(market), state.ss.ASSET_COSTS[market][asset_to_buy])
-            elif self.asset_type == 'data':
-                assets_to_buy = ['algo', 'compute']
-                self.last_OCEAN_spent = {'tick': state.tick, 'spent': state.ss.ASSET_COSTS[market]['algo'], 'market': market, 'asset_buy': ['algo'], 'publish': False, 'ratio': 0}
-                self.last_OCEAN_spent_1 = {'tick': state.tick, 'spent': state.ss.ASSET_COSTS[market]['compute'], 'market': market, 'asset_buy': ['compute'], 'publish': False, 'ratio': 0}
-                for asset in assets_to_buy:
-                    self._transferOCEAN(state.getAgent(market), state.ss.ASSET_COSTS[market][asset])
-    
+            if self.OCEAN() > state.ss.ASSET_COSTS[market][asset_to_buy]:
+                if self.asset_type == 'algo':
+                    self.last_OCEAN_spent = {'tick': state.tick, 'spent': state.ss.ASSET_COSTS[market][asset_to_buy], 'market': market, 'asset_buy': asset_to_buy, 'publish': False, 'ratio': 0}
+                    self._transferOCEAN(state.getAgent(market), state.ss.ASSET_COSTS[market][asset_to_buy])
+                elif self.asset_type == 'data':
+                    asset_to_buy = 'algo'
+                    self.last_OCEAN_spent = {'tick': state.tick, 'spent': state.ss.ASSET_COSTS[market][asset_to_buy], 'market': market, 'asset_buy': asset_to_buy, 'publish': False, 'ratio': 0}
+                    self._transferOCEAN(state.getAgent(market), state.ss.ASSET_COSTS[market][asset_to_buy])
 
     # HELPER FUNCTIONS
     
@@ -236,6 +231,7 @@ class VersatileResearcherAgent(AgentBase):
         return market, asset_to_buy
 
     def takeStep(self, state):
+        self.last_OCEAN_spent = {}
 
         if self.research_type == 'public':
             self.multTimeTakeStep(state)
@@ -243,5 +239,7 @@ class VersatileResearcherAgent(AgentBase):
             assert self.research_type == 'private'
 
             if random.random() < 0.1:
-                self._privateBuyAssets(state) # buys assets for research | does nothing if agent is compute provider
-                self._privatePublishAssets(state) # publishes results
+                if random.random() < 0.5:
+                    self._privateBuyAssets(state) # buys assets for research | does nothing if agent is compute provider
+                else:
+                    self._privatePublishAssets(state) # publishes results
