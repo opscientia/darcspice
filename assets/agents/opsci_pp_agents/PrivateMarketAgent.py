@@ -6,7 +6,6 @@ from typing import List, Dict
 import random
 import math
 
-from assets.agents.opsci_pp_agents import PublicMarket, PrivateMarket
 from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
 from engine.AgentBase import AgentBase
 from web3tools.web3util import toBase18
@@ -32,10 +31,16 @@ class PrivateKnowledgeMarketAgent(AgentBase):
         The dict values are methods, not floats, so that the return value
         can change over time. E.g. percent_burn changes.
         """
-        super().__init__(name, USD, OCEAN, transaction_fees_percentage, fee_receiving_agents)
+        super().__init__(name, USD, OCEAN)
+        self._receiving_agents = fee_receiving_agents
+
+        self.OCEAN_last_tick = 0.0
+        self.transaction_fees_percentage = transaction_fees_percentage
+        self.total_fees: float = 0.0
 
         self.knowledge_assets_per_researcher = {}
         self.knowledge_assets = {}
+        self.total_knowledge_assets = 0
         self.types = ['algo', 'data', 'compute']
 
     def _ToDistribute(self, state):
@@ -66,6 +71,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                 # new publishing functionality | if the researcher is publishing assets to the marketplace
                 if received_from_r['publish']:
                     # add total knowledge_assets
+                    self.total_knowledge_assets += 1
                     if r.asset_type not in self.knowledge_assets.keys():
                         self.knowledge_assets[r.asset_type] = 1
                     else:
@@ -142,10 +148,6 @@ class PrivateKnowledgeMarketAgent(AgentBase):
 
         if disburse > 0:
             self._disburseOCEANPayout(state, disburse)
-
-        #record what we had up until this point
-        self._USD_per_tick.append(self.USD())
-        self._OCEAN_per_tick.append(self.OCEAN())
 
         if fee != 0 and disburse == 0:
             assert self.OCEAN_last_tick != self.OCEAN()

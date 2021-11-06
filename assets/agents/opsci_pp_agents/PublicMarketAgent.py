@@ -6,7 +6,6 @@ from typing import List, Dict
 import random
 import math
 
-from assets.agents.opsci_pp_agents import PublicMarket, PrivateMarket
 from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
 from engine.AgentBase import AgentBase
 from web3tools.web3util import toBase18
@@ -41,9 +40,12 @@ class PublicKnowledgeMarketAgent(AgentBase):
 
         self.OCEAN_last_tick = 0.0
         self.transaction_fees_percentage = transaction_fees_percentage
+        self.total_fees: float = 0.0
+
 
         self.knowledge_assets_per_researcher = {}
         self.knowledge_assets = {}
+        self.total_knowledge_assets = 0
         self.types = ['algo', 'data', 'compute']
 
     def _ToDistribute(self, state):
@@ -73,10 +75,11 @@ class PublicKnowledgeMarketAgent(AgentBase):
                 # new publishing functionality | if the researcher is publishing assets to the marketplace
                 if received_from_r['publish'] and r.research_type == 'public':
                     # add total knowledge_assets
+                    self.total_knowledge_assets += r.proposal['assets_generated']
                     if r.asset_type not in self.knowledge_assets.keys():
-                        self.knowledge_assets[r.asset_type] = 1
+                        self.knowledge_assets[r.asset_type] = r.proposal['assets_generated']
                     else:
-                        self.knowledge_assets[r.asset_type] += 1
+                        self.knowledge_assets[r.asset_type] += r.proposal['assets_generated']
 
                 # calculate fee for this transaction
                 r_fee = received_from_r['spent'] * self.transaction_fees_percentage

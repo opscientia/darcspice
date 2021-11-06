@@ -29,7 +29,7 @@ class VersatileResearcherAgent(ResearcherBase):
         research_type: str -> 'public' or 'private'
         asset_type: str -> 'data', 'algo', 'compute' ('compute' only available for 'private')
         '''
-        super().__init__(name, USD, OCEAN, receiving_agents, evaluator, proposal_setup)
+        super().__init__(name, USD, OCEAN, receiving_agents, evaluator)
         self._spent_at_tick = 0.0 #USD and OCEAN (in USD) spent
 
         self.research_type = research_type
