@@ -43,36 +43,50 @@ class SimState(SimStateBase.SimStateBase):
 
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
-        new_agents: Set[AgentBase.AgentBase] = set()
+        new_agents = []
+        researcher_agents = []
+        self.researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
 
         
         
-        new_agents.add(ResearcherAgent(
+        new_agents.append(ResearcherAgent(
             name = "researcher0", USD=0.0, OCEAN=0.0,
-            no_researchers = 10,
+            evaluator = "university",
             receiving_agents = {"sellers" : 1.0}))
 
-        new_agents.add(ResearcherAgent(
+        new_agents.append(ResearcherAgent(
             name = "researcher1", USD=0.0, OCEAN=0.0,
-            no_researchers = 10,
+            evaluator = "university",
             receiving_agents = {"sellers" : 1.0}))
 
         # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
-        new_agents.add(OpscientiaDAOAgent(
-            name = "university", USD=500000.0, OCEAN=0.0,
-            s_between_grants = S_PER_DAY))
+        new_agents.append(OpscientiaDAOAgent(
+            name = "university", USD=500000.0, OCEAN=0.0))
         
-        new_agents.add(SellerAgent(
+        new_agents.append(SellerAgent(
             name = "sellers", USD=0.0, OCEAN=0.0,
             n_sellers = float(ss.init_n_sellers),
             time_step= ss.time_step
         ))
 
+        researcher_agents.append(ResearcherAgent(
+            name = "researcher0", USD=0.0, OCEAN=0.0,
+            evaluator = "university",
+            receiving_agents = {"sellers" : 1.0}))
+
+        researcher_agents.append(ResearcherAgent(
+            name = "researcher1", USD=0.0, OCEAN=0.0,
+            evaluator = "university",
+            receiving_agents = {"sellers" : 1.0}))
+
+
         for agent in new_agents:
             self.agents[agent.name] = agent
 
+        for agent in researcher_agents:
+            self.researchers[agent.name] = agent
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)
                     

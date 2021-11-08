@@ -122,12 +122,12 @@ class ResearcherAgent(AgentBase):
                     self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
                     self.last_tick_spent = state.tick
                     self._BuyAndPublishAssets(state)
-            else:
-                assert(state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name)
-                self.proposal_accepted = False
-                self.ratio_funds_to_publish = 0.0 # not publishing
-                self.last_tick_spent = state.tick
-                self._BuyAssets(state)
+            # else:
+            #     assert(state.getAgent(self._evaluator).proposal_evaluation['winner'] != self.name)
+            #     self.proposal_accepted = False
+            #     self.ratio_funds_to_publish = 0.0 # not publishing
+            #     self.last_tick_spent = state.tick
+            #     self._BuyAssets(state)
             self.my_OCEAN = self.OCEAN()
         elif (self.ticks_since_proposal == 1) and not state.getAgent(self._evaluator).proposal_evaluation:
             # In case the funding is misaligned with the researchers
