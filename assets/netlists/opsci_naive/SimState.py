@@ -2,7 +2,7 @@ from enforce_typing import enforce_types
 from typing import Set
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
+from assets.agents.opsci_agents.BaselineResearcherAgent import BaselineResearcherAgent
 from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from assets.agents.opsci_agents.SellerAgent import SellerAgent
 from engine import AgentBase, SimStateBase
@@ -50,20 +50,18 @@ class SimState(SimStateBase.SimStateBase):
         #################### Wiring of agents that send OCEAN ####################
 
         
+        new_agents.append(OpscientiaDAOAgent(
+            name = "university", USD=0.0, OCEAN=500000.0))
         
-        new_agents.append(ResearcherAgent(
+        new_agents.append(BaselineResearcherAgent(
             name = "researcher0", USD=0.0, OCEAN=0.0,
             evaluator = "university",
             receiving_agents = {"sellers" : 1.0}))
 
-        new_agents.append(ResearcherAgent(
+        new_agents.append(BaselineResearcherAgent(
             name = "researcher1", USD=0.0, OCEAN=0.0,
             evaluator = "university",
             receiving_agents = {"sellers" : 1.0}))
-
-        # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
-        new_agents.append(OpscientiaDAOAgent(
-            name = "university", USD=500000.0, OCEAN=0.0))
         
         new_agents.append(SellerAgent(
             name = "sellers", USD=0.0, OCEAN=0.0,
@@ -71,12 +69,12 @@ class SimState(SimStateBase.SimStateBase):
             time_step= ss.time_step
         ))
 
-        researcher_agents.append(ResearcherAgent(
+        researcher_agents.append(BaselineResearcherAgent(
             name = "researcher0", USD=0.0, OCEAN=0.0,
             evaluator = "university",
             receiving_agents = {"sellers" : 1.0}))
 
-        researcher_agents.append(ResearcherAgent(
+        researcher_agents.append(BaselineResearcherAgent(
             name = "researcher1", USD=0.0, OCEAN=0.0,
             evaluator = "university",
             receiving_agents = {"sellers" : 1.0}))

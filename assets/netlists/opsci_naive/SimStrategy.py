@@ -22,6 +22,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
 
         # (taken from constants.py)
         self.TICKS_BETWEEN_PROPOSALS = 6480
+        self.RATIO_FUNDS_TO_PUBLISH = 0
         self.TOTAL_MINTS = 1000 # better number to be determined
         self.TOTAL_OCEAN_SUPPLY = 1.41e9 
         self.INIT_OCEAN_SUPPLY = 0.49 * self.TOTAL_OCEAN_SUPPLY
