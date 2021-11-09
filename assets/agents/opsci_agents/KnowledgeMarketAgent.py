@@ -39,7 +39,8 @@ class KnowledgeMarketAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.OCEAN_last_tick = 0.0
+        self.OCEAN_last_tick = 10000
+        self.my_OCEAN_list = []
         self.transaction_fees_percentage = transaction_fees_percentage
 
         self.last_research_tick = 0
@@ -48,9 +49,10 @@ class KnowledgeMarketAgent(AgentBase):
         self.total_knowledge_assets: int = 0
         self.total_fees: float = 0.0
 
-    def _ToDistribute(self, state):
-        received = self.OCEAN() - self.OCEAN_last_tick
-        if received > 0 and state.tick > 0:
+    def _ToDistribute(self, state, received):
+        # received = self.OCEAN() - self.OCEAN_last_tick
+        if received > 0:
+            print('GOT HERE')
             fees = received * self.transaction_fees_percentage
             for researcher in state.researchers.keys():
                 if state.getAgent(researcher).last_tick_spent == (state.tick or state.tick-1):
@@ -65,14 +67,17 @@ class KnowledgeMarketAgent(AgentBase):
 
     def takeStep(self, state) -> None:
         self.last_research_tick += 1
+        if len(self.my_OCEAN_list) > 0:
+            if self.OCEAN() != self.my_OCEAN_list[-1]:
+                received = self.OCEAN() - self.my_OCEAN_list[-1]
         #1. check if some agent funds to you and send the transaction fees to Treasury and Stakers
-        fee, keep, disburse = self._ToDistribute(state)
+                fee, keep, disburse = self._ToDistribute(state, received)
 
-        if fee > 0:
-            self._disburseFeesOCEAN(state, fee)
+                if fee > 0:
+                    self._disburseFeesOCEAN(state, fee)
 
-        if disburse > 0:
-            self._disburseOCEANPayout(state, disburse)
+                if disburse > 0:
+                    self._disburseOCEANPayout(state, disburse)
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
@@ -96,8 +101,9 @@ class KnowledgeMarketAgent(AgentBase):
             self.knowledge_assets_per_researcher[winner] = proposal['assets_generated']
             self.total_knowledge_assets += proposal['assets_generated']
             self.last_research_tick = state.tick
-
+        
         self.OCEAN_last_tick = self.OCEAN()
+        self.my_OCEAN_list.append(self.OCEAN())
 
     def _disburseUSD(self, state) -> None:
         USD = self.USD()

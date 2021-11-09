@@ -1,6 +1,7 @@
 from enforce_typing import enforce_types
 from typing import Set
 import random
+from assets import agents
 
 from assets.agents import MinterAgents
 from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
@@ -37,28 +38,28 @@ class SimState(SimStateBase.SimStateBase):
 
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
-        new_agents: Set[AgentBase.AgentBase] = set()
-        researcher_agents: Set[AgentBase.AgentBase] = set()
+        new_agents = []
+        researcher_agents = []
         self.researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.add(KnowledgeMarketAgent(
-            name = "market", USD=0.0, OCEAN=10000.0,
+        new_agents.append(KnowledgeMarketAgent(
+            name = "market", USD=0.0, OCEAN=0.0,
             transaction_fees_percentage=0.1,
             fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
 
-        new_agents.add(OpscientiaDAOAgent(
+        new_agents.append(OpscientiaDAOAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
-        new_agents.add(SimpleStakerspeculatorAgent(
+        new_agents.append(SimpleStakerspeculatorAgent(
             name = "staker", USD=0.0, OCEAN=90000.0))
 
         for i in range(ss.NUMBER_OF_RESEARCHERS):
-            new_agents.add(ResearcherAgent(
+            new_agents.append(ResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
-            researcher_agents.add(ResearcherAgent(
+            researcher_agents.append(ResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
