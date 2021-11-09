@@ -45,16 +45,6 @@ class SimState(SimStateBase.SimStateBase):
         self.public_researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.append(PrivateKnowledgeMarketAgent(
-            name = "private_market", USD=0.0, OCEAN=0.0,
-            transaction_fees_percentage=0.1,
-            fee_receiving_agents={"dao_treasury": 1.0}))
-        
-        new_agents.append(PublicKnowledgeMarketAgent(
-            name = "public_market", USD=0.0, OCEAN=0.0,
-            transaction_fees_percentage=0.1,
-            fee_receiving_agents={"dao_treasury": 1.0}))
-
         new_agents.append(VersatileDAOTreasuryAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
@@ -110,6 +100,16 @@ class SimState(SimStateBase.SimStateBase):
                 name = "researcher4", evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0, research_type='public',
                 receiving_agents = {"market": 1.0}))
+
+        new_agents.append(PrivateKnowledgeMarketAgent(
+            name = "private_market", USD=0.0, OCEAN=0.0,
+            transaction_fees_percentage=0.1,
+            fee_receiving_agents={"dao_treasury": 1.0}))
+        
+        new_agents.append(PublicKnowledgeMarketAgent(
+            name = "public_market", USD=0.0, OCEAN=0.0,
+            transaction_fees_percentage=0.1,
+            fee_receiving_agents={"dao_treasury": 1.0}))
 
         for agent in new_agents:
             self.agents[agent.name] = agent            
