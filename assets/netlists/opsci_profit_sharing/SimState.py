@@ -55,7 +55,6 @@ class SimState(SimStateBase.SimStateBase):
             transaction_fees_percentage=0.1,
             fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
 
-
         for agent in new_agents:
             self.agents[agent.name] = agent
 

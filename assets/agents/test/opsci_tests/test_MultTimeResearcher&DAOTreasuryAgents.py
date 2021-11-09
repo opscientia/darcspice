@@ -1,7 +1,7 @@
 from enforce_typing import enforce_types
 
-from assets.agents.opsci_agents.MultTimeDAOTreasuryAgent import MultTimeDAOTreasuryAgent
-from assets.agents.opsci_agents.MultTimeResearcherAgent import MultTimeResearcherAgent
+from assets.agents.opsci_agents.mult_time_agents.MultTimeDAOTreasuryAgent import MultTimeDAOTreasuryAgent
+from assets.agents.opsci_agents.mult_time_agents.MultTimeResearcherAgent import MultTimeResearcherAgent
 from engine import AgentBase, SimStateBase, SimStrategyBase
 from engine.AgentDict import AgentDict
 from util.constants import S_PER_DAY
@@ -20,6 +20,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2}
+        self.RANDOM_BUYING = False
 
 
 class SimState(SimStateBase.SimStateBase):
