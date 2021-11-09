@@ -50,7 +50,7 @@ class KnowledgeMarketAgent(AgentBase):
         self.total_fees: float = 0.0
 
     def _ToDistribute(self, state, received):
-        # received = self.OCEAN() - self.OCEAN_last_tick
+        received = self.OCEAN() - self.OCEAN_last_tick
         if received > 0:
             print('GOT HERE')
             fees = received * self.transaction_fees_percentage

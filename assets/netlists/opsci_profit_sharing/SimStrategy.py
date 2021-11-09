@@ -21,6 +21,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.TRANSACTION_FEES = 0.1
         self.FEES_TO_STAKERS = 0.2
         self.NUMBER_OF_RESEARCHERS = 2
+        self.FUNDING_BOUNDARY = 10000
         '''
         Some additional parameters that will enable more experimentation (not currently in use)
         '''
