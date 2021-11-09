@@ -2,8 +2,8 @@ from enforce_typing import enforce_types
 from typing import Set
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
-from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
+from assets.agents.opsci_agents.profit_sharing_agents.ResearcherAgent import ResearcherAgent
+from assets.agents.opsci_agents.profit_sharing_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from assets.agents.opsci_agents.SellerAgent import SellerAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs

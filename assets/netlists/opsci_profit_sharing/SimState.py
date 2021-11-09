@@ -4,9 +4,9 @@ import random
 from assets import agents
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
-from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
-from assets.agents.opsci_agents.KnowledgeMarketAgent import KnowledgeMarketAgent
+from assets.agents.opsci_agents.profit_sharing_agents.ResearcherAgent import ResearcherAgent
+from assets.agents.opsci_agents.profit_sharing_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
+from assets.agents.opsci_agents.profit_sharing_agents.KnowledgeMarketAgent import KnowledgeMarketAgent
 from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
