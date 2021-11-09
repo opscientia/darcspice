@@ -27,15 +27,6 @@ class SimState(SimStateBase.SimStateBase):
             from .SimStrategy import SimStrategy
             self.ss = SimStrategy()
         ss = self.ss #for convenience as we go forward
-                                
-        #as ecosystem improves, these parameters may change / improve
-        self._marketplace_percent_toll_to_ocean = 0.002 #magic number
-        self._percent_burn: float = 0.0005 #to burning, vs to OpsciMarketplace #magic number
-        self._percent_dao: float = 0.05 #to dao vs to sellers
-
-        self._speculation_valuation = 150e6 #in USD #magic number
-        self._percent_increase_speculation_valuation_per_s = 0.10 / S_PER_YEAR # ""
-
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
         new_agents = []
@@ -78,9 +69,6 @@ class SimState(SimStateBase.SimStateBase):
         #update agents
         #update kpis (global state values)
         super().takeStep()
-        
-        #update global state values: other
-        self._speculation_valuation *= (1.0 + self._percent_increase_speculation_valuation_per_s * self.ss.time_step)
 
     #==============================================================      
     def marketplacePercentTollToOcean(self) -> float:
