@@ -28,7 +28,7 @@ class MultDAOTreasuryAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation: Dict = None
+        self.proposal_evaluation: dict = {}
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
@@ -62,21 +62,21 @@ class MultDAOTreasuryAgent(AgentBase):
                               agent.proposal['assets_generated'] / \
                               agent.proposal['knowledge_access']
         for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME):
-            winner = min(scores, key=scores.get)
+            winner = min(scores, key=scores.get) # type: ignore
             evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
             del scores[winner]
         assert (len(evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME)
         return evaluation
 
     def proposalsReady(self, state):
-        if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
+        if all((state.getAgent(name).proposal != {}) for name in state.researchers.keys()):
             self._proposals_to_evaluate = [state.getAgent(name).proposal for name in state.researchers.keys()]
             return True
 
     def takeStep(self, state) -> None:
         can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
         if not can_fund:
-            self.proposal_evaluation = None
+            self.proposal_evaluation = {}
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())
@@ -98,22 +98,16 @@ class MultDAOTreasuryAgent(AgentBase):
             self.no_proposals_received += 1
             for ev in self.proposal_evaluation.keys():
                 self.total_research_funds_disbursed += self.proposal_evaluation[ev]['amount']
-        
-        # Used for transferring funds to any other agent (not ResearcherAgent)
-        # if self.USD() > 0:
-        #     self._disburseUSD(state)
-        # if self.OCEAN() > 0:
-        #     self._disburseOCEAN(state)
 
     def _disburseFundsOCEAN(self, state):
-        if self.proposal_evaluation != None:
+        if self.proposal_evaluation != {}:
             for ev in self.proposal_evaluation.keys():
                 OCEAN = min(self.OCEAN(), self.proposal_evaluation[ev]['amount'])
                 agent = state.getAgent(self.proposal_evaluation[ev]['winner'])
                 self._transferOCEAN(agent, OCEAN)
     
     def _disburseFundsUSD(self, state):
-        if self.proposal_evaluation != None:        
+        if self.proposal_evaluation != {}:        
             USD = min(self.USD(), self.proposal_evaluation['amount'])
             agent = state.getAgent(self.proposal_evaluation['winner'])
             self._transferUSD(agent, USD)

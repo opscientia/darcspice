@@ -89,21 +89,15 @@ class OpscientiaDAOAgent(AgentBase):
             self.proposal_funded = True
             self.no_proposals_received += 1
             self.total_research_funds_disbursed += self.proposal_evaluation['amount']
-        
-        # Used for transferring funds to any other agent (not ResearcherAgent)
-        # if self.USD() > 0:
-        #     self._disburseUSD(state)
-        # if self.OCEAN() > 0:
-        #     self._disburseOCEAN(state)
 
     def _disburseFundsOCEAN(self, state):
-        if self.proposal_evaluation != None:        
+        if self.proposal_evaluation != {}:        
             OCEAN = min(self.OCEAN(), self.proposal_evaluation['amount'])
             agent = state.getAgent(self.proposal_evaluation['winner'])
             self._transferOCEAN(agent, OCEAN)
     
     def _disburseFundsUSD(self, state):
-        if self.proposal_evaluation != None:        
+        if self.proposal_evaluation != {}:        
             USD = min(self.USD(), self.proposal_evaluation['amount'])
             agent = state.getAgent(self.proposal_evaluation['winner'])
             self._transferUSD(agent, USD)

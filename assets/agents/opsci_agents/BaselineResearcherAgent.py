@@ -96,7 +96,7 @@ class BaselineResearcherAgent(AgentBase):
             self.ticks_since_proposal = 0
 
         # Checking if proposal accepted (should only be checked at the tick right after the tick when createProposal() was called)
-        if (self.ticks_since_proposal == 1) and state.getAgent(self._evaluator).proposal_evaluation:
+        if (self.ticks_since_proposal == 1) and (state.getAgent(self._evaluator).proposal_evaluation != {}):
             self.new_proposal = False
             # if I am the winner, send the funds received to KnowledgeMarket
             if state.getAgent(self._evaluator).proposal_evaluation['winner'] == self.name:

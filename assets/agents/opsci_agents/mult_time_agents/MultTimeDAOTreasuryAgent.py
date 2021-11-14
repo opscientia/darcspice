@@ -131,7 +131,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             assert(total_proposal_accepted <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def _disburseFundsOCEAN(self, state, i):
-        assert self.proposal_evaluation
+        assert self.proposal_evaluation != {}
         OCEAN = min(self.OCEAN(), self.proposal_evaluation[i]['amount'])
         agent = state.getAgent(self.proposal_evaluation[i]['winner'])
         self._transferOCEAN(agent, OCEAN)
