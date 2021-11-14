@@ -108,7 +108,7 @@ def test1():
     assert dao.update == 0
     assert dao.OCEAN() == 9.0
     assert r0.research_finished == True
-    assert r0.proposal == None
+    assert r0.proposal == {}
     assert r1.proposal == {'grant_requested': 2,
                                'assets_generated': 1,
                                'no_researchers': 10,
