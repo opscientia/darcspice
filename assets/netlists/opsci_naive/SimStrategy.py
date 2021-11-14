@@ -12,7 +12,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
 
         #===set base-class values we want for this netlist====
         self.setTimeStep(S_PER_HOUR)
-        self.setMaxTime(10, 'years') #typical runs: 10 years, 20 years, 150 years
+        self.setMaxTime(30, 'years') #typical runs: 10 years, 20 years, 150 years
 
         #===new attributes specific to this netlist===
 
@@ -21,6 +21,8 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.init_n_assets = 1
 
         # (taken from constants.py)
+        self.TICKS_BETWEEN_PROPOSALS = 6480
+        self.RATIO_FUNDS_TO_PUBLISH = 0
         self.TOTAL_MINTS = 1000 # better number to be determined
         self.TOTAL_OCEAN_SUPPLY = 1.41e9 
         self.INIT_OCEAN_SUPPLY = 0.49 * self.TOTAL_OCEAN_SUPPLY
