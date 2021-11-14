@@ -27,13 +27,13 @@ def test1():
     class SimpleResearcherAgent(AgentBase.AgentBase):
         def __init__(self, name: str, USD: float, OCEAN: float,):
             super().__init__(name, USD, OCEAN)
-            self.proposal = None
+            self.proposal: dict = {}
         def createProposal(self) -> dict:
             return {'grant_requested': 1,
                     'assets_generated': 1,
                     'no_researchers': 1,
                     'knowledge_access': 1}
-        def takeStep(self) -> None:
+        def takeStep(self):
             self.proposal = self.createProposal()
 
     state.agents["a1"] = SimpleResearcherAgent("a1", 0.0, 0.0)

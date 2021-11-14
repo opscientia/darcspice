@@ -30,13 +30,14 @@ def test1():
             self.proposal = None
             self.last_tick_spent = 0
             self.proposal = {'assets_generated': 1}
+            self.ratio_funds_to_publish: float = 0.0
 
         def _BuyAndPublishAssets(self, state) -> None:
-            self.ratio_funds_to_publish: float = 0.5
+            self.ratio_funds_to_publish = 0.5
             self._transferOCEAN(state.getAgent('market'), 4)
 
         def _BuyAssets(self, state) -> None:
-            self.ratio_funds_to_publish: float = 0.0
+            self.ratio_funds_to_publish = 0.0
             self._transferOCEAN(state.getAgent('market'), 4)
 
         def takeStep(self, state) -> None:

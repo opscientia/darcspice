@@ -23,7 +23,7 @@ class BaselineResearcherAgent(AgentBase):
         self._evaluator = evaluator
         self.proposal_setup = proposal_setup
 
-        self.proposal = None
+        self.proposal: dict = {}
         self.new_proposal = False
         self.knowledge_access: float = 1.0
         self.ticks_since_proposal: int = 0
@@ -61,7 +61,7 @@ class BaselineResearcherAgent(AgentBase):
         '''
         USD = self.USD()
         # in this naive model, it makes little difference whether the money from grants is spent in one tick or across many
-        if self.proposal != None and self.USD() != 0.0:
+        if self.proposal != {} and self.USD() != 0.0:
             for name, computePercent in self._receiving_agents.items():
                 self._transferUSD(state.getAgent(name), computePercent * USD) # NOTE: computePercent() should be used when it is a function in SimState.py
     
@@ -72,7 +72,7 @@ class BaselineResearcherAgent(AgentBase):
         1 tick = 1 hour
         '''
         OCEAN = self.OCEAN()
-        if OCEAN != 0 and self.proposal:
+        if OCEAN != 0 and self.proposal != {}:
             OCEAN_DISBURSE: float = self.proposal['grant_requested']
             for name, computePercent in self._receiving_agents.items():
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
@@ -80,11 +80,11 @@ class BaselineResearcherAgent(AgentBase):
     
     def takeStep(self, state):
 
-        if self.proposal is not None:
+        if self.proposal != {}:
             self.ticks_since_proposal += 1
 
         # Proposal functionality
-        if self.proposal is None:
+        if self.proposal is {}:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
             self.ticks_since_proposal = 0
