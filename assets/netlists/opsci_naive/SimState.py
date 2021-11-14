@@ -51,19 +51,17 @@ class SimState(SimStateBase.SimStateBase):
         
         new_agents.add(ResearcherAgent(
             name = "researcher0", USD=0.0, OCEAN=0.0,
-            no_researchers = 10,
             receiving_agents = {"sellers" : 1.0}))
 
         new_agents.add(ResearcherAgent(
             name = "researcher1", USD=0.0, OCEAN=0.0,
-            no_researchers = 10,
             receiving_agents = {"sellers" : 1.0}))
 
         # 3. OpscientiaDAOAgent sends percentage of funds to OCEANBurnerAgent & funds research proposals
         new_agents.add(OpscientiaDAOAgent(
             name = "university", USD=500000.0, OCEAN=0.0,
             s_between_grants = S_PER_DAY))
-        
+
         new_agents.add(SellerAgent(
             name = "sellers", USD=0.0, OCEAN=0.0,
             n_sellers = float(ss.init_n_sellers),
