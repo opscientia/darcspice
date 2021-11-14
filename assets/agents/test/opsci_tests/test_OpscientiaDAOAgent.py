@@ -46,7 +46,7 @@ def test1():
     assert dao1.OCEAN() == 10.0
 
     state.takeStep() # create just one proposal
-    assert a1.proposal is not None
+    assert a1.proposal != {}
     dao1.takeStep(state); state.tick += 1 #tick = 1 #disperse here
     assert dao1.OCEAN() == 9.0
     assert a1.OCEAN() == 1.0

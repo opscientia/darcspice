@@ -27,7 +27,7 @@ class OpscientiaDAOAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation: Dict = None
+        self.proposal_evaluation: dict = {}
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
@@ -69,7 +69,7 @@ class OpscientiaDAOAgent(AgentBase):
     def takeStep(self, state) -> None:
         can_fund = self.proposalsReady(state) and (self.OCEAN() > state.ss.FUNDING_BOUNDARY)
         if not can_fund:
-            self.proposal_evaluation = None
+            self.proposal_evaluation = {}
 
         #record what we had up until this point
         self._USD_per_tick.append(self.USD())

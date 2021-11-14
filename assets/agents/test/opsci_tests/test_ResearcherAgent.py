@@ -90,9 +90,9 @@ def test1():
     m = state.agents["m"]
 
     state.takeStep(); state.tick += 1 # create a proposal | won't be funded yet since opsci_dao is the first agent
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == True
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == True
     assert not dao.proposal_evaluation
     assert r0.OCEAN() == 10.0
@@ -100,9 +100,9 @@ def test1():
     assert dao.OCEAN() == 10.0
 
     state.takeStep(); state.tick += 1 # fund & publish
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == False
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == False
     assert dao.proposal_evaluation
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
@@ -112,9 +112,9 @@ def test1():
     assert r1.ticks_since_proposal == 1
 
     state.takeStep(); state.tick += 1 # create a proposal | SHOULD NOT BE FUNDED UNTIL NEXT ROUND
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == True
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == True
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 9.0 # loser uses one 1 OCEAN to buy from Knowledge Market
@@ -123,9 +123,9 @@ def test1():
     assert r1.ticks_since_proposal == 0
     
     state.takeStep(); state.tick += 1 # fund & publish
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == False
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == False
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 8.0 # loser uses one 1 OCEAN to buy from Knowledge Market
@@ -134,9 +134,9 @@ def test1():
     assert r1.ticks_since_proposal == 1
 
     state.takeStep(); state.tick += 1 # create a proposal | SHOULD NOT BE FUNDED UNTIL NEXT ROUND
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == True
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == True
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 8.0 # loser uses one 1 OCEAN to buy from Knowledge Market
@@ -145,9 +145,9 @@ def test1():
     assert r1.ticks_since_proposal == 0
 
     state.takeStep(); state.tick += 1 # fund & publish
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == False
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == False
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 7.0 # loser uses one 1 OCEAN to buy from Knowledge Market
@@ -156,9 +156,9 @@ def test1():
     assert r1.ticks_since_proposal == 1
 
     state.takeStep(); state.tick += 1 # create a proposal | SHOULD NOT BE FUNDED UNTIL NEXT ROUND
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == True
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == True
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 7.0 # loser uses one 1 OCEAN to buy from Knowledge Market
@@ -167,9 +167,9 @@ def test1():
     assert r1.ticks_since_proposal == 0
 
     state.takeStep(); state.tick += 1 # fund & publish
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == False
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == False
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 6.0 # loser uses one 1 OCEAN to buy from Knowledge Market
@@ -178,9 +178,9 @@ def test1():
     assert r1.ticks_since_proposal == 1
 
     state.takeStep(); state.tick += 1 # create a proposal | SHOULD NOT BE FUNDED UNTIL NEXT ROUND
-    assert r0.proposal
+    assert r0.proposal != {}
     assert r0.new_proposal == True
-    assert r1.proposal
+    assert r1.proposal != {}
     assert r1.new_proposal == True
     assert r0.OCEAN() == 10.0 # winner receives 1 OCEAN but immediatelly spends it
     assert r1.OCEAN() == 6.0 # loser uses one 1 OCEAN to buy from Knowledge Market

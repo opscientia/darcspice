@@ -81,7 +81,7 @@ class KnowledgeMarketAgent(AgentBase):
         treasury = state.getAgent(state.ss.TREASURY)
 
         # At the end of a research project, add knowledge assets
-        if ((state.tick % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) and treasury.proposal_evaluation:
+        if ((state.tick % state.ss.TICKS_BETWEEN_PROPOSALS) == 0) and (treasury.proposal_evaluation != {}):
             winner = treasury.proposal_evaluation['winner']
             proposal = state.getAgent(winner).proposal
             if winner in self.knowledge_assets_per_researcher:
