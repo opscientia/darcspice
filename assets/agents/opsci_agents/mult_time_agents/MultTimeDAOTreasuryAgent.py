@@ -28,9 +28,9 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation: Dict = {}
+        self.proposal_evaluation: dict = {}
         self.update: int = 0
-        self.proposal_evaluation_update: Dict = {}
+        self.proposal_evaluation_update: dict = {}
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
@@ -53,7 +53,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         The proposal with the smaller score is accepted. 
         '''            
         scores = {}
-        self.proposal_evaluation_update: Dict = {}
+        self.proposal_evaluation_update = {}
 
         # Ensure that scores and names consist of research proposals NOT currently funded
         for name in state.researchers.keys():
@@ -96,7 +96,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                 del self.proposal_evaluation[i]
 
     def proposalsReady(self, state):
-        if all(state.getAgent(name).proposal is not None for name in state.researchers.keys()):
+        if all((state.getAgent(name).proposal != {}) for name in state.researchers.keys()):
             self._proposals_to_evaluate = [state.getAgent(name).proposal for name in state.researchers.keys()]
             return True
 

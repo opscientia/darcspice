@@ -24,7 +24,7 @@ class MultTimeResearcherAgent(AgentBase):
         self._evaluator = evaluator
         self.proposal_setup = proposal_setup
 
-        self.proposal = None
+        self.proposal: dict = {}
         self.new_proposal = False # not sure how to utilize this yet
         self.knowledge_access: float = 1.0
         self.ticks_since_proposal: int = 0
@@ -66,7 +66,7 @@ class MultTimeResearcherAgent(AgentBase):
         '''
         USD = self.USD()
         # in this naive model, it makes little difference whether the money from grants is spent in one tick or across many
-        if self.proposal != None and self.USD() != 0.0:
+        if (self.proposal != {}) and (self.USD() != 0.0):
             for name, computePercent in self._receiving_agents.items():
                 self._transferUSD(state.getAgent(name), computePercent * USD) # NOTE: computePercent() should be used when it is a function in SimState.py
     
@@ -79,7 +79,7 @@ class MultTimeResearcherAgent(AgentBase):
         OCEAN = self.OCEAN()
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
-        if OCEAN != 0 and self.proposal:
+        if (OCEAN != 0) and (self.proposal != {}):
             OCEAN_DISBURSE: float = self.proposal['grant_requested']
             self.last_OCEAN_spent += OCEAN_DISBURSE
             for name, computePercent in self._receiving_agents.items():
@@ -95,7 +95,7 @@ class MultTimeResearcherAgent(AgentBase):
         OCEAN = self.OCEAN()
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = 0.0 # not publishing
-        if OCEAN != 0 and OCEAN >= state.ss.PRICE_OF_ASSETS and self.proposal:
+        if (OCEAN != 0) and (OCEAN >= state.ss.PRICE_OF_ASSETS) and (self.proposal != {}):
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
             self.last_OCEAN_spent += OCEAN_DISBURSE
             self.knowledge_access += 1
@@ -133,18 +133,18 @@ class MultTimeResearcherAgent(AgentBase):
         self._checkIfFunded(state)
 
         # Proposal functionality
-        if self.proposal is None:
+        if self.proposal == {}:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
             self.ticks_since_proposal = 0
 
-        if self.proposal is not None:
+        if self.proposal != {}:
             self.ticks_since_proposal += 1
             # tracking the research progress for winning researchers
             if self.proposal_accepted:
                 if self.ticks_since_proposal - self.proposal['time'] == 0:
                     self.research_finished = True
-                    self.proposal = None
+                    self.proposal = {}
                     self.proposal_accepted = False
 
         self.my_OCEAN = self.OCEAN()
