@@ -71,7 +71,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
 
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
-            winner = min(scores, key=scores.get)
+            winner = min(scores, key=scores.get) # type: ignore
             self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
             del scores[winner]
 

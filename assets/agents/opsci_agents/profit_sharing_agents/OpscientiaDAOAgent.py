@@ -59,7 +59,7 @@ class OpscientiaDAOAgent(AgentBase):
                               agent.proposal['no_researchers'] /  \
                               agent.proposal['assets_generated'] / \
                               agent.proposal['knowledge_access']
-        winner = min(scores, key=scores.get)
+        winner = min(scores, key=scores.get) # type: ignore
         return {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
 
     def proposalsReady(self, state):
