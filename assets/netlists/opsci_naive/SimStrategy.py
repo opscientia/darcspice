@@ -27,6 +27,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.TOTAL_OCEAN_SUPPLY = 1.41e9 
         self.INIT_OCEAN_SUPPLY = 0.49 * self.TOTAL_OCEAN_SUPPLY
         self.UNMINTED_OCEAN_SUPPLY = self.TOTAL_OCEAN_SUPPLY - self.INIT_OCEAN_SUPPLY
+        self.FUNDING_BOUNDARY = 0
 
         self.OPF_TREASURY_USD = 2e6 #(not the true number)
         self.OPF_TREASURY_OCEAN = 200e6 #(not the true number)

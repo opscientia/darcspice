@@ -126,7 +126,6 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                 if sum(ratios[type].values()) != 0:
                     assert round(sum(ratios[type].values()), 1) == 1
                     for name, ratio in ratios[type].items():
-                        print(f'PAID OUT HERERERERERERERE TO AGENT {name}')
                         self._transferOCEAN(state.getAgent(name), disburse[type] * ratio)
 
     def _disburseFeesOCEAN(self, state, fee) -> None:
