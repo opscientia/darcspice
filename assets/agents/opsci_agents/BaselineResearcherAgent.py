@@ -84,7 +84,7 @@ class BaselineResearcherAgent(AgentBase):
             self.ticks_since_proposal += 1
 
         # Proposal functionality
-        if self.proposal is {}:
+        if self.proposal == {}:
             self.proposal = self.createProposal(state)
             self.no_proposals_submitted += 1
             self.ticks_since_proposal = 0
