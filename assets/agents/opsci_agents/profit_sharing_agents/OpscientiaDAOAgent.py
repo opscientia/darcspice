@@ -67,7 +67,7 @@ class OpscientiaDAOAgent(AgentBase):
             return True
 
     def takeStep(self, state) -> None:
-        can_fund = self.proposalsReady(state) and (self.OCEAN() > 10000)
+        can_fund = self.proposalsReady(state) and (self.OCEAN() > state.ss.FUNDING_BOUNDARY)
         if not can_fund:
             self.proposal_evaluation = None
 

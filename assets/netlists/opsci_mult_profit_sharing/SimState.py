@@ -3,9 +3,9 @@ from typing import Set
 import random
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_agents.MultResearcherAgent import MultResearcherAgent
-from assets.agents.opsci_agents.MultDAOTreasuryAgent import MultDAOTreasuryAgent
-from assets.agents.opsci_agents.MultKnowledgeMarketAgent import MultKnowledgeMarketAgent
+from assets.agents.opsci_agents.mult_agents.MultResearcherAgent import MultResearcherAgent
+from assets.agents.opsci_agents.mult_agents.MultDAOTreasuryAgent import MultDAOTreasuryAgent
+from assets.agents.opsci_agents.mult_agents.MultKnowledgeMarketAgent import MultKnowledgeMarketAgent
 from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs

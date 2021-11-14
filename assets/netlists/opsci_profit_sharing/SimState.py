@@ -1,11 +1,12 @@
 from enforce_typing import enforce_types
 from typing import Set
 import random
+from assets import agents
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
-from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
-from assets.agents.opsci_agents.KnowledgeMarketAgent import KnowledgeMarketAgent
+from assets.agents.opsci_agents.profit_sharing_agents.ResearcherAgent import ResearcherAgent
+from assets.agents.opsci_agents.profit_sharing_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
+from assets.agents.opsci_agents.profit_sharing_agents.KnowledgeMarketAgent import KnowledgeMarketAgent
 from assets.agents.opsci_agents.SimpleStakerspeculatorAgent import SimpleStakerspeculatorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
@@ -26,42 +27,33 @@ class SimState(SimStateBase.SimStateBase):
             from .SimStrategy import SimStrategy
             self.ss = SimStrategy()
         ss = self.ss #for convenience as we go forward
-                                
-        #as ecosystem improves, these parameters may change / improve
-        self._marketplace_percent_toll_to_ocean = 0.002 #magic number
-        self._percent_burn: float = 0.0005 #to burning, vs to OpsciMarketplace #magic number
-        self._percent_dao: float = 0.05 #to dao vs to sellers
-
-        self._speculation_valuation = 150e6 #in USD #magic number
-        self._percent_increase_speculation_valuation_per_s = 0.10 / S_PER_YEAR # ""
-
 
         #Instantiate and connnect agent instances. "Wire up the circuit"
-        new_agents: Set[AgentBase.AgentBase] = set()
-        researcher_agents: Set[AgentBase.AgentBase] = set()
+        new_agents = []
+        researcher_agents = []
         self.researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
-        new_agents.add(KnowledgeMarketAgent(
-            name = "market", USD=0.0, OCEAN=10000.0,
-            transaction_fees_percentage=0.1,
-            fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
-
-        new_agents.add(OpscientiaDAOAgent(
+        new_agents.append(OpscientiaDAOAgent(
             name = "dao_treasury", USD=0.0, OCEAN=500000.0))
 
-        new_agents.add(SimpleStakerspeculatorAgent(
+        new_agents.append(SimpleStakerspeculatorAgent(
             name = "staker", USD=0.0, OCEAN=90000.0))
 
         for i in range(ss.NUMBER_OF_RESEARCHERS):
-            new_agents.add(ResearcherAgent(
+            new_agents.append(ResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
-            researcher_agents.add(ResearcherAgent(
+            researcher_agents.append(ResearcherAgent(
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0,
                 receiving_agents = {"market": 1.0}))
+        
+        new_agents.append(KnowledgeMarketAgent(
+            name = "market", USD=0.0, OCEAN=0.0,
+            transaction_fees_percentage=0.1,
+            fee_receiving_agents={"staker": self.ss.FEES_TO_STAKERS, "dao_treasury": 1.0 - self.ss.FEES_TO_STAKERS}))
 
         for agent in new_agents:
             self.agents[agent.name] = agent
@@ -77,9 +69,6 @@ class SimState(SimStateBase.SimStateBase):
         #update agents
         #update kpis (global state values)
         super().takeStep()
-        
-        #update global state values: other
-        self._speculation_valuation *= (1.0 + self._percent_increase_speculation_valuation_per_s * self.ss.time_step)
 
     #==============================================================      
     def marketplacePercentTollToOcean(self) -> float:

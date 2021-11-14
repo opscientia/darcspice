@@ -19,8 +19,8 @@ lastly, check knowledge_access index (should be the same after each tick)
 from enforce_typing import enforce_types
 import random
 
-from assets.agents.opsci_agents.ResearcherAgent import ResearcherAgent
-from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
+from assets.agents.opsci_agents.profit_sharing_agents.ResearcherAgent import ResearcherAgent
+from assets.agents.opsci_agents.profit_sharing_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from engine import AgentBase, SimStateBase, SimStrategyBase
 from engine.AgentDict import AgentDict
 from util.constants import S_PER_DAY
@@ -30,6 +30,7 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.TICKS_BETWEEN_PROPOSALS = 2
         self.PRICE_OF_ASSETS = 1
         self.RATIO_FUNDS_TO_PUBLISH = 1
+        self.FUNDING_BOUNDARY = 0
 
 class SimState(SimStateBase.SimStateBase):
     def __init__(self, ss=None):

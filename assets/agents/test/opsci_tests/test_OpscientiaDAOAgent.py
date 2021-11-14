@@ -1,6 +1,6 @@
 from enforce_typing import enforce_types
 
-from assets.agents.opsci_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
+from assets.agents.opsci_agents.profit_sharing_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from engine import AgentBase, SimStateBase, SimStrategyBase
 from engine.AgentDict import AgentDict
 from util.constants import S_PER_DAY
@@ -8,6 +8,7 @@ from util.constants import S_PER_DAY
 class SimStrategy(SimStrategyBase.SimStrategyBase):
     def __init__(self):
         self.TICKS_BETWEEN_PROPOSALS = 1
+        self.FUNDING_BOUNDARY = 0
 
 class SimState(SimStateBase.SimStateBase):
     def __init__(self):
