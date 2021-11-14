@@ -39,8 +39,8 @@ class KnowledgeMarketAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.OCEAN_last_tick = 0
-        self.my_OCEAN_list = []
+        self.OCEAN_last_tick: float = 0.0
+        self.my_OCEAN_list: list = []
         self.transaction_fees_percentage = transaction_fees_percentage
 
         self.last_research_tick = 0
