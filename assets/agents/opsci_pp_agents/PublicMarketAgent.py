@@ -43,8 +43,8 @@ class PublicKnowledgeMarketAgent(AgentBase):
         self.total_fees: float = 0.0
 
 
-        self.knowledge_assets_per_researcher = {}
-        self.knowledge_assets = {}
+        self.knowledge_assets_per_researcher: dict = {}
+        self.knowledge_assets: dict = {}
         self.total_knowledge_assets = 0
         self.types = ['algo', 'data', 'compute']
 

@@ -38,8 +38,8 @@ class PrivateKnowledgeMarketAgent(AgentBase):
         self.transaction_fees_percentage = transaction_fees_percentage
         self.total_fees: float = 0.0
 
-        self.knowledge_assets_per_researcher = {}
-        self.knowledge_assets = {}
+        self.knowledge_assets_per_researcher: dict = {}
+        self.knowledge_assets: dict = {}
         self.total_knowledge_assets = 0
         self.types = ['algo', 'data', 'compute']
 
@@ -113,7 +113,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
             assert sum(self.knowledge_assets_per_researcher[t].values()) == self.knowledge_assets[t] # assert the total is the same as the sum of all the individuals
 
         # get the ratios of assets (differentiated by type) of all researchers
-        ratios = {}
+        ratios: dict = {}
         for type, agents in self.knowledge_assets_per_researcher.items():
             if type not in ratios:
                 ratios[type] = {}
