@@ -69,24 +69,3 @@ class SimState(SimStateBase.SimStateBase):
         #update agents
         #update kpis (global state values)
         super().takeStep()
-
-    #==============================================================      
-    def marketplacePercentTollToOcean(self) -> float:
-        return self._marketplace_percent_toll_to_ocean
-    
-    def percentToBurn(self) -> float:
-        return self._percent_burn
-
-    def percentToOpsciMrkt(self) -> float:
-        return 1.0 - self._percent_burn
-    
-    def percentToOpsciDAO(self) -> float:
-        return self._percent_dao
-
-    def percentToSellers(self) -> float:
-        return 1.0 - self._percent_dao
-    
-def funcOne():
-    return 1.0
-
-
