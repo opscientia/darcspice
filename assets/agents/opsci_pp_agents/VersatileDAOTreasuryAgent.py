@@ -28,9 +28,9 @@ class VersatileDAOTreasuryAgent(AgentBase):
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
 
-        self.proposal_evaluation: Dict = {}
+        self.proposal_evaluation: dict = {}
         self.update: int = 0
-        self.proposal_evaluation_update: Dict = {}
+        self.proposal_evaluation_update: dict = {}
 
         self._USD_per_grant: float = 0.0
         self._OCEAN_per_grant: float = 0.0
@@ -53,12 +53,12 @@ class VersatileDAOTreasuryAgent(AgentBase):
         The proposal with the smaller score is accepted. 
         '''            
         scores = {}
-        self.proposal_evaluation_update: Dict = {}
+        self.proposal_evaluation_update = {}
 
         # Ensure that scores and names consist of research proposals NOT currently funded
         for name in state.public_researchers.keys():
             # I don't want to fund proposals that are already in proposal_evaluation
-            if self.proposal_evaluation:
+            if self.proposal_evaluation != {}:
                 skipping_rs = [r['winner'] for r in list(self.proposal_evaluation.values())]
                 if name in skipping_rs:
                     continue
@@ -71,7 +71,7 @@ class VersatileDAOTreasuryAgent(AgentBase):
 
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
-            winner = min(scores, key=scores.get)
+            winner = min(scores, key=scores.get) # type: ignore
             self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
             del scores[winner]
 
@@ -96,7 +96,7 @@ class VersatileDAOTreasuryAgent(AgentBase):
                 del self.proposal_evaluation[i]
 
     def proposalsReady(self, state):
-        if all(state.getAgent(name).proposal is not None for name in state.public_researchers.keys()):
+        if all((state.getAgent(name).proposal != {}) for name in state.public_researchers.keys()):
             self._proposals_to_evaluate = [state.getAgent(name).proposal for name in state.public_researchers.keys()]
             return True
 
@@ -131,7 +131,7 @@ class VersatileDAOTreasuryAgent(AgentBase):
             assert(total_proposal_accepted <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def _disburseFundsOCEAN(self, state, i):
-        assert self.proposal_evaluation
+        assert self.proposal_evaluation != {}
         OCEAN = min(self.OCEAN(), self.proposal_evaluation[i]['amount'])
         agent = state.getAgent(self.proposal_evaluation[i]['winner'])
         self._transferOCEAN(agent, OCEAN)
