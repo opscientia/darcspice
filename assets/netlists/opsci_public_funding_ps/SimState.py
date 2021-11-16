@@ -42,7 +42,9 @@ class SimState(SimStateBase.SimStateBase):
         self.researchers: dict = {}
         new_agents = []
         public_researcher_agents = []
+        private_researcher_agents = []
         self.public_researchers: dict = {}
+        self.private_researchers: dict = {}
 
         #################### Wiring of agents that send OCEAN ####################
         new_agents.append(VersatileDAOTreasuryAgent(
@@ -101,6 +103,20 @@ class SimState(SimStateBase.SimStateBase):
                 USD=0.0, OCEAN=10000.0, research_type='public',
                 receiving_agents = {"market": 1.0}))
 
+        # add to private_researcher_agents
+        private_researcher_agents.append(VersatileResearcherAgent(
+                name = "researcher0", evaluator = "dao_treasury",
+                USD=0.0, OCEAN=200000.0, research_type='private',
+                receiving_agents = {"market": 1.0}))
+        private_researcher_agents.append(VersatileResearcherAgent(
+                name = "researcher1", evaluator = "dao_treasury",
+                USD=0.0, OCEAN=200000.0, research_type='private',
+                receiving_agents = {"market": 1.0}))
+        private_researcher_agents.append(VersatileResearcherAgent(
+                name = "researcher2", evaluator = "dao_treasury",
+                USD=0.0, OCEAN=200000.0, research_type='private',
+                receiving_agents = {"market": 1.0}))
+
         new_agents.append(PrivateKnowledgeMarketAgent(
             name = "private_market", USD=0.0, OCEAN=0.0,
             transaction_fees_percentage=0.1,
@@ -119,6 +135,9 @@ class SimState(SimStateBase.SimStateBase):
         
         for agent in public_researcher_agents:
             self.public_researchers[agent.name] = agent
+        
+        for agent in private_researcher_agents:
+            self.private_researchers[agent.name] = agent
 
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)

@@ -239,6 +239,7 @@ class VersatileResearcherAgent(AgentBase):
         if self.research_type == 'public':
             self.multTimeTakeStep(state)
         else:
+            self.my_OCEAN = self.OCEAN()
             assert self.research_type == 'private'
 
             if state.getAgent(self._evaluator).update > 0:
