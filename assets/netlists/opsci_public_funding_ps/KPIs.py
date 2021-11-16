@@ -20,7 +20,7 @@ def netlist_createLogData(state):
     datarow = [] #for csv logging: list of float
 
     r_dict = {}
-    for r in state.researchers.keys():
+    for r in state.public_researchers.keys():
         r_dict[r] = state.getAgent(r)
         s += ["; %s OCEAN=%s" % (r , prettyBigNum(r_dict[r].OCEAN(),False))]
         s += ["; %s proposals=%s" % (r, r_dict[r].no_proposals_submitted)]
@@ -41,8 +41,27 @@ def netlist_createLogData(state):
         dataheader += ["%s_total_assets_mrkt" % r]
         datarow += [r_dict[r].total_assets_in_mrkt]
 
-        dataheader += ["%s_OCEAN" % r]
+        dataheader += ["%s_public_OCEAN" % r]
         datarow += [r_dict[r].my_OCEAN]
+
+        dataheader += ["%s_%s_total_assets_%s_in_market" % (r, r_dict[r].research_type, r_dict[r].asset_type)]
+        datarow += [r_dict[r].total_assets_in_mrkt]
+    
+    for r in state.private_researchers.keys():
+        r_dict[r] = state.getAgent(r)
+        s += ["; %s OCEAN=%s" % (r , prettyBigNum(r_dict[r].OCEAN(),False))]
+        s += ["; %s proposals=%s" % (r, r_dict[r].no_proposals_submitted)]
+        s += ["; %s proposals funded=%s" % (r, r_dict[r].no_proposals_funded)]
+        s += ["; research type=%s; asset type=%s" % (r_dict[r].research_type, r_dict[r].asset_type)]
+
+        dataheader += ["%s_total_assets_mrkt" % r]
+        datarow += [r_dict[r].total_assets_in_mrkt]
+
+        dataheader += ["%s_private_OCEAN" % r]
+        datarow += [r_dict[r].my_OCEAN]
+
+        dataheader += ["%s_%s_total_assets_%s_in_market" % (r, r_dict[r].research_type, r_dict[r].asset_type)]
+        datarow += [r_dict[r].total_assets_in_mrkt]
 
     treasury = state.getAgent("dao_treasury")
     s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
@@ -58,6 +77,11 @@ def netlist_createLogData(state):
 
     dataheader += ["private_market_assets"]
     datarow += [private_market.total_knowledge_assets]
+
+    # if private_market.knowledge_assets != {}:
+    #     for type, count in private_market.knowledge_assets.items():
+    #         dataheader += ["private_market_%s" % type]
+    #         datarow += [count]
 
     public_market = state.getAgent("public_market")
     s += ["; public_market OCEAN=%s" % prettyBigNum(public_market.OCEAN(),False)]
@@ -95,8 +119,11 @@ def netlist_plotInstructions(header: List[str], values):
     proposals_funded = [p for p in r_list if '_no_proposals_funded' in p]
     knowledge_access = [k for k in r_list if 'knowledge_access' in k]
     total_funding = [t for t in r_list if '_total_funding' in t]
-    total_OCEAN = [o for o in r_list if '_OCEAN' in o]
+    total_public_OCEAN = [o for o in r_list if '_public_OCEAN' in o]
+    total_private_OCEAN = [o for o in r_list if '_private_OCEAN' in o]
     total_assets_mrkt = [m for m in r_list if 'total_assets_mrkt' in m]
+    total_public_assets_mrkt = [m for m in r_list if 'public_total_assets_' in m]
+    total_private_assets_mrkt = [m for m in r_list if 'private_total_assets_' in m]
     researchers = []
     i = [i for i in range(0, 200)]
     for idx in i:
@@ -107,6 +134,8 @@ def netlist_plotInstructions(header: List[str], values):
     researchers.reverse()
     
     y_params = [
+        # YParam(['private_market_data', 'private_market_algo', 'private_market_compute'], ['private_market'], "Private Market Knowledge Assets (by type)" ,LINEAR,MULT1,COUNT),
+
         YParam(proposals_funded,
         researchers,"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
         YParam(proposals,
@@ -115,10 +144,16 @@ def netlist_plotInstructions(header: List[str], values):
         researchers,"OCEAN funding",LINEAR,MULT1,COUNT),
         YParam(total_assets_mrkt,
         researchers,"Assets in Knowledge Market",LINEAR,MULT1,COUNT),
+        YParam(total_public_assets_mrkt,
+        total_public_assets_mrkt,"Public Researchers Assets in Knowledge Market",LINEAR,MULT1,COUNT),
+        YParam(total_private_assets_mrkt,
+        total_private_assets_mrkt,"Private Researchers Assets in Knowledge Market",LINEAR,MULT1,COUNT),
         YParam(knowledge_access,
         researchers,"Knowledge access index",LINEAR,MULT1,COUNT),
-        YParam(total_OCEAN,
-        researchers,"Researcher OCEAN",LINEAR,MULT1,COUNT),
+        YParam(total_public_OCEAN,
+        total_public_OCEAN,"Public Researcher OCEAN",LINEAR,MULT1,COUNT),
+        YParam(total_private_OCEAN,
+        total_private_OCEAN,"Private Researcher OCEAN",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_OCEAN"],
         ["dao_treasury"],"DAO_Treasury_OCEAN",LINEAR,MULT1,COUNT),
         YParam(["private_market_OCEAN", "public_market_OCEAN"],
