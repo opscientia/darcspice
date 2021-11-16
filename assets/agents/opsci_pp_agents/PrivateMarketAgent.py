@@ -5,6 +5,7 @@ from enforce_typing import enforce_types
 from typing import List, Dict
 import random
 import math
+import time
 
 from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
 from engine.AgentBase import AgentBase
@@ -26,6 +27,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
     '''
     def __init__(self, name: str, USD: float, OCEAN: float,
                  transaction_fees_percentage: float,
+                 knowledge_assets_per_r: dict,
                  fee_receiving_agents=None):
         """receiving_agents -- [agent_n_name] : method_for_%_going_to_agent_n
         The dict values are methods, not floats, so that the return value
@@ -37,9 +39,16 @@ class PrivateKnowledgeMarketAgent(AgentBase):
         self.OCEAN_last_tick = 0.0
         self.transaction_fees_percentage = transaction_fees_percentage
         self.total_fees: float = 0.0
+        self.knowledge_assets_per_researcher = {}
+        for i in ['data', 'algo', 'compute']:
+            k = knowledge_assets_per_r
+            self.knowledge_assets_per_researcher[i] = k 
 
-        self.knowledge_assets_per_researcher: dict = {}
-        self.knowledge_assets: dict = {}
+        print(f'WEOIFJAW;EOIFJ {self.knowledge_assets_per_researcher}')
+        self.knowledge_assets_per_researcher['data']['researcher0'] += 1
+        print(f'WEOIFJAW;EOIFJ {self.knowledge_assets_per_researcher}')
+        time.sleep(30)
+        self.knowledge_assets: dict = {'data': 0.0, 'algo': 0.0, 'compute': 0.0}
         self.total_knowledge_assets = 0
         self.types = ['algo', 'data', 'compute']
 
@@ -58,6 +67,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
 
                 # get the OCEAN received by this agent (add it to total for assertion later)
                 received_from_r = r.last_OCEAN_spent
+                print(received_from_r)
 
                 if received_from_r != {}:
                     # make sure the researcher is really buying from this market
@@ -73,17 +83,12 @@ class PrivateKnowledgeMarketAgent(AgentBase):
                     if received_from_r['publish']:
                         # add total knowledge_assets
                         self.total_knowledge_assets += 1
-                        if r.asset_type not in self.knowledge_assets.keys():
-                            self.knowledge_assets[r.asset_type] = received_from_r['assets_generated']
-                        else:
-                            self.knowledge_assets[r.asset_type] += received_from_r['assets_generated']
+                        assert r.asset_type in self.knowledge_assets.keys()
+                        self.knowledge_assets[r.asset_type] += received_from_r['assets_generated']
                         # keep track of ownership of knowledge_assets
-                        if r.asset_type not in self.knowledge_assets_per_researcher:
-                            self.knowledge_assets_per_researcher[r.asset_type] = {}
-                        if r in self.knowledge_assets_per_researcher[r.asset_type]: # check if this researcher already published sth
-                            self.knowledge_assets_per_researcher[r.asset_type][r] += received_from_r['assets_generated']
-                        else:
-                            self.knowledge_assets_per_researcher[r.asset_type][r] = received_from_r['assets_generated']
+                        assert r.asset_type in self.knowledge_assets_per_researcher
+                        assert r.name in self.knowledge_assets_per_researcher[r.asset_type] # check if this researcher already published sth
+                        self.knowledge_assets_per_researcher[r.asset_type][r.name] += received_from_r['assets_generated']
 
                     # calculate fee for this transaction
                     r_fee = received_from_r['spent'] * self.transaction_fees_percentage
@@ -100,6 +105,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
 
             assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
             assert round(fees, 5) == round(received * self.transaction_fees_percentage, 5) # same logic
+            print(f'TICK {state.tick} DISBURSE {OCEAN_to_researchers}')
             return fees, OCEAN_to_self, OCEAN_to_researchers
         else:
             return 0, 0, 0
@@ -109,7 +115,9 @@ class PrivateKnowledgeMarketAgent(AgentBase):
         Send OCEAN payout according to the ownership of assets in the KnowledgeMarket
         Receivers: ResearcherAgents
         '''
+        print(f'TICK {state.tick} KA PER R {self.knowledge_assets_per_researcher}')
         for t in self.knowledge_assets.keys():
+            print(f'TICK {state.tick} ASSET TYPE: {t} SUM {sum(self.knowledge_assets_per_researcher[t].values())} INDIVIDUAL RESEARCHERS {self.knowledge_assets_per_researcher[t]} JUST ASSETS {self.knowledge_assets[t]}')
             assert sum(self.knowledge_assets_per_researcher[t].values()) == self.knowledge_assets[t] # assert the total is the same as the sum of all the individuals
 
         # get the ratios of assets (differentiated by type) of all researchers
@@ -118,8 +126,10 @@ class PrivateKnowledgeMarketAgent(AgentBase):
             if type not in ratios:
                 ratios[type] = {}
             for agent, count in agents.items():
-                if agent.name not in ratios[type]:
-                    ratios[type][agent.name] = count / self.knowledge_assets[type]
+                if count == 0: # make sure that if the researcher has published nothing and there is nothing in the market that we don't divide by 0
+                    continue
+                if agent not in ratios[type]:
+                    ratios[type][agent] = count / self.knowledge_assets[type]
 
         for type in disburse.keys():
             if type in ratios:
@@ -154,6 +164,7 @@ class PrivateKnowledgeMarketAgent(AgentBase):
             self._disburseFeesOCEAN(state, fee)
 
         if disburse != {}:
+            print(f'TICK {state.tick} | DISBURSE = {disburse}')
             self._disburseOCEANPayout(state, disburse)
 
         if fee != 0 and disburse == 0:
