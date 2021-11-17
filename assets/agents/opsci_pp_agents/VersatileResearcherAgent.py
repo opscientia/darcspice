@@ -68,6 +68,7 @@ class VersatileResearcherAgent(AgentBase):
         self.ratio_funds_to_publish: float = 0.0
 
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
+        self.total_OCEAN_spent_this_tick: float = 0.0
         self.last_OCEAN_spent: dict = {}
         self.OCEAN_last_action: float = 0.0
     
@@ -107,13 +108,13 @@ class VersatileResearcherAgent(AgentBase):
         '''
         # new functionality for VersatileAgent
         _, asset_to_buy = self._getMarketAndAssets()
-
         OCEAN = self.OCEAN()
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
         if (OCEAN != 0) and (self.proposal != {}):
             OCEAN_DISBURSE: float = self.proposal['grant_requested']
-            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': 'public_market', 'asset_buy': asset_to_buy, 'publish': True, 'ratio': self.ratio_funds_to_publish}
+            self.total_OCEAN_spent_this_tick += OCEAN_DISBURSE
+            self.last_OCEAN_spent = {'tick': state.tick, 'spent': self.total_OCEAN_spent_this_tick, 'market': 'public_market', 'asset_buy': asset_to_buy, 'publish': True, 'ratio': self.ratio_funds_to_publish}
             self._transferOCEAN(state.getAgent('public_market'), OCEAN_DISBURSE)
             self.knowledge_access += 1 # self.proposal['assets_generated'] # subject to change, but we can say that the knowledge assets published ~ knowledge gained
 
@@ -123,19 +124,19 @@ class VersatileResearcherAgent(AgentBase):
         it is presumed that at least a part of the funds are for buying assets in the marketplace.
         1 tick = 1 hour
         '''
-
         # new functionality for VersatileAgent
-        market, asset_to_buy = self._getMarketAndAssets()
+        _, asset_to_buy = self._getMarketAndAssets()
 
         OCEAN = self.OCEAN()
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = 0.0 # not publishing
         if (OCEAN != 0) and (OCEAN >= state.ss.PRICE_OF_ASSETS) and (self.proposal != {}):
             OCEAN_DISBURSE =  state.ss.PRICE_OF_ASSETS # arbitrary, if Researcher starts with 10k OCEAN, it gives them 10 rounds to buy back into the competition
-            self.last_OCEAN_spent = {'tick': state.tick, 'spent': OCEAN_DISBURSE, 'market': market, 'asset_buy': asset_to_buy, 'publish': False, 'ratio': self.ratio_funds_to_publish}
+            self.total_OCEAN_spent_this_tick += OCEAN_DISBURSE
+            self.last_OCEAN_spent = {'tick': state.tick, 'spent': self.total_OCEAN_spent_this_tick, 'market': 'public_market', 'asset_buy': asset_to_buy, 'publish': False, 'ratio': self.ratio_funds_to_publish}
             self.knowledge_access += 1
             self.proposal['knowledge_access'] = self.knowledge_access
-            self._transferOCEAN(state.getAgent(market), OCEAN_DISBURSE)
+            self._transferOCEAN(state.getAgent('public_market'), OCEAN_DISBURSE)
 
     def _checkIfFunded(self, state) -> None:
         prop_eval = state.getAgent(self._evaluator).proposal_evaluation
@@ -162,8 +163,8 @@ class VersatileResearcherAgent(AgentBase):
                         self._BuyAssets(state)
     
     def multTimeTakeStep(self, state):
+        self.total_OCEAN_spent_this_tick = 0.0
         # takeStep for MultTimeResearcherAgent (and now public VersatileResearcherAgent)
-
         self._checkIfFunded(state)
 
         # Proposal functionality

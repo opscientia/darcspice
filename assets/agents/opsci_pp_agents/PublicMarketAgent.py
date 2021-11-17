@@ -70,6 +70,7 @@ class PublicKnowledgeMarketAgent(AgentBase):
                     assert received_from_r['market'] == 'public_market'
 
                     sum_OCEAN_received += received_from_r['spent']
+                    
                     ratio = received_from_r['ratio']
                     # print(f"RESEARCHER: {r.name} | received_from {received_from_r} | RATIO: {ratio}")
 
