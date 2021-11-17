@@ -69,6 +69,7 @@ class VersatileResearcherAgent(AgentBase):
 
         self.last_tick_spent = 0 # used by KnowledgeMarket to determine who just sent funds
         self.last_OCEAN_spent: dict = {}
+        self.OCEAN_last_action: float = 0.0
     
     #### FUNCTIONS of MultTimeResearcherAgent ####
     def createProposal(self, state) -> dict:
@@ -192,6 +193,12 @@ class VersatileResearcherAgent(AgentBase):
             self._USDToDisbursePerTick(state)
 
     #### FUNCTIONS OF PrivateResearcherAgents ####
+    def _haveROI(self) -> bool:
+        if self.OCEAN() > self.OCEAN_last_action:
+            return True
+        else:
+            return False
+
     def _privatePublishAssets(self, state) -> None:
         '''
         Used by private researchers to publish assets to the marketplace
@@ -246,6 +253,7 @@ class VersatileResearcherAgent(AgentBase):
                 if not self.private_bought_last_tick:
                     self.private_bought_last_tick = True
                     self._privateBuyAssets(state) # buys assets for research | does nothing if agent is compute provider
-                else:
+                elif self._haveROI():
                     self._privatePublishAssets(state) # publishes results
                     self.private_bought_last_tick = False
+                    self.OCEAN_last_action = self.OCEAN()
