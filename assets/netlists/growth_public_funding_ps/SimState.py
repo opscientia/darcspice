@@ -7,6 +7,7 @@ from assets.agents.opsci_pp_agents.VersatileResearcherAgent import VersatileRese
 from assets.agents.opsci_pp_agents.VersatileDAOTreasuryAgent import VersatileDAOTreasuryAgent
 from assets.agents.opsci_pp_agents.PrivateMarketAgent import PrivateKnowledgeMarketAgent
 from assets.agents.opsci_pp_agents.PublicMarketAgent import PublicKnowledgeMarketAgent
+from assets.agents.opsci_pp_agents.ResearcherGenerator import ResearcherGeneratorAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
 from util import valuation
@@ -78,6 +79,9 @@ class SimState(SimStateBase.SimStateBase):
                     name = "researcher%x" % i, evaluator = "dao_treasury",
                     USD=0.0, OCEAN=200000.0, research_type='private',
                     receiving_agents = {"market": 1.0}))
+
+        new_agents.append(ResearcherGeneratorAgent(name="generator", evaluator = "dao_treasury",
+                                                    USD=0.0, OCEAN=0.0))
 
         new_agents.append(PrivateKnowledgeMarketAgent(
             name = "private_market", USD=0.0, OCEAN=0.0,
