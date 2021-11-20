@@ -23,6 +23,9 @@ class SimEngine(object):
         self.output_dir = output_dir
         self.output_csv = "data.csv" #magic number
         self.netlist_log_func = netlist_log_func
+
+        self.all_rows: list = []
+        self.dataheader: list = []
         
     def run(self):
         """
@@ -38,6 +41,7 @@ class SimEngine(object):
         while True:
             self.takeStep()
             if self.doStop():
+                self.createNewCsv()
                 break
             self.state.tick += 1 #could be e.g. 10 or 100 or ..
         log.info("Done")
@@ -88,6 +92,8 @@ class SimEngine(object):
             s += s2
             dataheader += dataheader2
             datarow += datarow2
+            self.all_rows.append(datarow)
+        self.dataheader = dataheader
 
         return s, dataheader, datarow
 
@@ -119,4 +125,23 @@ class SimEngine(object):
             return True
         
         return False
+    
+    def createNewCsv(self) -> None:
+        for row in self.all_rows:
+            while len(row) != len(self.all_rows[-1]):
+                row.append(0)
+        if self.output_dir is None:
+            return
             
+        full_filename = os.path.join(self.output_dir, 'datax.csv')
+        
+        #if needed, create file and add header
+        if not os.path.exists(full_filename):
+            with open(full_filename,'w+') as f:
+                f.write(", ".join(self.dataheader) + "\n")
+            
+        #add in row
+        for row in self.all_rows:
+            datarow_s = ['%g' % dataval for dataval in row]
+            with open(full_filename,'a+') as f:
+                f.write(", ".join(datarow_s) + "\n")
