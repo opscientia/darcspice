@@ -12,17 +12,22 @@ from web3tools.web3util import toBase18
 class ResearcherGeneratorAgent(AgentBase):
     """Community growth agent"""
     def __init__(self, name: str, evaluator: str, USD: float, OCEAN: float, time_interval: int):
-        super().__init__(name, USD, OCEAN)   
+        super().__init__(name, USD, OCEAN)
+
         self.generated_agents_idx = 0
         self._evaluator = evaluator
         self.time_interval = time_interval
+        self.market_update = 0
         
     def takeStep(self, state):
-        if self._doCreateVersatileResearcherAgent(state):
+        if self._doCreateVersatileResearcherAgentTreasury(state):
             self._createVersatileResearcherAgent(state)
 
-    def _doCreateVersatileResearcherAgent(self, state) -> bool:
+    def _doCreateVersatileResearcherAgentTreasury(self, state) -> bool:
         return state.getAgent(self._evaluator).update > 0
+
+    def _doCreateVersatileResearcherAgentMarket(self, state) -> bool:
+        return (state.getAgent('public_market').total_knowledge_assets - self.market_update) >= 10
     
     def _doCreateVersatileResearcherAgentTime(self, state) -> bool:
         return state.tick % self.time_interval == 0
