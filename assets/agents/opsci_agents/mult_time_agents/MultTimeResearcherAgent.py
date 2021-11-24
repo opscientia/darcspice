@@ -38,6 +38,7 @@ class MultTimeResearcherAgent(AgentBase):
         self.total_research_funds_received: float = 0.0
         self.total_assets_in_mrkt: int = 0
         self.integrations: list = []
+        self.novelties: list = []
 
         self.ratio_funds_to_publish: float = 0.0
 
@@ -57,7 +58,8 @@ class MultTimeResearcherAgent(AgentBase):
                     'no_researchers': 10,
                     'time': random.randint(5000, 15000), # research length: random number of ticks
                     'knowledge_access': self.knowledge_access,
-                    'integration': self._getIntegration()}
+                    'integration': self._getIntegration(),
+                    'novelty': self._getNovelty()}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
@@ -138,6 +140,16 @@ class MultTimeResearcherAgent(AgentBase):
             integration = random.uniform(0.5, 1.0)
         self.integrations.append(integration)
         return integration
+
+    def _getNovelty(self) -> float:
+        if len(self.novelties) == 0:
+            novelty = random.random()
+        elif self.novelties[-1] < 0.5:
+            novelty = random.uniform(0.0, 0.5)
+        elif self.novelties[-1] >= 0.5:
+            novelty = random.uniform(0.5, 1.0)
+        self.novelties.append(novelty)
+        return novelty
 
     def takeStep(self, state):
 
