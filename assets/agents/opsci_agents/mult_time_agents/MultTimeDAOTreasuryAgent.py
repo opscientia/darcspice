@@ -27,6 +27,9 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
+        self.integration: float = 0.0
+        self.novelty: float = 0.0
+        self.in_index: float = 0.0
 
         self.proposal_evaluation: dict = {}
         self.update: int = 0
@@ -74,6 +77,9 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get) # type: ignore
             self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
+            self.integration = state.getAgent(winner).proposal['integration']
+            self.novelty = state.getAgent(winner).proposal['novelty']
+            self._getINindex()
             del scores[winner]
 
             # immediately disburse funds to new winner
@@ -136,3 +142,6 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         OCEAN = min(self.OCEAN(), self.proposal_evaluation[i]['amount'])
         agent = state.getAgent(self.proposal_evaluation[i]['winner'])
         self._transferOCEAN(agent, OCEAN)
+
+    def _getINindex(self) -> None:
+        self.in_index = self.integration * self.novelty
