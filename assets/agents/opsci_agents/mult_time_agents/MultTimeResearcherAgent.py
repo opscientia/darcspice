@@ -37,6 +37,7 @@ class MultTimeResearcherAgent(AgentBase):
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
         self.total_assets_in_mrkt: int = 0
+        self.integrations: list = []
 
         self.ratio_funds_to_publish: float = 0.0
 
@@ -55,7 +56,8 @@ class MultTimeResearcherAgent(AgentBase):
                     'assets_generated': random.randint(1, 10), # Note: might be worth considering some distribution based on other params 
                     'no_researchers': 10,
                     'time': random.randint(5000, 15000), # research length: random number of ticks
-                    'knowledge_access': self.knowledge_access}
+                    'knowledge_access': self.knowledge_access,
+                    'integration': self._getIntegration()}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
@@ -127,6 +129,16 @@ class MultTimeResearcherAgent(AgentBase):
                     for _ in range(state.getAgent(self._evaluator).update):
                         self._BuyAssets(state)
     
+    def _getIntegration(self) -> float:
+        if len(self.integrations) == 0:
+            integration = random.random()
+        elif self.integrations[-1] < 0.5:
+            integration = random.uniform(0.0, 0.5)
+        elif self.integrations[-1] >= 0.5:
+            integration = random.uniform(0.5, 1.0)
+        self.integrations.append(integration)
+        return integration
+
     def takeStep(self, state):
 
         self.last_OCEAN_spent = 0.0
