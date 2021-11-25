@@ -59,7 +59,8 @@ class MultTimeResearcherAgent(AgentBase):
                     'time': random.randint(5000, 15000), # research length: random number of ticks
                     'knowledge_access': self.knowledge_access,
                     'integration': self._getIntegration(),
-                    'novelty': self._getNovelty()}
+                    'novelty': self._getNovelty(),
+                    'impact': self._getImpact()}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
@@ -150,6 +151,12 @@ class MultTimeResearcherAgent(AgentBase):
             novelty = random.uniform(0.5, 1.0)
         self.novelties.append(novelty)
         return novelty
+
+    def _getImpact(self) -> float:
+        if self.novelties[-1] < self.integrations[-1]:
+            return 10 * self.integrations[-1]
+        else:
+            return 10 * self.novelties[-1]
 
     def takeStep(self, state):
 
