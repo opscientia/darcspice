@@ -55,6 +55,8 @@ def netlist_createLogData(state):
     datarow += [treasury.novelty]
     dataheader += ["dao_treasury_funded_proposals_in_index"]
     datarow += [treasury.in_index]
+    dataheader += ["funded_proposals_impact"]
+    datarow += [treasury.impact]
 
     staker = state.getAgent("staker")
     s += ["; staker OCEAN=%s" % prettyBigNum(staker.OCEAN(),False)]
@@ -110,8 +112,8 @@ def netlist_plotInstructions(header: List[str], values):
     y_params = [
         YParam(proposals_funded,
         researchers,"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
-        YParam(["dao_treasury_funded_proposals_integration", "dao_treasury_funded_proposals_novelty", "dao_treasury_funded_proposals_in_index"],
-        ["integration", "novelty", "in_index"],"integration vs novelty in funded proposals",LINEAR,MULT1,COUNT),
+        YParam(["dao_treasury_funded_proposals_integration", "dao_treasury_funded_proposals_novelty", "dao_treasury_funded_proposals_in_index", "funded_proposals_impact"],
+        ["integration", "novelty", "in_index", "impact"],"integration, novelty, impact in funded proposals",LINEAR,MULT1,COUNT),
         YParam(proposals,
         researchers,"#_proposals",LINEAR,MULT1,COUNT),
         YParam(total_funding,
