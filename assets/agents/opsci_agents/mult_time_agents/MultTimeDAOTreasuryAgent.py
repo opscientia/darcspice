@@ -30,6 +30,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         self.integration: float = 0.0
         self.novelty: float = 0.0
         self.in_index: float = 0.0
+        self.impact: float = 0.0
 
         self.proposal_evaluation: dict = {}
         self.update: int = 0
@@ -71,7 +72,8 @@ class MultTimeDAOTreasuryAgent(AgentBase):
                               agent.proposal['assets_generated'] / \
                               agent.proposal['time'] / \
                               agent.proposal['knowledge_access'] / \
-                              (agent.proposal['integration'] * agent.proposal['novelty'])
+                              (agent.proposal['integration'] * agent.proposal['novelty']) / \
+                              agent.proposal['impact']
 
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
@@ -80,6 +82,7 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             self.integration = state.getAgent(winner).proposal['integration']
             self.novelty = state.getAgent(winner).proposal['novelty']
             self._getINindex()
+            self.impact = state.getAgent(winner).proposal['impact']
             del scores[winner]
 
             # immediately disburse funds to new winner
