@@ -67,6 +67,14 @@ def netlist_createLogData(state):
     s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
     dataheader += ["dao_treasury_OCEAN"]
     datarow += [treasury.OCEAN()]
+    dataheader += ["dao_treasury_funded_proposals_integration"]
+    datarow += [treasury.integration]
+    dataheader += ["dao_treasury_funded_proposals_novelty"]
+    datarow += [treasury.novelty]
+    dataheader += ["dao_treasury_funded_proposals_in_index"]
+    datarow += [treasury.in_index]
+    dataheader += ["funded_proposals_impact"]
+    datarow += [treasury.impact]
 
     private_market = state.getAgent("private_market")
     s += ["; private_market OCEAN=%s" % prettyBigNum(private_market.OCEAN(),False)]
@@ -138,6 +146,9 @@ def netlist_plotInstructions(header: List[str], values):
 
         YParam(proposals_funded,
         researchers,"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
+        YParam(["dao_treasury_funded_proposals_integration", "dao_treasury_funded_proposals_novelty", "dao_treasury_funded_proposals_in_index"],
+        ["integration", "novelty", "in_index"],"integration vs novelty in funded proposals",LINEAR,MULT1,COUNT),
+        YParam(["funded_proposals_impact"],["impact"], "impact of funded proposals",LINEAR,MULT1,COUNT),
         YParam(proposals,
         researchers,"#_proposals",LINEAR,MULT1,COUNT),
         YParam(total_funding,

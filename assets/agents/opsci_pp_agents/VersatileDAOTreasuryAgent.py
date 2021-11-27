@@ -27,6 +27,10 @@ class VersatileDAOTreasuryAgent(AgentBase):
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
+        self.integration: float = 0.0
+        self.novelty: float = 0.0
+        self.in_index: float = 0.0
+        self.impact: float = 0.0
 
         self.proposal_evaluation: dict = {}
         self.update: int = 0
@@ -72,20 +76,32 @@ class VersatileDAOTreasuryAgent(AgentBase):
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get) # type: ignore
-            self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
+            self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested'],
+                                          'integration': state.getAgent(winner).proposal['integration'], 'novelty': state.getAgent(winner).proposal['novelty'],
+                                          'impact': state.getAgent(winner).proposal['impact']}
             del scores[winner]
 
             # immediately disburse funds to new winner
             self._disburseFundsOCEAN(state, i)
             self.total_research_funds_disbursed += self.proposal_evaluation[i]['amount']
-            self.proposal_evaluation_update[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
+            self.proposal_evaluation_update[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested'], 
+                                                  'integration': state.getAgent(winner).proposal['integration'], 'novelty': state.getAgent(winner).proposal['novelty'],
+                                                  'impact': state.getAgent(winner).proposal['impact']}
             self.update += 1
             # check if enough OCEAN for next grant
             if self.OCEAN() < state.ss.FUNDING_BOUNDARY: # arbitrary number
                 break
             if len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 break
-        
+        # reset integration & novelty
+        self.integration = 0.0
+        self.novelty = 0.0
+
+        for i in self.proposal_evaluation.keys():
+            self.integration += self.proposal_evaluation[i]['integration'] / state.ss.PROPOSALS_FUNDED_AT_A_TIME
+            self.novelty += self.proposal_evaluation[i]['novelty'] / state.ss.PROPOSALS_FUNDED_AT_A_TIME
+        self._getINindex()
+        self.impact = state.getAgent(winner).proposal['impact']
         assert (len(self.proposal_evaluation.keys()) <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def checkProposalState(self, state):
@@ -135,3 +151,6 @@ class VersatileDAOTreasuryAgent(AgentBase):
         OCEAN = min(self.OCEAN(), self.proposal_evaluation[i]['amount'])
         agent = state.getAgent(self.proposal_evaluation[i]['winner'])
         self._transferOCEAN(agent, OCEAN)
+
+    def _getINindex(self) -> None:
+        self.in_index = self.integration * self.novelty
