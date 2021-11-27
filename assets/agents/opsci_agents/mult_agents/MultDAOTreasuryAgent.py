@@ -27,6 +27,10 @@ class MultDAOTreasuryAgent(AgentBase):
         #track amounts over time
         self._USD_per_tick: List[float] = [] #the next tick will record what's in self
         self._OCEAN_per_tick: List[float] = [] # ""
+        self.integration: float = 0.0
+        self.novelty: float = 0.0
+        self.in_index: float = 0.0
+        self.impact: float = 0.0
 
         self.proposal_evaluation: dict = {}
 
@@ -63,9 +67,20 @@ class MultDAOTreasuryAgent(AgentBase):
                               agent.proposal['knowledge_access']
         for i in range(state.ss.PROPOSALS_FUNDED_AT_A_TIME):
             winner = min(scores, key=scores.get) # type: ignore
-            evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
+            evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested'], 
+                             'integration': state.getAgent(winner).proposal['integration'], 'novelty': state.getAgent(winner).proposal['novelty'],
+                             'impact': state.getAgent(winner).proposal['impact']}
             del scores[winner]
         assert (len(evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME)
+        # reset integration & novelty
+        self.integration = 0.0
+        self.novelty = 0.0
+
+        for i in self.proposal_evaluation.keys():
+            self.integration += self.proposal_evaluation[i]['integration'] / state.ss.PROPOSALS_FUNDED_AT_A_TIME
+            self.novelty += self.proposal_evaluation[i]['novelty'] / state.ss.PROPOSALS_FUNDED_AT_A_TIME
+        self._getINindex()
+        self.impact = state.getAgent(winner).proposal['impact']
         return evaluation
 
     def proposalsReady(self, state):
@@ -129,4 +144,7 @@ class MultDAOTreasuryAgent(AgentBase):
             return 0
         tick1 = int(max(0, math.floor(t1 / float(state.ss.time_step))))
         return tick1
+
+    def _getINindex(self) -> None:
+        self.in_index = self.integration * self.novelty
         

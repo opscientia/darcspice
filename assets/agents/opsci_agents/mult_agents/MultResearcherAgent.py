@@ -37,6 +37,9 @@ class MultResearcherAgent(AgentBase):
         self.no_proposals_funded: int = 0
         self.total_research_funds_received: float = 0.0
         self.total_assets_in_mrkt: int = 0
+        self.integrations: list = []
+        self.novelties: list = []
+
 
         self.ratio_funds_to_publish: float = 0.0
 
@@ -52,7 +55,10 @@ class MultResearcherAgent(AgentBase):
             return {'grant_requested': random.randint(10000, 50000), # Note: might be worth considering some distribution based on other params
                     'assets_generated': random.randint(1, 10), # Note: might be worth considering some distribution based on other params 
                     'no_researchers': 10,
-                    'knowledge_access': self.knowledge_access}
+                    'knowledge_access': self.knowledge_access,
+                    'integration': self._getIntegration(),
+                    'novelty': self._getNovelty(),
+                    'impact': self._getImpact()}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
@@ -93,7 +99,32 @@ class MultResearcherAgent(AgentBase):
             for name, computePercent in self._receiving_agents.items():
                 self._transferOCEAN(state.getAgent(name), computePercent * OCEAN_DISBURSE)
 
-    
+    def _getIntegration(self) -> float:
+        if len(self.integrations) == 0:
+            integration = random.random()
+        elif self.integrations[-1] < 0.5:
+            integration = random.uniform(0.0, 0.5)
+        elif self.integrations[-1] >= 0.5:
+            integration = random.uniform(0.5, 1.0)
+        self.integrations.append(integration)
+        return integration
+
+    def _getNovelty(self) -> float:
+        if len(self.novelties) == 0:
+            novelty = random.random()
+        elif self.novelties[-1] < 0.5:
+            novelty = random.uniform(0.0, 0.5)
+        elif self.novelties[-1] >= 0.5:
+            novelty = random.uniform(0.5, 1.0)
+        self.novelties.append(novelty)
+        return novelty
+
+    def _getImpact(self) -> float:
+        if self.novelties[-1] < self.integrations[-1]:
+            return 10 * self.integrations[-1]
+        else:
+            return 10 * self.novelties[-1]
+
     def takeStep(self, state):
 
         if self.proposal != {}:
