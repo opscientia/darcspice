@@ -78,11 +78,9 @@ class MultTimeDAOTreasuryAgent(AgentBase):
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
             winner = min(scores, key=scores.get) # type: ignore
-            self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested']}
-            self.integration = state.getAgent(winner).proposal['integration']
-            self.novelty = state.getAgent(winner).proposal['novelty']
-            self._getINindex()
-            self.impact = state.getAgent(winner).proposal['impact']
+            self.proposal_evaluation[i] = {'winner': winner, 'amount': state.getAgent(winner).proposal['grant_requested'], 
+                                           'integration': state.getAgent(winner).proposal['integration'], 'novelty': state.getAgent(winner).proposal['novelty'],
+                                           'impact': state.getAgent(winner).proposal['impact']}
             del scores[winner]
 
             # immediately disburse funds to new winner
@@ -96,6 +94,16 @@ class MultTimeDAOTreasuryAgent(AgentBase):
             if len(self.proposal_evaluation.keys()) == state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 break
         
+        # reset integration & novelty
+        self.integration = 0.0
+        self.novelty = 0.0
+
+        for i in self.proposal_evaluation.keys():
+            self.integration += self.proposal_evaluation[i]['integration'] / state.ss.PROPOSALS_FUNDED_AT_A_TIME
+            self.novelty += self.proposal_evaluation[i]['novelty'] / state.ss.PROPOSALS_FUNDED_AT_A_TIME
+        self._getINindex()
+        self.impact = state.getAgent(winner).proposal['impact']
+
         assert (len(self.proposal_evaluation.keys()) <= state.ss.PROPOSALS_FUNDED_AT_A_TIME)
 
     def checkProposalState(self, state):
