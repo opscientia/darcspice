@@ -47,3 +47,13 @@ Netlist code available at `assets/netlists/growth_public_funding_ps/`, agents `a
 
 - run: `tsp run assets/netlists/growth_public_funding_ps/netlist.py simulation_data/csv/opsci_public_funding_ps_01`
 - plot: `tsp plot assets/netlists/opsci_public_funding_ps/netlist.py simulation_data/csv/opsci_public_funding_ps_01 simulation_data/png/opsci_public_funding_ps_01`
+
+
+## Future contributions
+
+For anyone interested in expanding the functionality of TokenSPICE for open science, here is a list of netlists and features that would be helpful.
+
+- SourceCred implementation for higher level resolution of community contributions
+- peer review actions and rewards for researchers
+- quadratic funding model
+- token ecosystem with a minter (tracking supply, price, different reward distribution experiments)
