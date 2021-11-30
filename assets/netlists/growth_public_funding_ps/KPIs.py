@@ -1,6 +1,7 @@
 from enforce_typing import enforce_types
 import math
 from typing import List
+from tqdm import tqdm
 
 from engine import KPIsBase
 from util import valuation
@@ -18,6 +19,44 @@ def netlist_createLogData(state):
     s = [] #for console logging
     dataheader = [] # for csv logging: list of string
     datarow = [] #for csv logging: list of float
+
+    treasury = state.getAgent("dao_treasury")
+    s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
+    dataheader += ["dao_treasury_OCEAN"]
+    datarow += [treasury.OCEAN()]
+    dataheader += ["dao_treasury_funded_proposals_integration"]
+    datarow += [treasury.integration]
+    dataheader += ["dao_treasury_funded_proposals_novelty"]
+    datarow += [treasury.novelty]
+    dataheader += ["dao_treasury_funded_proposals_in_index"]
+    datarow += [treasury.in_index]
+    dataheader += ["funded_proposals_impact"]
+    datarow += [treasury.impact]
+
+    private_market = state.getAgent("private_market")
+    s += ["; private_market OCEAN=%s" % prettyBigNum(private_market.OCEAN(),False)]
+    dataheader += ["private_market_OCEAN"]
+    datarow += [private_market.OCEAN()]
+    dataheader += ["private_market_fees_OCEAN"]
+    datarow += [private_market.total_fees]
+
+    dataheader += ["private_market_assets"]
+    datarow += [private_market.total_knowledge_assets]
+
+    # if private_market.knowledge_assets != {}:
+    #     for type, count in private_market.knowledge_assets.items():
+    #         dataheader += ["private_market_%s" % type]
+    #         datarow += [count]
+
+    public_market = state.getAgent("public_market")
+    s += ["; public_market OCEAN=%s" % prettyBigNum(public_market.OCEAN(),False)]
+    dataheader += ["public_market_OCEAN"]
+    datarow += [public_market.OCEAN()]
+    dataheader += ["public_market_fees_OCEAN"]
+    datarow += [public_market.total_fees]
+
+    dataheader += ["public_market_assets"]
+    datarow += [public_market.total_knowledge_assets]
 
     r_dict = {}
     for r in state.public_researchers.keys():
@@ -63,44 +102,6 @@ def netlist_createLogData(state):
         dataheader += ["%s_%s_total_assets_%s_in_market" % (r, r_dict[r].research_type, r_dict[r].asset_type)]
         datarow += [r_dict[r].total_assets_in_mrkt]
 
-    treasury = state.getAgent("dao_treasury")
-    s += ["; dao_treasury OCEAN=%s" % prettyBigNum(treasury.OCEAN(),False)]
-    dataheader += ["dao_treasury_OCEAN"]
-    datarow += [treasury.OCEAN()]
-    dataheader += ["dao_treasury_funded_proposals_integration"]
-    datarow += [treasury.integration]
-    dataheader += ["dao_treasury_funded_proposals_novelty"]
-    datarow += [treasury.novelty]
-    dataheader += ["dao_treasury_funded_proposals_in_index"]
-    datarow += [treasury.in_index]
-    dataheader += ["funded_proposals_impact"]
-    datarow += [treasury.impact]
-
-    private_market = state.getAgent("private_market")
-    s += ["; private_market OCEAN=%s" % prettyBigNum(private_market.OCEAN(),False)]
-    dataheader += ["private_market_OCEAN"]
-    datarow += [private_market.OCEAN()]
-    dataheader += ["private_market_fees_OCEAN"]
-    datarow += [private_market.total_fees]
-
-    dataheader += ["private_market_assets"]
-    datarow += [private_market.total_knowledge_assets]
-
-    # if private_market.knowledge_assets != {}:
-    #     for type, count in private_market.knowledge_assets.items():
-    #         dataheader += ["private_market_%s" % type]
-    #         datarow += [count]
-
-    public_market = state.getAgent("public_market")
-    s += ["; public_market OCEAN=%s" % prettyBigNum(public_market.OCEAN(),False)]
-    dataheader += ["public_market_OCEAN"]
-    datarow += [public_market.OCEAN()]
-    dataheader += ["public_market_fees_OCEAN"]
-    datarow += [public_market.total_fees]
-
-    dataheader += ["public_market_assets"]
-    datarow += [public_market.total_knowledge_assets]
-
 
     #done
     return s, dataheader, datarow
@@ -134,7 +135,7 @@ def netlist_plotInstructions(header: List[str], values):
     total_private_assets_mrkt = [m for m in r_list if 'private_total_assets_' in m]
     researchers = []
     i = [i for i in range(0, 200)]
-    for idx in i:
+    for idx in tqdm(i):
         for r in r_list:
             if ('researcher%x' % idx) in r:
                 if ('researcher%x' % idx) not in researchers:

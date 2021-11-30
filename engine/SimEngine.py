@@ -2,6 +2,7 @@ import logging
 log = logging.getLogger('master')
 
 from enforce_typing import enforce_types
+from tqdm import tqdm
 import os
 
 from util import valuation
@@ -52,7 +53,8 @@ class SimEngine(object):
         log.debug("Tick=%d: begin" % (self.state.tick))
         
         if (self.elapsedSeconds() % S_PER_DAY) == 0:
-            s, dataheader, datarow  = self.createLogData()            
+            s, dataheader, datarow  = self.createLogData()
+            self.dataheader = dataheader
             log.info("".join(s))
             self.logToCsv(dataheader, datarow)
                 
@@ -93,7 +95,6 @@ class SimEngine(object):
             dataheader += dataheader2
             datarow += datarow2
             self.all_rows.append(datarow)
-        self.dataheader = dataheader
 
         return s, dataheader, datarow
 
@@ -125,21 +126,21 @@ class SimEngine(object):
             return True
         
         return False
-    
+
     def createNewCsv(self) -> None:
-        for row in self.all_rows:
+        for row in tqdm(self.all_rows):
             while len(row) != len(self.all_rows[-1]):
                 row.append(0)
         if self.output_dir is None:
             return
-            
+
         full_filename = os.path.join(self.output_dir, 'datax.csv')
-        
+
         #if needed, create file and add header
         if not os.path.exists(full_filename):
             with open(full_filename,'w+') as f:
                 f.write(", ".join(self.dataheader) + "\n")
-            
+
         #add in row
         for row in self.all_rows:
             datarow_s = ['%g' % dataval for dataval in row]
