@@ -130,7 +130,7 @@ class VersatileDAOTreasuryAgent(AgentBase):
             if len(self.proposal_evaluation) < state.ss.PROPOSALS_FUNDED_AT_A_TIME:
                 if can_fund:
                     self.evaluateProposal(state)
-        
+
         if (self.proposal_evaluation == {}) and can_fund:
             self.evaluateProposal(state)
 
