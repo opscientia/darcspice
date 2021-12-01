@@ -216,7 +216,14 @@ def netlist_plotInstructions(header: List[str], values):
     
     y_params = [
         # YParam(['private_market_data', 'private_market_algo', 'private_market_compute'], ['private_market'], "Private Market Knowledge Assets (by type)" ,LINEAR,MULT1,COUNT),
-
+        YParam(["total_value_in_treasury", "total_value_in_researchers", "total_value_in_markets"],
+        ["treasury", "researchers", "markets"],"Value distribution in the system",LINEAR,MULT1,COUNT),
+        YParam(["total_value_in_researchers", "total_value_in_public_researchers", "total_value_in_private_researchers"],
+        ["researchers", "public_researchers", "private_researchers"],"Value distribution across researcher types",LINEAR,MULT1,COUNT),
+        YParam(["total_value_of_system"],
+        [""],"Total value in the system",LINEAR,MULT1,COUNT),
+        YParam(["relative_value_in_markets", "relative_value_in_researchers", "relative_value_in_treasury"],
+        ["markets", "researchers", "treasury"],"Relative value distribution in the system",LINEAR,MULT1,COUNT),
         YParam(proposals_funded,
         researchers,"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_funded_proposals_integration", "dao_treasury_funded_proposals_novelty", "dao_treasury_funded_proposals_in_index"],
