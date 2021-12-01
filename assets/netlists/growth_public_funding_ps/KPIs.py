@@ -10,7 +10,16 @@ from util.strutil import prettyBigNum
 
 @enforce_types
 class KPIs(KPIsBase.KPIsBase):
-    pass
+    def __init__(self):
+        super().__init__()
+
+        self._total_value_in_mrkts: list = []
+        self._total_value_in_rsrchs: list = []
+        self._total_value_in_treasury: list = []
+        self._total_value_in_system: list = []
+        self._relative_value_in_mrkts: list = []
+        self._relative_value_in_rsrchrs: list = []
+        self._relative_value_in_treasury: list = []
 
 
 @enforce_types
