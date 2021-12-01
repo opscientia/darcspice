@@ -65,6 +65,7 @@ class KPIs(KPIsBase.KPIsBase):
 @enforce_types
 def netlist_createLogData(state):
     """pass this to SimEngine.__init__() as argument `netlist_createLogData`"""
+    kpis = state.kpis
     s = [] #for console logging
     dataheader = [] # for csv logging: list of string
     datarow = [] #for csv logging: list of float
@@ -106,6 +107,28 @@ def netlist_createLogData(state):
 
     dataheader += ["public_market_assets"]
     datarow += [public_market.total_knowledge_assets]
+
+    dataheader += ["total_value_in_treasury"]
+    datarow += kpis._total_value_in_treasury
+    dataheader += ["total_value_in_researchers"]
+    datarow += kpis._total_value_in_rsrchs
+    dataheader += ["total_value_in_public_researchers"]
+    datarow += kpis._total_value_in_public_rsrchs
+    dataheader += ["total_value_in_private_researchers"]
+    datarow += kpis._total_value_in_private_rsrchs
+    dataheader += ["total_value_in_markets"]
+    datarow += kpis._total_value_in_mrkts
+
+    dataheader += ["total_value_of_system"]
+    datarow += kpis._total_value_in_system
+    dataheader += ["relative_value_in_markets"]
+    datarow += kpis._relative_value_in_mrkts
+    dataheader += ["relative_value_in_researchers"]
+    datarow += kpis._relative_value_in_rsrchrs
+    dataheader += ["relative_value_in_treasury"]
+    datarow += kpis._relative_value_in_treasury
+
+
 
     r_dict = {}
     for r in state.public_researchers.keys():
