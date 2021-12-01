@@ -10,8 +10,8 @@ from util.strutil import prettyBigNum
 
 @enforce_types
 class KPIs(KPIsBase.KPIsBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,time_step: int):
+        super().__init__(time_step)
 
         self._total_value_in_treasury: list = []
         self._total_value_in_rsrchs: list = []
@@ -43,13 +43,13 @@ class KPIs(KPIsBase.KPIsBase):
         self._relative_value_in_rsrchrs.append(r / system)
         self._relative_value_in_treasury.append(t / system)
 
-    def _getTotalValues(state):
+    def _getTotalValues(self, state):
         treasury_OCEAN = state.getAgent('dao_treasury').OCEAN()
 
         researcher_OCEAN = 0.0
         public_researcher_OCEAN = 0.0
         private_researcher_OCEAN = 0.0
-        for r in state.researcher_agents.keys():
+        for r in state.researchers.keys():
             researcher_OCEAN += state.getAgent(r).OCEAN()
         for r in state.public_researchers.keys():
             public_researcher_OCEAN += state.getAgent(r).OCEAN()
