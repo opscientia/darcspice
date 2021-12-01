@@ -13,13 +13,38 @@ class KPIs(KPIsBase.KPIsBase):
     def __init__(self):
         super().__init__()
 
-        self._total_value_in_mrkts: list = []
-        self._total_value_in_rsrchs: list = []
         self._total_value_in_treasury: list = []
+        self._total_value_in_rsrchs: list = []
+        self._total_value_in_public_rsrchs: list = []
+        self._total_value_in_private_rsrchs: list = []
+        self._total_value_in_mrkts: list = []
+
+        # relative values
         self._total_value_in_system: list = []
         self._relative_value_in_mrkts: list = []
         self._relative_value_in_rsrchrs: list = []
         self._relative_value_in_treasury: list = []
+
+    def takeStep(self, state):
+        return super().takeStep(state)
+
+    def _getTotalValues(state) -> float:
+        treasury_OCEAN = state.getAgent('dao_treasury').OCEAN()
+
+        researcher_OCEAN = 0.0
+        public_researcher_OCEAN = 0.0
+        private_researcher_OCEAN = 0.0
+        for r in state.researcher_agents.keys():
+            researcher_OCEAN += state.getAgent(r).OCEAN()
+        for r in state.public_researchers.keys():
+            public_researcher_OCEAN += state.getAgent(r).OCEAN()
+        for r in state.private_researchers.keys():
+            private_researcher_OCEAN += state.getAgent(r).OCEAN()
+
+        markets_OCEAN = state.getAgent('private_market').OCEAN() + state.getAgent('public_market').OCEAN()
+
+        return treasury_OCEAN, researcher_OCEAN, public_researcher_OCEAN, private_researcher_OCEAN, markets_OCEAN
+        
 
 
 @enforce_types
