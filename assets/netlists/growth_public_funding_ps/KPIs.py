@@ -26,9 +26,24 @@ class KPIs(KPIsBase.KPIsBase):
         self._relative_value_in_treasury: list = []
 
     def takeStep(self, state):
-        return super().takeStep(state)
+        super().takeStep(state)
 
-    def _getTotalValues(state) -> float:
+        t, r, pub_r, priv_r, m = self._getTotalValues(state)
+
+        self._total_value_in_treasury.append(t)
+        self._total_value_in_rsrchs.append(r)
+        self._total_value_in_public_rsrchs.append(pub_r)
+        self._total_value_in_private_rsrchs.append(priv_r)
+        self._relative_value_in_mrkts.append(m)
+
+        system = t + r + m
+
+        self._total_value_in_system.append(system)
+        self._relative_value_in_mrkts.append(m / system)
+        self._relative_value_in_rsrchrs.append(r / system)
+        self._relative_value_in_treasury.append(t / system)
+
+    def _getTotalValues(state):
         treasury_OCEAN = state.getAgent('dao_treasury').OCEAN()
 
         researcher_OCEAN = 0.0
