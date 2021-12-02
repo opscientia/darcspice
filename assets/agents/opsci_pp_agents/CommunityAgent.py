@@ -24,19 +24,19 @@ class CommunityAgent(AgentBase):
         self.treasury = state.getAgent(state.ss.TREASURY)
 
         if self.treasury.update > 0:
-            self._getCuriosity(state)
-            if self.curiosity > 0.5: # magic number
+            self._getCuriosity()
+            if self.curiosity > 0.5 and self.OCEAN() >= 1000: # magic number
                 self._interact(state)
 
     def _getCuriosity(self) -> None:
         assert self.treasury.proposal_evaluation != {}
 
-        self.curiosity = (self.treasury.impact / 10) + random.randrange(-0.5, 0.5)
+        self.curiosity = (self.treasury.impact / 10) + random.uniform(-0.5, 0.5)
         if self.curiosity > 1:
             self.curiosity = 1
         if self.curiosity < 1:
             self.curiosity = 0
 
     def _interact(self, state):
-        self._transferOCEAN('public_market', state.ss.PRICE_OF_ASSETS)
+        self._transferOCEAN(state.getAgent('public_market'), state.ss.PRICE_OF_ASSETS)
         self.knowledge_access += 1
