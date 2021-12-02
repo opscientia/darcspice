@@ -13,17 +13,17 @@ class KPIs(KPIsBase.KPIsBase):
     def __init__(self,time_step: int):
         super().__init__(time_step)
 
-        self._total_value_in_treasury: list = []
-        self._total_value_in_rsrchs: list = []
-        self._total_value_in_public_rsrchs: list = []
-        self._total_value_in_private_rsrchs: list = []
-        self._total_value_in_mrkts: list = []
+        self._total_value_in_treasury: list = [0]
+        self._total_value_in_rsrchs: list = [0]
+        self._total_value_in_public_rsrchs: list = [0]
+        self._total_value_in_private_rsrchs: list = [0]
+        self._total_value_in_mrkts: list = [0]
 
         # relative values
-        self._total_value_in_system: list = []
-        self._relative_value_in_mrkts: list = []
-        self._relative_value_in_rsrchrs: list = []
-        self._relative_value_in_treasury: list = []
+        self._total_value_in_system: list = [0]
+        self._relative_value_in_mrkts: list = [0]
+        self._relative_value_in_rsrchrs: list = [0]
+        self._relative_value_in_treasury: list = [0]
 
     def takeStep(self, state):
         super().takeStep(state)
@@ -109,24 +109,24 @@ def netlist_createLogData(state):
     datarow += [public_market.total_knowledge_assets]
 
     dataheader += ["total_value_in_treasury"]
-    datarow += kpis._total_value_in_treasury
+    datarow += [kpis._total_value_in_treasury[-1]]
     dataheader += ["total_value_in_researchers"]
-    datarow += kpis._total_value_in_rsrchs
+    datarow += [kpis._total_value_in_rsrchs[-1]]
     dataheader += ["total_value_in_public_researchers"]
-    datarow += kpis._total_value_in_public_rsrchs
+    datarow += [kpis._total_value_in_public_rsrchs[-1]]
     dataheader += ["total_value_in_private_researchers"]
-    datarow += kpis._total_value_in_private_rsrchs
+    datarow += [kpis._total_value_in_private_rsrchs[-1]]
     dataheader += ["total_value_in_markets"]
-    datarow += kpis._total_value_in_mrkts
+    datarow += [kpis._total_value_in_mrkts[-1]]
 
     dataheader += ["total_value_of_system"]
-    datarow += kpis._total_value_in_system
+    datarow += [kpis._total_value_in_system[-1]]
     dataheader += ["relative_value_in_markets"]
-    datarow += kpis._relative_value_in_mrkts
+    datarow += [kpis._relative_value_in_mrkts[-1]]
     dataheader += ["relative_value_in_researchers"]
-    datarow += kpis._relative_value_in_rsrchrs
+    datarow += [kpis._relative_value_in_rsrchrs[-1]]
     dataheader += ["relative_value_in_treasury"]
-    datarow += kpis._relative_value_in_treasury
+    datarow += [kpis._relative_value_in_treasury[-1]]
 
 
 
