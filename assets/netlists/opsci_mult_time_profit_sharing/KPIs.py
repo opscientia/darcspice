@@ -9,12 +9,50 @@ from util.strutil import prettyBigNum
 
 @enforce_types
 class KPIs(KPIsBase.KPIsBase):
-    pass
+    def __init__(self,time_step: int):
+        super().__init__(time_step)
+
+        self._total_value_in_treasury: list = [0]
+        self._total_value_in_rsrchs: list = [0]
+        self._total_value_in_mrkts: list = [0]
+
+        # relative values
+        self._total_value_in_system: list = [0]
+        self._relative_value_in_mrkts: list = [0]
+        self._relative_value_in_rsrchrs: list = [0]
+        self._relative_value_in_treasury: list = [0]
+
+    def takeStep(self, state):
+        super().takeStep(state)
+
+        t, r, m = self._getTotalValues(state)
+
+        self._total_value_in_treasury.append(t)
+        self._total_value_in_rsrchs.append(r)
+        self._relative_value_in_mrkts.append(m)
+
+        system = t + r + m
+
+        self._total_value_in_system.append(system)
+        self._relative_value_in_mrkts.append(m / system)
+        self._relative_value_in_rsrchrs.append(r / system)
+        self._relative_value_in_treasury.append(t / system)
+
+    def _getTotalValues(self, state):
+        treasury_OCEAN = state.getAgent('dao_treasury').OCEAN()
+
+        researcher_OCEAN = 0.0
+        for r in state.researchers.keys():
+            researcher_OCEAN += state.getAgent(r).OCEAN()
+        markets_OCEAN = state.getAgent('market').OCEAN()
+
+        return treasury_OCEAN, researcher_OCEAN, markets_OCEAN
 
 
 @enforce_types
 def netlist_createLogData(state):
     """pass this to SimEngine.__init__() as argument `netlist_createLogData`"""
+    kpis = state.kpis
     s = [] #for console logging
     dataheader = [] # for csv logging: list of string
     datarow = [] #for csv logging: list of float
@@ -73,6 +111,23 @@ def netlist_createLogData(state):
     dataheader += ["market_assets"]
     datarow += [market.total_knowledge_assets]
 
+    dataheader += ["total_value_in_treasury"]
+    datarow += [kpis._total_value_in_treasury[-1]]
+    dataheader += ["total_value_in_researchers"]
+    datarow += [kpis._total_value_in_rsrchs[-1]]
+    dataheader += ["total_value_in_markets"]
+    datarow += [kpis._total_value_in_mrkts[-1]]
+
+    dataheader += ["total_value_of_system"]
+    datarow += [kpis._total_value_in_system[-1]]
+    dataheader += ["relative_value_in_markets"]
+    datarow += [kpis._relative_value_in_mrkts[-1]]
+    dataheader += ["relative_value_in_researchers"]
+    datarow += [kpis._relative_value_in_rsrchrs[-1]]
+    dataheader += ["relative_value_in_treasury"]
+    datarow += [kpis._relative_value_in_treasury[-1]]
+
+
     #done
     return s, dataheader, datarow
 
@@ -110,6 +165,12 @@ def netlist_plotInstructions(header: List[str], values):
     researchers.reverse()
     
     y_params = [
+        YParam(["total_value_in_treasury", "total_value_in_researchers", "total_value_in_markets"],
+        ["treasury", "researchers", "markets"],"Value distribution in the system",LINEAR,MULT1,COUNT),
+        YParam(["total_value_of_system"],
+        [""],"Total value in the system",LINEAR,MULT1,COUNT),
+        YParam(["relative_value_in_markets", "relative_value_in_researchers", "relative_value_in_treasury"],
+        ["markets", "researchers", "treasury"],"Relative value distribution in the system",LINEAR,MULT1,COUNT),
         YParam(proposals_funded,
         researchers,"#_proposals_FUNDED",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_funded_proposals_integration", "dao_treasury_funded_proposals_novelty", "dao_treasury_funded_proposals_in_index"],
