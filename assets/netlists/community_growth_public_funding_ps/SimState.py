@@ -81,8 +81,8 @@ class SimState(SimStateBase.SimStateBase):
                     USD=0.0, OCEAN=200000.0, research_type='private',
                     receiving_agents = {"market": 1.0}))
 
-        new_agents.append(ResearcherGeneratorAgent(name="generator", evaluator = "dao_treasury",
-                                                    USD=0.0, OCEAN=0.0, generator_cond_type="time", generator_type="dec", time_interval=30000, start_gen=5))
+        # new_agents.append(ResearcherGeneratorAgent(name="generator", evaluator = "dao_treasury",
+        #                                             USD=0.0, OCEAN=0.0, generator_cond_type="time", generator_type="dec", time_interval=30000, start_gen=5))
 
         new_agents.append(PrivateKnowledgeMarketAgent(
             name = "private_market", USD=0.0, OCEAN=0.0,
