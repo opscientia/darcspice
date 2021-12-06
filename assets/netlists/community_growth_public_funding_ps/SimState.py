@@ -3,7 +3,7 @@ from typing import Set
 import random
 
 from assets.agents import MinterAgents
-from assets.agents.opsci_pp_agents.VersatileResearcherAgent import VersatileResearcherAgent
+from assets.agents.opsci_pp_agents.VVersatileResearcherAgent import VVersatileResearcherAgent
 from assets.agents.opsci_pp_agents.VVersatileDAOTreasuryAgent import VVersatileDAOTreasuryAgent
 from assets.agents.opsci_pp_agents.PrivateMarketAgent import PrivateKnowledgeMarketAgent
 from assets.agents.opsci_pp_agents.PublicMarketAgent import PublicKnowledgeMarketAgent
