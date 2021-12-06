@@ -154,6 +154,7 @@ class VVersatileResearcherAgent(AgentBase):
             # if I am the winner, send the funds received to KnowledgeMarket
             if any((prop_evaluation[i]['winner'] == self.name) for i in prop_evaluation.keys()):
                 self.proposal_accepted = True
+                self._createResearchProject(state)
                 self.ticks_since_proposal = 0 # reset ticks_since_proposal to track the time of research
                 self.no_proposals_funded += 1
                 self.total_assets_in_mrkt += self.proposal['assets_generated']
