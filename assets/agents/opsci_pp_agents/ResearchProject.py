@@ -12,7 +12,7 @@ class ResearchProject():
     '''
     Represents a funded research project. Created by Researchers, used for tracking community engagement, academic lineage, impact, etc.
     '''
-    def __init__(self, name: str, creator: str, value: float, impact: float, integration: float, novelty: float, engagement: float):
+    def __init__(self, name: str, creator: str, value: float, impact: float, integration: float, novelty: float, engagement: float = 0.0):
 
         self.name = name
         self.creator = creator

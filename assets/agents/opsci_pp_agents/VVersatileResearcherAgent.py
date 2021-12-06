@@ -3,6 +3,7 @@ from enforce_typing import enforce_types
 import random
 from typing import List
 from engine.AgentBase import AgentBase
+from assets.agents.opsci_pp_agents.ResearchProject import ResearchProject
 
 log = logging.getLogger('agents')
 
@@ -166,6 +167,16 @@ class VVersatileResearcherAgent(AgentBase):
                 if state.getAgent(self._evaluator).update > 0:
                     for _ in range(state.getAgent(self._evaluator).update):
                         self._BuyAssets(state)
+
+    def _createResearchProject(self, state):
+        project_name = f'{self.name}_{self.no_proposals_funded}'
+        project = ResearchProject(name=project_name, 
+                                  creator={self.name}, 
+                                  value=self.proposal['grant_requested'],
+                                  impact=self.proposal['impact'],
+                                  integration=self.proposal['integration'],
+                                  novelty=self.proposal['novelty'])
+        state.projects[project_name] = project
 
     def _getIntegration(self) -> float:
         if len(self.integrations) == 0:
