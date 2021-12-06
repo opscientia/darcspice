@@ -67,7 +67,7 @@ class SimState(SimStateBase.SimStateBase):
                 name = "researcher%x" % i, evaluator = "dao_treasury",
                 USD=0.0, OCEAN=10000.0, research_type='public',
                 receiving_agents = {"market": 1.0}))
-        
+
         for i in range(ss.NO_PUBLIC_RESEARCHERS, ss.NO_PUBLIC_RESEARCHERS + ss.NO_PRIVATE_RESEARCHERS):
             new_agents.append(VVersatileResearcherAgent(
                     name = "researcher%x" % i, evaluator = "dao_treasury",
