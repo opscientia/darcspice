@@ -74,6 +74,8 @@ class VVersatileResearcherAgent(AgentBase):
         self.total_OCEAN_spent_this_tick: float = 0.0
         self.last_OCEAN_spent: dict = {}
         self.OCEAN_last_action: float = 0.0
+
+        self.proposal_params: dict = {}
     
     #### FUNCTIONS of MultTimeResearcherAgent ####
     def createProposal(self, state) -> dict:
@@ -84,17 +86,24 @@ class VVersatileResearcherAgent(AgentBase):
             self.proposal['knowledge_access'] = self.knowledge_access
             return self.proposal
         else:
-            return {'grant_requested': random.randint(10000, 50000), # Note: might be worth considering some distribution based on other params
+            self.proposal_params['grant_requested'] = random.randint(10000, 50000)
+            self.proposal_params['time'] = random.randint(5000, 15000)
+            self.proposal_params['continuing'] = random.choice([True, False])
+            return {'grant_requested': self.proposal_params['grant_requested'] + self._getSalary(), # Note: might be worth considering some distribution based on other params
                     'assets_generated': random.randint(1, 10), # Note: might be worth considering some distribution based on other params 
                     'no_researchers': 10,
-                    'time': random.randint(5000, 15000), # research length: random number of ticks
+                    'time': self.proposal_params['time'], # research length: random number of ticks
                     'knowledge_access': self.knowledge_access,
                     'integration': self._getIntegration(),
                     'novelty': self._getNovelty(),
-                    'impact': self._getImpact()}
+                    'impact': self._getImpact(),
+                    'continuing': self.proposal_params['continuing']}
 
     def spentAtTick(self) -> float:
         return self._spent_at_tick
+
+    def _getSalary(self) -> int:
+        return (self.proposal_params['time'] / 24 / 30) * 2000 # 2000 OCEAN per month salary, 1 tick = 1 hour
 
     def _USDToDisbursePerTick(self, state) -> None:
         '''

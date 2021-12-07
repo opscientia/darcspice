@@ -68,19 +68,21 @@ class SimState(SimStateBase.SimStateBase):
                 USD=0.0, OCEAN=10000.0, research_type='public',
                 receiving_agents = {"market": 1.0}))
 
-        for i in range(ss.NO_PUBLIC_RESEARCHERS, ss.NO_PUBLIC_RESEARCHERS + ss.NO_PRIVATE_RESEARCHERS):
-            new_agents.append(VVersatileResearcherAgent(
-                    name = "researcher%x" % i, evaluator = "dao_treasury",
-                    USD=0.0, OCEAN=200000.0, research_type='private',
-                    receiving_agents = {"market": 1.0}))
-            researcher_agents.append(VVersatileResearcherAgent(
-                    name = "researcher%x" % i, evaluator = "dao_treasury",
-                    USD=0.0, OCEAN=200000.0, research_type='private',
-                    receiving_agents = {"market": 1.0}))
-            private_researcher_agents.append(VVersatileResearcherAgent(
-                    name = "researcher%x" % i, evaluator = "dao_treasury",
-                    USD=0.0, OCEAN=200000.0, research_type='private',
-                    receiving_agents = {"market": 1.0}))
+        # don't use private researchers for now to reduce noise
+
+        # for i in range(ss.NO_PUBLIC_RESEARCHERS, ss.NO_PUBLIC_RESEARCHERS + ss.NO_PRIVATE_RESEARCHERS):
+        #     new_agents.append(VVersatileResearcherAgent(
+        #             name = "researcher%x" % i, evaluator = "dao_treasury",
+        #             USD=0.0, OCEAN=200000.0, research_type='private',
+        #             receiving_agents = {"market": 1.0}))
+        #     researcher_agents.append(VVersatileResearcherAgent(
+        #             name = "researcher%x" % i, evaluator = "dao_treasury",
+        #             USD=0.0, OCEAN=200000.0, research_type='private',
+        #             receiving_agents = {"market": 1.0}))
+        #     private_researcher_agents.append(VVersatileResearcherAgent(
+        #             name = "researcher%x" % i, evaluator = "dao_treasury",
+        #             USD=0.0, OCEAN=200000.0, research_type='private',
+        #             receiving_agents = {"market": 1.0}))
 
         # new_agents.append(ResearcherGeneratorAgent(name="generator", evaluator = "dao_treasury",
         #                                             USD=0.0, OCEAN=0.0, generator_cond_type="time", generator_type="dec", time_interval=30000, start_gen=5))
