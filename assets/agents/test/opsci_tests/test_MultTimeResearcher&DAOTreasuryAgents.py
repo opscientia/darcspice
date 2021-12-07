@@ -15,11 +15,17 @@ class SimStrategy(SimStrategyBase.SimStrategyBase):
         self.PROPOSAL_SETUP_0 = {'grant_requested': 1,
                                'assets_generated': 1,
                                'no_researchers': 10,
-                               'time': 2}
+                               'time': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
         self.PROPOSAL_SETUP_1 = {'grant_requested': 2,
                                'assets_generated': 1,
                                'no_researchers': 10,
-                               'time': 2}
+                               'time': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
         self.RANDOM_BUYING = False
 
 
@@ -71,32 +77,47 @@ def test1():
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 1}
+                               'knowledge_access': 1,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r1.proposal == {'grant_requested': 2,
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 1}
+                               'knowledge_access': 1,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.OCEAN() and r1.OCEAN() == 10.0
     assert m.OCEAN() == 0.0
 
     # first funding
     state.takeStep()
     state.tick += 1
-    assert dao.proposal_evaluation == {0: {'winner': 'r0', 'amount': 1}}
+    assert dao.proposal_evaluation == {0: {'winner': 'r0', 'amount': 1,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}}
     assert dao.update == 1
     assert dao.OCEAN() == 9.0
     assert r0.proposal == {'grant_requested': 1,
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 1}
+                               'knowledge_access': 1,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.research_finished == False
     assert r1.proposal == {'grant_requested': 2,
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 2}
+                               'knowledge_access': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.OCEAN() == 10.0
     assert r1.OCEAN() == 9.0
     assert m.OCEAN() == 2.0
@@ -104,7 +125,10 @@ def test1():
     # research takes place, nothing should happen
     state.takeStep()
     state.tick += 1
-    assert dao.proposal_evaluation == {0: {'winner': 'r0', 'amount': 1}}
+    assert dao.proposal_evaluation == {0: {'winner': 'r0', 'amount': 1,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}}
     assert dao.update == 0
     assert dao.OCEAN() == 9.0
     assert r0.research_finished == True
@@ -113,7 +137,10 @@ def test1():
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 2}
+                               'knowledge_access': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.OCEAN() == 10.0
     assert r1.OCEAN() == 9.0
     assert m.OCEAN() == 2.0
@@ -128,13 +155,19 @@ def test1():
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 2}
+                               'knowledge_access': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.research_finished == False
     assert r1.proposal == {'grant_requested': 2,
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 2}
+                               'knowledge_access': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.OCEAN() == 10.0
     assert r1.OCEAN() == 9.0
     assert m.OCEAN() == 2.0
@@ -142,20 +175,29 @@ def test1():
     # second funding
     state.takeStep()
     state.tick += 1
-    assert dao.proposal_evaluation == {0: {'winner': 'r0', 'amount': 1}}
+    assert dao.proposal_evaluation == {0: {'winner': 'r0', 'amount': 1,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}}
     assert dao.update == 1
     assert dao.OCEAN() == 8.0
     assert r0.proposal == {'grant_requested': 1,
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 2}
+                               'knowledge_access': 2,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.research_finished == False
     assert r1.proposal == {'grant_requested': 2,
                                'assets_generated': 1,
                                'no_researchers': 10,
                                'time': 2,
-                               'knowledge_access': 3}
+                               'knowledge_access': 3,
+                               'integration': 1,
+                               'novelty': 1,
+                               'impact': 10}
     assert r0.OCEAN() == 10.0
     assert r1.OCEAN() == 8.0
     assert m.OCEAN() == 4.0
