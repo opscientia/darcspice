@@ -103,7 +103,8 @@ class VVersatileResearcherAgent(AgentBase):
         return self._spent_at_tick
 
     def _getSalary(self) -> int:
-        return (self.proposal_params['time'] / 24 / 30) * 2000 # 2000 OCEAN per month salary, 1 tick = 1 hour
+        self.proposal_params['salary'] = (self.proposal_params['time'] / 24 / 30) * 2000
+        return self.proposal_params['salary'] # 2000 OCEAN per month salary, 1 tick = 1 hour
 
     def _USDToDisbursePerTick(self, state) -> None:
         '''
@@ -127,7 +128,7 @@ class VVersatileResearcherAgent(AgentBase):
         self.last_tick_spent = state.tick
         self.ratio_funds_to_publish = state.ss.RATIO_FUNDS_TO_PUBLISH # KnowledgeMarketAgent will check this parameter
         if (OCEAN != 0) and (self.proposal != {}):
-            OCEAN_DISBURSE: float = self.proposal['grant_requested']
+            OCEAN_DISBURSE: float = self.proposal['grant_requested'] - self.proposal_params['salary']
             self.total_OCEAN_spent_this_tick += OCEAN_DISBURSE
             self.last_OCEAN_spent = {'tick': state.tick, 'spent': self.total_OCEAN_spent_this_tick, 'market': 'public_market', 'asset_buy': asset_to_buy, 'publish': True, 'ratio': self.ratio_funds_to_publish}
             self._transferOCEAN(state.getAgent('public_market'), OCEAN_DISBURSE)
