@@ -40,6 +40,6 @@ class CommunityAgent(AgentBase):
     def _interact(self, state):
         self._transferOCEAN(state.getAgent('public_market'), state.ss.PRICE_OF_ASSETS)
         self.knowledge_access += 1
-        project = random.choice(state.projects.keys())
+        project = random.choice(list(state.projects.keys()))
         state.projects[project].engagement += 1
         state.projects[project].impact += 1

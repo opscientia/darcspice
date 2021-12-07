@@ -29,6 +29,10 @@ class KPIs(KPIsBase.KPIsBase):
         self._community_curiosity: list = [0]
         self._community_knowledge_access: list = [0]
 
+        # project tracking
+        self._total_projects: list = [0]
+        self._total_project_engagement: list = [0]
+
     def takeStep(self, state):
         super().takeStep(state)
 
@@ -49,11 +53,18 @@ class KPIs(KPIsBase.KPIsBase):
 
         self._getCommunityMetrics(state)
 
+        self._getProjectValues(state)
+
     def _getCommunityMetrics(self, state) -> None:
         member = state.getAgent('member')
 
         self._community_curiosity.append(member.curiosity)
         self._community_knowledge_access.append(member.knowledge_access)
+
+    def _getProjectValues(self, state) -> None:
+        projects = state.projects
+        self._total_projects.append(len(projects.keys()))
+        self._total_project_engagement.append(sum(project.engagement for project in projects.values()))
 
     def _getTotalValues(self, state):
         treasury_OCEAN = state.getAgent('dao_treasury').OCEAN()
@@ -145,6 +156,11 @@ def netlist_createLogData(state):
     dataheader += ["community_knowledge_access"]
     datarow += [kpis._community_knowledge_access[-1]]
 
+    dataheader += ["total_projects"]
+    datarow += [kpis._total_projects[-1]]
+    dataheader += ["total_project_engagement"]
+    datarow += [kpis._total_project_engagement[-1]]
+
     r_dict = {}
     for r in state.public_researchers.keys():
         r_dict[r] = state.getAgent(r)
@@ -230,6 +246,10 @@ def netlist_plotInstructions(header: List[str], values):
     researchers.reverse()
     
     y_params = [
+        YParam(["total_projects"],
+        ["total"],"Total projects funded",LINEAR,MULT1,COUNT),
+        YParam(["total_project_engagement"],
+        ["engagement"],"Total project engagement",LINEAR,MULT1,COUNT),
         YParam(["community_curiosity"],
         ["community"],"Community curiosity",LINEAR,MULT1,COUNT),
         YParam(["community_knowledge_access"],

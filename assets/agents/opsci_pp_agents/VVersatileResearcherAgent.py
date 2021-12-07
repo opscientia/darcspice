@@ -172,7 +172,7 @@ class VVersatileResearcherAgent(AgentBase):
     def _createResearchProject(self, state):
         project_name = f'{self.name}_{self.no_proposals_funded}'
         project = ResearchProject(name=project_name, 
-                                  creator={self.name}, 
+                                  creator=self.name, 
                                   value=self.proposal['grant_requested'],
                                   impact=self.proposal['impact'],
                                   integration=self.proposal['integration'],
