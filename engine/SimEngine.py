@@ -26,6 +26,7 @@ class SimEngine(object):
         self.netlist_log_func = netlist_log_func
 
         self.all_rows: list = []
+        self.all_rp_rows: list = []
         self.dataheader: list = []
         
     def run(self):
@@ -43,6 +44,7 @@ class SimEngine(object):
             self.takeStep()
             if self.doStop():
                 self.createNewCsv()
+                self.createResearchCsv()
                 break
             self.state.tick += 1 #could be e.g. 10 or 100 or ..
         log.info("Done")
@@ -57,6 +59,8 @@ class SimEngine(object):
             self.dataheader = dataheader
             log.info("".join(s))
             self.logToCsv(dataheader, datarow)
+
+            dataheader, datarow = self.createResearchLogData()
                 
         #main work
         self.state.takeStep()
@@ -97,6 +101,40 @@ class SimEngine(object):
             self.all_rows.append(datarow)
 
         return s, dataheader, datarow
+
+    def createResearchLogData(self):
+        """Compute this iter's status, and output in forms ready
+        for console logging and csv logging."""
+        state = self.state
+        ss = state.ss
+        rkpis = state.rkpis
+
+        s = [] #for console logging
+        dataheader = [] # for csv logging: list of string
+        datarow = [] #for csv logging: list of float
+
+        #columns always logged: Tick, Second, Min, Hour, Day, Month, Year
+        s += ["Tick=%d" % (state.tick)]
+        dataheader += ["Tick"]
+        datarow += [state.tick]
+
+        es = float(self.elapsedSeconds())
+        emi, eh, ed, emo, ey = es/S_PER_MIN, es/S_PER_HOUR, es/S_PER_DAY, \
+                               es/S_PER_MONTH,es/S_PER_YEAR
+        s += [" (%.1f h, %.1f d, %.1f mo)" % \
+              (eh, ed, emo)] 
+        dataheader += ["Second", "Min", "Hour", "Day", "Month", "Year"]
+        datarow += [es, emi, eh, ed, emo, ey]
+
+        #other columns to log
+        if self.netlist_log_func is not None:
+            s2, dataheader2, datarow2 = self.netlist_log_func(state)
+            s += s2
+            dataheader += dataheader2
+            datarow += datarow2
+            self.all_rp_rows.append(datarow)
+
+        return dataheader, datarow
 
     def logToCsv(self, dataheader, datarow) -> None:
         if self.output_dir is None:
@@ -143,6 +181,26 @@ class SimEngine(object):
 
         #add in row
         for row in self.all_rows:
+            datarow_s = ['%g' % dataval for dataval in row]
+            with open(full_filename,'a+') as f:
+                f.write(", ".join(datarow_s) + "\n")
+
+    def createResearchCsv(self) -> None:
+        for row in tqdm(self.all_rp_rows):
+            while len(row) != len(self.all_rp_rows[-1]):
+                row.append(0)
+        if self.output_dir is None:
+            return
+
+        full_filename = os.path.join(self.output_dir, 'rpdata.csv')
+
+        #if needed, create file and add header
+        if not os.path.exists(full_filename):
+            with open(full_filename,'w+') as f:
+                f.write(", ".join(self.dataheader) + "\n")
+
+        #add in row
+        for row in self.all_rp_rows:
             datarow_s = ['%g' % dataval for dataval in row]
             with open(full_filename,'a+') as f:
                 f.write(", ".join(datarow_s) + "\n")
