@@ -11,6 +11,7 @@ from assets.agents.opsci_pp_agents.ResearcherGenerator import ResearcherGenerato
 from assets.agents.opsci_pp_agents.CommunityAgent import CommunityAgent
 from engine import AgentBase, SimStateBase
 from .KPIs import KPIs
+from .ResearchKPIs import RKPIs
 from util import valuation
 from util.constants import S_PER_YEAR, S_PER_MONTH, S_PER_DAY
 
@@ -113,6 +114,7 @@ class SimState(SimStateBase.SimStateBase):
 
         #track certain metrics over time, so that we don't have to load
         self.kpis = KPIs(self.ss.time_step)
+        self.rkpis = RKPIs(self.ss.time_step)
                     
     def takeStep(self) -> None:
         """This happens once per tick"""
