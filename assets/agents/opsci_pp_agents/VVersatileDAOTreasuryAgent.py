@@ -67,11 +67,12 @@ class VVersatileDAOTreasuryAgent(AgentBase):
                 if name in skipping_rs:
                     continue
             agent = state.getAgent(name)
-            scores[name] = agent.proposal['grant_requested'] / \
+            cont_weight = 0.6 if agent.proposal['continuing'] else 1.0
+            scores[name] = cont_weight * (agent.proposal['grant_requested'] / \
                               agent.proposal['no_researchers'] /  \
                               agent.proposal['assets_generated'] / \
                               agent.proposal['time'] / \
-                              agent.proposal['knowledge_access']
+                              agent.proposal['knowledge_access'])
 
         start_idx = (list(self.proposal_evaluation.keys())[-1] + 1) if self.proposal_evaluation else 0
         for i in range(start_idx, start_idx + state.ss.PROPOSALS_FUNDED_AT_A_TIME): # ensures unique indeces for the evaluation
