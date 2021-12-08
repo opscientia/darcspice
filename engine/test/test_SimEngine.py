@@ -22,6 +22,14 @@ class KPIs(KPIsBase.KPIsBase):
     def tick():
         pass
 
+class RKPIs(KPIsBase.KPIsBase):
+    def takeStep(self, state):
+        pass
+
+    @staticmethod
+    def tick():
+        pass
+
 
 class SimpleAgent(AgentBase.AgentBase):
     def takeStep(self, state):
@@ -33,6 +41,7 @@ class SimState(SimStateBase.SimStateBase):
         super().__init__()
         self.ss = SimStrategy()
         self.kpis = KPIs(time_step=3)
+        self.rkpis = RKPIs(time_step=3)
 
 # ==================================================================
 # actual tests
