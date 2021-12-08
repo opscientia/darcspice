@@ -92,7 +92,6 @@ class PublicKnowledgeMarketAgent(AgentBase):
             if round(sum_OCEAN_received, 5) != round(received, 5):
                 OCEAN_to_self += received - sum_OCEAN_received
                 sum_OCEAN_received += OCEAN_to_self
-            print(f'SUM OCEAN RECEIVED {round(sum_OCEAN_received, 5)} RECEIVED: {round(received, 5)}')
             assert round(sum_OCEAN_received, 5) == round(received, 5) # sum of the OCEAN received from researchers must equal the total received
             return fees, OCEAN_to_self
         else:
