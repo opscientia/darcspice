@@ -28,6 +28,7 @@ class SimEngine(object):
         self.all_rows: list = []
         self.all_rp_rows: list = []
         self.dataheader: list = []
+        self.rp_dataheader: list = []
         
     def run(self):
         """
@@ -60,8 +61,9 @@ class SimEngine(object):
             log.info("".join(s))
             self.logToCsv(dataheader, datarow)
 
-            dataheader, datarow = self.createResearchLogData()
-                
+            rp_dataheader = self.createResearchLogData()
+            self.rp_dataheader = rp_dataheader
+
         #main work
         self.state.takeStep()
         
@@ -134,7 +136,7 @@ class SimEngine(object):
             datarow += datarow2
             self.all_rp_rows.append(datarow)
 
-        return dataheader, datarow
+        return dataheader
 
     def logToCsv(self, dataheader, datarow) -> None:
         if self.output_dir is None:
@@ -197,7 +199,7 @@ class SimEngine(object):
         #if needed, create file and add header
         if not os.path.exists(full_filename):
             with open(full_filename,'w+') as f:
-                f.write(", ".join(self.dataheader) + "\n")
+                f.write(", ".join(self.rp_dataheader) + "\n")
 
         #add in row
         for row in self.all_rp_rows:
