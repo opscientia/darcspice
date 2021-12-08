@@ -74,8 +74,25 @@ def netlist_plotInstructions(header: List[str], values):
         COUNT, DOLLAR, PERCENT
     
     x = arrayToFloatList(values[:,header.index("Month")])
+    rp_list = [e for e in header if 'rp' in e]
+    impact = [p for p in rp_list if '_impact' in p]
+    engagement = [p for p in rp_list if '_engagement' in p]
     
     y_params = [
+        YParam(["total_rp"],
+        ["total"],"Total projects funded",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_engagement"],
+        ["total"],"Total project engagement",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_integration"],
+        ["total"],"Total project integration",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_novelty"],
+        ["total"],"Total project novelty",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_impact"],
+        ["total"],"Total project impact",LINEAR,MULT1,COUNT),
+        YParam(impact,
+        impact,"Research projects impact",LINEAR,MULT1,COUNT),
+        YParam(engagement,
+        engagement,"Research projects engagement",LINEAR,MULT1,COUNT),
     ]
 
     return (x, y_params)
