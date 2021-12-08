@@ -47,6 +47,7 @@ class KPIs(KPIsBase.KPIsBase):
         system = t + r + m
 
         self._total_value_in_system.append(system)
+        self._total_value_in_mrkts.append(m)
         self._relative_value_in_mrkts.append(m / system)
         self._relative_value_in_rsrchrs.append(r / system)
         self._relative_value_in_treasury.append(t / system)
@@ -276,14 +277,14 @@ def netlist_plotInstructions(header: List[str], values):
         researchers,"Assets in Knowledge Market",LINEAR,MULT1,COUNT),
         YParam(total_public_assets_mrkt,
         total_public_assets_mrkt,"Public Researchers Assets in Knowledge Market",LINEAR,MULT1,COUNT),
-        YParam(total_private_assets_mrkt,
-        total_private_assets_mrkt,"Private Researchers Assets in Knowledge Market",LINEAR,MULT1,COUNT),
+        # YParam(total_private_assets_mrkt,
+        # total_private_assets_mrkt,"Private Researchers Assets in Knowledge Market",LINEAR,MULT1,COUNT),
         YParam(knowledge_access,
         researchers,"Knowledge access index",LINEAR,MULT1,COUNT),
         YParam(total_public_OCEAN,
         total_public_OCEAN,"Public Researcher OCEAN",LINEAR,MULT1,COUNT),
-        YParam(total_private_OCEAN,
-        total_private_OCEAN,"Private Researcher OCEAN",LINEAR,MULT1,COUNT),
+        # YParam(total_private_OCEAN,
+        # total_private_OCEAN,"Private Researcher OCEAN",LINEAR,MULT1,COUNT),
         YParam(["dao_treasury_OCEAN"],
         ["dao_treasury"],"DAO_Treasury_OCEAN",LINEAR,MULT1,COUNT),
         YParam(["private_market_OCEAN", "public_market_OCEAN"],

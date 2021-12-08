@@ -51,7 +51,7 @@ class SimState(SimStateBase.SimStateBase):
 
         #################### Wiring of agents that send OCEAN ####################
         new_agents.append(VVersatileDAOTreasuryAgent(
-            name = "dao_treasury", USD=0.0, OCEAN=500000.0))
+            name = "dao_treasury", USD=0.0, OCEAN=1000000.0))
 
         # Public researcher agents
         for i in range(ss.NO_PUBLIC_RESEARCHERS):
