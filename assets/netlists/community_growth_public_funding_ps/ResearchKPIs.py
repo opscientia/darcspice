@@ -34,7 +34,7 @@ class RKPIs(KPIsBase.KPIsBase):
         self._total_rp_impact.append(sum(project.impact for project in projects.values()))
 
 @enforce_types
-def netlist_createLogData(state):
+def netlist_rp_createLogData(state):
     """pass this to SimEngine.__init__() as argument `netlist_createLogData`"""
     rkpis = state.rkpis
     dataheader = [] # for csv logging: list of string
@@ -51,14 +51,16 @@ def netlist_createLogData(state):
     dataheader += ["total_rp_impact"]
     datarow += [rkpis._total_rp_impact[-1]]
 
-    for rp, spec in state.projects.keys():
+    for rp, spec in state.projects.items():
         dataheader += ["%s_impact" % rp]
         datarow += [spec.impact]
         dataheader += ["%s_engagement" % rp]
         datarow += [spec.engagement]
 
+    return dataheader, datarow
+
 @enforce_types
-def netlist_plotInstructions(header: List[str], values):
+def netlist_rl_plotInstructions(header: List[str], values):
     """
     Describe how to plot the information.
     tsp.do_plot() calls this

@@ -4,6 +4,7 @@ log = logging.getLogger('master')
 from enforce_typing import enforce_types
 from tqdm import tqdm
 import os
+import time
 
 from util import valuation
 from util.constants import S_PER_MIN, S_PER_HOUR, S_PER_DAY, S_PER_MONTH, S_PER_YEAR
@@ -19,11 +20,12 @@ class SimEngine(object):
       output_dir -- directory of where results are stored
     """
 
-    def __init__(self, state, output_dir: str, netlist_log_func=None):
+    def __init__(self, state, output_dir: str, netlist_log_func=None, netlist_rp_log_func=None):
         self.state = state
         self.output_dir = output_dir
         self.output_csv = "data.csv" #magic number
         self.netlist_log_func = netlist_log_func
+        self.netlist_rp_log_func = netlist_rp_log_func
 
         self.all_rows: list = []
         self.all_rp_rows: list = []
@@ -129,9 +131,8 @@ class SimEngine(object):
         datarow += [es, emi, eh, ed, emo, ey]
 
         #other columns to log
-        if self.netlist_log_func is not None:
-            s2, dataheader2, datarow2 = self.netlist_log_func(state)
-            s += s2
+        if self.netlist_rp_log_func is not None:
+            dataheader2, datarow2 = self.netlist_rp_log_func(state)
             dataheader += dataheader2
             datarow += datarow2
             self.all_rp_rows.append(datarow)

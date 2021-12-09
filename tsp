@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+import time
 
 INFO = logging.INFO
 DEBUG = logging.DEBUG
@@ -77,9 +78,10 @@ def do_run():
     netlist_module = _importNetlistModule(netlist_str)
     netlist_state = netlist_module.SimState()
     netlist_log_func = netlist_module.netlist_createLogData
+    netlist_rp_log_func = netlist_module.netlist_rp_createLogData
     
     from engine.SimEngine import SimEngine
-    engine = SimEngine(netlist_state, output_dir, netlist_log_func)
+    engine = SimEngine(netlist_state, output_dir, netlist_log_func, netlist_rp_log_func)
     if not do_profile:
         engine.run()
     else:
@@ -93,7 +95,6 @@ def _importNetlistModule(netlist_str: str):
     module_str = netlist_str.replace('/','.').replace('.py','') 
     netlist_module = importlib.import_module(module_str)
     return netlist_module
-    
 
 #==========================================================================
 #tsp plot
