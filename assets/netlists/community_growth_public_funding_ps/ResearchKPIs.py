@@ -2,6 +2,7 @@ from enforce_typing import enforce_types
 import math
 from typing import List
 from tqdm import tqdm
+import time
 
 from engine import KPIsBase
 from util import valuation
@@ -26,12 +27,29 @@ class RKPIs(KPIsBase.KPIsBase):
 
     def _getProjectValues(self, state) -> None:
         projects = state.projects
-        self._total_rp.append(len(projects.keys()))
-        self._total_rp_engagement.append(sum(project.engagement for project in projects.values()))
-        self._total_rp_value.append(sum(project.value for project in projects.values()))
-        self._total_rp_integration.append(sum(project.integration for project in projects.values()))
-        self._total_rp_novelty.append(sum(project.novelty for project in projects.values()))
-        self._total_rp_impact.append(sum(project.impact for project in projects.values()))
+        total_rp = 0
+        total_engagement = 0
+        total_value = 0
+        total_integration = 0
+        total_novelty = 0
+        total_impact = 0
+
+        for rp, spec in state.projects.items():
+            total_rp += 1
+            total_engagement += spec.engagement
+            total_value += spec.value
+            total_integration += spec.integration
+            total_novelty += spec.novelty
+            total_impact += spec.impact
+
+        self._total_rp.append(total_rp)
+        print(total_rp)
+        time.sleep(30)
+        self._total_rp_engagement.append(total_engagement)
+        self._total_rp_value.append(total_value)
+        self._total_rp_integration.append(total_integration)
+        self._total_rp_novelty.append(total_novelty)
+        self._total_rp_impact.append(total_impact)
 
 @enforce_types
 def netlist_rp_createLogData(state):
