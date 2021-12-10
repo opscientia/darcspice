@@ -111,7 +111,7 @@ class SimEngine(object):
         for console logging and csv logging."""
         state = self.state
         ss = state.ss
-        rkpis = state.rkpis
+        kpis = state.kpis
 
         s = [] #for console logging
         dataheader = [] # for csv logging: list of string

@@ -30,8 +30,12 @@ class KPIs(KPIsBase.KPIsBase):
         self._community_knowledge_access: list = [0]
 
         # project tracking
-        self._total_projects: list = [0]
-        self._total_project_engagement: list = [0]
+        self._total_rp: list = [0]
+        self._total_rp_engagement: list = [0]
+        self._total_rp_value: list = [0]
+        self._total_rp_impact: list = [0]
+        self._total_rp_integration: list = [0]
+        self._total_rp_novelty: list = [0]
 
     def takeStep(self, state):
         super().takeStep(state)
@@ -56,6 +60,7 @@ class KPIs(KPIsBase.KPIsBase):
 
         self._getProjectValues(state)
 
+
     def _getCommunityMetrics(self, state) -> None:
         member = state.getAgent('member')
 
@@ -63,9 +68,28 @@ class KPIs(KPIsBase.KPIsBase):
         self._community_knowledge_access.append(member.knowledge_access)
 
     def _getProjectValues(self, state) -> None:
-        projects = state.projects
-        self._total_projects.append(len(projects.keys()))
-        self._total_project_engagement.append(sum(project.engagement for project in projects.values()))
+        total_rp = 0
+        total_engagement = 0
+        total_value = 0
+        total_integration = 0
+        total_novelty = 0
+        total_impact = 0
+
+        for rp, spec in state.projects.items():
+            total_rp += 1
+            total_engagement += spec.engagement
+            total_value += spec.value
+            total_integration += spec.integration
+            total_novelty += spec.novelty
+            total_impact += spec.impact
+
+        self._total_rp.append(total_rp)
+        self._total_rp_engagement.append(total_engagement)
+        self._total_rp_value.append(total_value)
+        self._total_rp_integration.append(total_integration)
+        self._total_rp_novelty.append(total_novelty)
+        self._total_rp_impact.append(total_impact)
+
 
     def _getTotalValues(self, state):
         treasury_OCEAN = state.getAgent('dao_treasury').OCEAN()
@@ -157,11 +181,6 @@ def netlist_createLogData(state):
     dataheader += ["community_knowledge_access"]
     datarow += [kpis._community_knowledge_access[-1]]
 
-    dataheader += ["total_projects"]
-    datarow += [kpis._total_projects[-1]]
-    dataheader += ["total_project_engagement"]
-    datarow += [kpis._total_project_engagement[-1]]
-
     r_dict = {}
     for r in state.public_researchers.keys():
         r_dict[r] = state.getAgent(r)
@@ -247,10 +266,6 @@ def netlist_plotInstructions(header: List[str], values):
     researchers.reverse()
     
     y_params = [
-        YParam(["total_projects"],
-        ["total"],"Total projects funded",LINEAR,MULT1,COUNT),
-        YParam(["total_project_engagement"],
-        ["engagement"],"Total project engagement",LINEAR,MULT1,COUNT),
         YParam(["community_curiosity"],
         ["community"],"Community curiosity",LINEAR,MULT1,COUNT),
         YParam(["community_knowledge_access"],
@@ -291,6 +306,72 @@ def netlist_plotInstructions(header: List[str], values):
         ["private_market", "public_market"],"Private vs Public Market OCEAN",LOG,MULT1,COUNT),
         YParam(["private_market_fees_OCEAN", "public_market_fees_OCEAN"],
         ["private_market", "public_market"],"Total fees collected through private vs public market",LINEAR,MULT1,COUNT),
+    ]
+
+    return (x, y_params)
+
+@enforce_types
+def netlist_rp_createLogData(state):
+    """pass this to SimEngine.__init__() as argument `netlist_createLogData`"""
+    kpis = state.kpis
+    dataheader = [] # for csv logging: list of string
+    datarow = [] #for csv logging: list of float
+
+    dataheader += ["total_rp"]
+    datarow += [kpis._total_rp[-1]]
+    dataheader += ["total_rp_engagement"]
+    datarow += [kpis._total_rp_engagement[-1]]
+    dataheader += ["total_rp_integration"]
+    datarow += [kpis._total_rp_integration[-1]]
+    dataheader += ["total_rp_novelty"]
+    datarow += [kpis._total_rp_novelty[-1]]
+    dataheader += ["total_rp_impact"]
+    datarow += [kpis._total_rp_impact[-1]]
+
+    for rp, spec in state.projects.items():
+        dataheader += ["%s_impact" % rp]
+        datarow += [spec.impact]
+        dataheader += ["%s_engagement" % rp]
+        datarow += [spec.engagement]
+
+    return dataheader, datarow
+
+@enforce_types
+def netlist_rp_plotInstructions(header: List[str], values):
+    """
+    Describe how to plot the information.
+    tsp.do_plot() calls this
+
+    :param: header: List[str] holding 'Tick', 'Second', ...
+    :param: values: 2d array of float [tick_i, valuetype_i]
+    :return: x: List[float] -- x-axis info on how to plot
+    :return: y_params: List[YParam] -- y-axis info on how to plot
+    """
+    from util.plotutil import YParam, arrayToFloatList, \
+        LINEAR, LOG, BOTH, \
+        MULT1, MULT100, DIV1M, DIV1B, \
+        COUNT, DOLLAR, PERCENT
+    
+    x = arrayToFloatList(values[:,header.index("Month")])
+    rp_list = [e for e in header if 'rp' in e]
+    impact = [p for p in rp_list if '_impact' in p]
+    engagement = [p for p in rp_list if '_engagement' in p]
+    
+    y_params = [
+        YParam(["total_rp"],
+        ["total"],"Total projects funded",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_engagement"],
+        ["total"],"Total project engagement",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_integration"],
+        ["total"],"Total project integration",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_novelty"],
+        ["total"],"Total project novelty",LINEAR,MULT1,COUNT),
+        YParam(["total_rp_impact"],
+        ["total"],"Total project impact",LINEAR,MULT1,COUNT),
+        YParam(impact,
+        impact,"Research projects impact",LINEAR,MULT1,COUNT),
+        YParam(engagement,
+        engagement,"Research projects engagement",LINEAR,MULT1,COUNT),
     ]
 
     return (x, y_params)

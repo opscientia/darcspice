@@ -151,6 +151,51 @@ def do_plot():
     csvToPngs(input_csv_filename, output_png_dir, netlist_plot_instrs_func)
 
     print("Done")
+
+def do_research_plot():
+    #got the right number of args?  If not, output help
+    if len(sys.argv) not in [5]:
+        print(HELP_PLOT)
+        sys.exit(0)
+    
+    #extract inputs
+    assert sys.argv[1] == "rplot"
+    netlist_str = sys.argv[2]
+    input_csv_dir = sys.argv[3]
+    output_png_dir = sys.argv[4]
+
+    #
+    base_input_csv_filename = "rpdata.csv" #magic number. Set in engine/SimEngine.py
+    input_csv_filename = os.path.join(input_csv_dir, base_input_csv_filename)
+
+    print(f"Arguments: NETLIST={netlist_str}, INPUT_CSV_DIR={input_csv_dir}, "
+          "OUTPUT_PNG_DIR={output_pngdir}")
+    print(f"Base input filename: '{base_input_csv_filename}' (hardcoded)")
+    print(f"Full input filename: '{input_csv_filename}'")
+    print()
+
+    #corner cases
+    if not os.path.exists(input_csv_dir):
+        print(f"Input directory '{input_csv_dir}' does not exist. Exiting.")
+        sys.exit(0)
+        
+    if not os.path.exists(input_csv_filename):
+        print(f"Input filename '{input_csv_filename}' does not exist. Exiting.")
+        sys.exit(0)
+        
+    if os.path.exists(output_png_dir):
+        print(f"Output path '{output_png_dir}' already exists. Exiting.")
+        sys.exit(0)
+
+    #get netlist module
+    netlist_module = _importNetlistModule(netlist_str)
+    netlist_plot_instrs_func = netlist_module.netlist_rp_plotInstructions
+
+    #main work    
+    from util.plotutil import csvToPngs
+    csvToPngs(input_csv_filename, output_png_dir, netlist_plot_instrs_func)
+
+    print("Done")
     
 #========================================================================
 #tsp showstats
@@ -235,6 +280,9 @@ def do_main():
                 
     elif sys.argv[1] == "plot":
         do_plot()
+
+    elif sys.argv[1] == "rplot":
+        do_research_plot()
         
     elif sys.argv[1] == "showstats":
         do_showstats()
