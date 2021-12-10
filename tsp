@@ -19,6 +19,7 @@ TOOLS:
   === Generate results and plot ===
   tsp run [[Run TokenSPICE simulation. Input netlist. Output rundir w/ csv.]]
   tsp plot [[Plot results from 1 run. Input csv. Output pngs.]]
+  tsp rplot [[Plot research project data from 1 run. Input csv. Output pngs.]]
   tsp showstats [[Show performance statistics for a run]]
 
   === Tests === 
