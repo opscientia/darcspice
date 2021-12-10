@@ -2,6 +2,7 @@ from enforce_typing import enforce_types
 import math
 from typing import List
 from tqdm import tqdm
+import time
 
 from engine import KPIsBase
 from util import valuation
@@ -353,7 +354,7 @@ def netlist_rp_plotInstructions(header: List[str], values):
         COUNT, DOLLAR, PERCENT
     
     x = arrayToFloatList(values[:,header.index("Month")])
-    rp_list = [e for e in header if 'rp' in e]
+    rp_list = [e for e in header if 'researcher' in e]
     impact = [p for p in rp_list if '_impact' in p]
     engagement = [p for p in rp_list if '_engagement' in p]
     
