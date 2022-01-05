@@ -262,23 +262,6 @@ def netlist_rp_createLogData(state):
     dataheader = [] # for csv logging: list of string
     datarow = [] #for csv logging: list of float
 
-    dataheader += ["total_rp"]
-    datarow += [kpis._total_rp[-1]]
-    dataheader += ["total_rp_engagement"]
-    datarow += [kpis._total_rp_engagement[-1]]
-    dataheader += ["total_rp_integration"]
-    datarow += [kpis._total_rp_integration[-1]]
-    dataheader += ["total_rp_novelty"]
-    datarow += [kpis._total_rp_novelty[-1]]
-    dataheader += ["total_rp_impact"]
-    datarow += [kpis._total_rp_impact[-1]]
-
-    for rp, spec in state.projects.items():
-        dataheader += ["%s_impact" % rp]
-        datarow += [spec.impact]
-        dataheader += ["%s_engagement" % rp]
-        datarow += [spec.engagement]
-
     return dataheader, datarow
 
 @enforce_types
@@ -298,25 +281,8 @@ def netlist_rp_plotInstructions(header: List[str], values):
         COUNT, DOLLAR, PERCENT
     
     x = arrayToFloatList(values[:,header.index("Month")])
-    rp_list = [e for e in header if 'researcher' in e]
-    impact = [p for p in rp_list if '_impact' in p]
-    engagement = [p for p in rp_list if '_engagement' in p]
     
     y_params = [
-        YParam(["total_rp"],
-        ["total"],"Total projects funded",LINEAR,MULT1,COUNT),
-        YParam(["total_rp_engagement"],
-        ["total"],"Total project engagement",LINEAR,MULT1,COUNT),
-        YParam(["total_rp_integration"],
-        ["total"],"Total project integration",LINEAR,MULT1,COUNT),
-        YParam(["total_rp_novelty"],
-        ["total"],"Total project novelty",LINEAR,MULT1,COUNT),
-        YParam(["total_rp_impact"],
-        ["total"],"Total project impact",LINEAR,MULT1,COUNT),
-        YParam(impact,
-        impact,"Research projects impact",LINEAR,MULT1,COUNT),
-        YParam(engagement,
-        engagement,"Research projects engagement",LINEAR,MULT1,COUNT),
     ]
 
     return (x, y_params)
