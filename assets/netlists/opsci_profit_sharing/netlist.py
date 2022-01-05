@@ -9,4 +9,4 @@ Netlist to simulate the Open Science Ecosystem, with no EVM
 
 from .SimStrategy import SimStrategy
 from .SimState import SimState
-from .KPIs import KPIs, netlist_createLogData, netlist_plotInstructions
+from .KPIs import KPIs, netlist_createLogData, netlist_plotInstructions, netlist_rp_createLogData, netlist_rp_plotInstructions
