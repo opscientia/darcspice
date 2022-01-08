@@ -170,17 +170,10 @@ def _xyToPngs(  # pylint: disable=too-many-branches, too-many-locals, too-many-a
 
         ys = [_applyMult(y, p.mult) for y in ys]
 
-<<<<<<< HEAD
-        fig, ax = pyplot.subplots()
-        
-        ax.set_xlabel("Month")
-        
-=======
         _, ax = pyplot.subplots()
 
         ax.set_xlabel(x_label)
 
->>>>>>> 11d7b3b190c5b0220cc6b6e76ec525ceb7fb5f56
         for y, label in zip(ys, p.labels):
             if label == "":
                 ax.plot(x, y)
@@ -214,11 +207,6 @@ def _xyToPngs(  # pylint: disable=too-many-branches, too-many-locals, too-many-a
         elif max_x < 152:
             xticks = [i for i in range(max_x + 1) if (i % 10) == 0]
         elif max_x < 202:
-<<<<<<< HEAD
-            xticks = [i for i in range(max_x+1) if (i%20)==0]
-        elif max_x > 202:
-            xticks = [i for i in range(max_x+1) if (i%20)==0]
-=======
             xticks = [i for i in range(max_x + 1) if (i % 20) == 0]
         elif max_x < 1000:
             xticks = [i for i in range(max_x + 1) if (i % 100) == 0]
@@ -226,7 +214,6 @@ def _xyToPngs(  # pylint: disable=too-many-branches, too-many-locals, too-many-a
             xticks = [i for i in range(max_x + 1) if (i % 500) == 0]
         else:
             raise ValueError(f"don't yet have behavior for max_x={max_x}")
->>>>>>> 11d7b3b190c5b0220cc6b6e76ec525ceb7fb5f56
         pyplot.xticks(xticks)
 
         # pyplot.show() #popup
