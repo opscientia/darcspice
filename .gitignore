@@ -15,3 +15,10 @@ example_makefile
 tokenspiceenv/
 venv/
 contracts/
+venv/
+outdir_csv/
+outdir_png/
+out.txt
+build/
+.coverage
+codacy-analysis-cli-master/

@@ -1,84 +1,106 @@
-import logging
-log = logging.getLogger('baseagent')
+"""
+Main classes in this module:
+-AgentBaseAbstract - abstract interface
+-AgentBaseNoEvm - hold AgentWalletNoEvm
+-AgentBaseEvm - hold AgentWalletEvm
+-Sub-class AgentBase{NoEvm,Evm} for specific agents (buyers, publishers, ..)
+"""
 
 from abc import ABC, abstractmethod
-from enforce_typing import enforce_types
-import typing
+import logging
 
-from engine import AgentWallet
-from web3engine import bpool, datatoken, globaltokens
+from enforce_typing import enforce_types
+
+from engine.AgentWallet import AgentWalletAbstract, AgentWalletEvm, AgentWalletNoEvm
 from util.constants import SAFETY
 from util.strutil import StrMixin
-from web3tools.web3util import toBase18
+
+log = logging.getLogger("baseagent")
+
 
 @enforce_types
-class AgentBase(ABC, StrMixin):
-    """This can be a data buyer, publisher, etc. Sub-classes implement each."""
-       
-    def __init__(self, name: str, USD: float, OCEAN: float):
+class AgentBaseAbstract(ABC):
+    def __init__(self, name: str):
         self.name = name
-        self._wallet = AgentWallet.AgentWallet(USD, OCEAN)
+        self._wallet: AgentWalletAbstract
 
-        #postconditions
-        assert self.USD() == USD
-        assert round(self.OCEAN(), 1) == OCEAN
-
-    #=======================================================================
     @abstractmethod
-    def takeStep(self, state): #this is where the Agent does *work*
+    def takeStep(self, state):  # this is where the Agent does *work*
         pass
 
-    #=======================================================================
-    #core
-    @property
-    def address(self) -> str:
-        return self._wallet._address
-        
-    #=======================================================================
-    #USD-related
+    # USD-related
     def USD(self) -> float:
-        return self._wallet.USD() 
-    
+        return self._wallet.USD()
+
     def receiveUSD(self, amount: float) -> None:
-        self._wallet.depositUSD(amount) 
+        self._wallet.depositUSD(amount)
 
     def _transferUSD(self, receiving_agent, amount: float) -> None:
-        """set receiver to None to model spending, without modeling receiver"""
         if SAFETY:
-            assert isinstance(receiving_agent, AgentBase) or (receiving_agent is None)
+            assert isinstance(receiving_agent, AgentBaseAbstract) or (
+                receiving_agent is None
+            )
         if receiving_agent is not None:
             self._wallet.transferUSD(receiving_agent._wallet, amount)
         else:
             self._wallet.withdrawUSD(amount)
-        
-    #=======================================================================
-    #OCEAN-related
+
+    # OCEAN-related
     def OCEAN(self) -> float:
-        return self._wallet.OCEAN() 
+        return self._wallet.OCEAN()
 
     def receiveOCEAN(self, amount: float) -> None:
         self._wallet.depositOCEAN(amount)
 
     def _transferOCEAN(self, receiving_agent, amount: float) -> None:
-        """set receiver to None to model spending, without modeling receiver"""
         if SAFETY:
-            assert isinstance(receiving_agent, AgentBase) or (receiving_agent is None)
+            assert isinstance(receiving_agent, AgentBaseAbstract) or (
+                receiving_agent is None
+            )
         if receiving_agent is not None:
             self._wallet.transferOCEAN(receiving_agent._wallet, amount)
         else:
             self._wallet.withdrawOCEAN(amount)
-            
-    #=======================================================================
-    #datatoken and pool-related
-    def DT(self, dt:datatoken.Datatoken) -> float:
+
+
+@enforce_types
+class AgentBaseNoEvm(StrMixin, AgentBaseAbstract):
+    def __init__(self, name: str, USD: float, OCEAN: float):
+        AgentBaseAbstract.__init__(self, name)
+        self._wallet: AgentWalletNoEvm = AgentWalletNoEvm(USD, OCEAN)
+
+        # postconditions
+        assert self.USD() == USD
+        assert self.OCEAN() == OCEAN
+
+
+@enforce_types
+class AgentBaseEvm(StrMixin, AgentBaseAbstract):
+    def __init__(self, name: str, USD: float, OCEAN: float):
+        AgentBaseAbstract.__init__(self, name)
+        self._wallet: AgentWalletEvm = AgentWalletEvm(USD, OCEAN)
+
+        # postconditions
+        assert self.USD() == USD
+        assert self.OCEAN() == OCEAN
+
+    @property
+    def address(self) -> str:
+        return self._wallet.address
+
+    @property
+    def account(self) -> str:
+        return self._wallet.account
+
+    # datatoken and pool-related
+    def DT(self, dt) -> float:
         return self._wallet.DT(dt)
-    
-    def BPT(self, pool:bpool.BPool) -> float:
+
+    def BPT(self, pool) -> float:
         return self._wallet.BPT(pool)
 
-    def stakeOCEAN(self, OCEAN_stake:float, pool:bpool.BPool):
+    def stakeOCEAN(self, OCEAN_stake: float, pool):
         self._wallet.stakeOCEAN(OCEAN_stake, pool)
 
-    def unstakeOCEAN(self, BPT_unstake:float, pool:bpool.BPool):
+    def unstakeOCEAN(self, BPT_unstake: float, pool):
         self._wallet.unstakeOCEAN(BPT_unstake, pool)
-                            

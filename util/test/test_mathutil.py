@@ -1,21 +1,21 @@
 from enforce_typing import enforce_types
 
-import numpy
 import pytest
-        
-from util.mathutil import *
+
+from util.mathutil import *  # pylint: disable=wildcard-import
+
 
 @enforce_types
 def testIsNumber():
-    for x in [-2, 0, 2, 20000,
-              -2.1, -2.0, 0.0, 2.0, 2.1, 2e6]:
+    for x in [-2, 0, 2, 20000, -2.1, -2.0, 0.0, 2.0, 2.1, 2e6]:
         assert isNumber(x)
 
-    for x in [[], [1,2], {}, {1:2, 2:3}, None, "", "foo"]:
+    for x in [[], [1, 2], {}, {1: 2, 2: 3}, None, "", "foo"]:
         assert not isNumber(x)
 
+
 @enforce_types
-def testIntInStr():        
+def testIntInStr():
     assert intInStr("123") == 123
     assert intInStr("sdds12") == 12
     assert intInStr("sdds12afdsf3zz") == 123
@@ -25,10 +25,12 @@ def testIntInStr():
     assert intInStr("0.00006") == 6
     assert intInStr("10.00006") == 1000006
 
-    with pytest.raises(ValueError): intInStr("")
+    with pytest.raises(ValueError):
+        intInStr("")
     for v in [32, None, {}, []]:
         with pytest.raises(TypeError):
             intInStr(v)
+
 
 @enforce_types
 def testRange():
@@ -37,7 +39,7 @@ def testRange():
     assert p == 2.2
 
     r = Range(-1.5, 2.5)
-    for i in range(20):
+    for _ in range(20):
         p = r.drawRandomPoint()
         assert -1.5 <= p <= 2.5
 
@@ -49,11 +51,16 @@ def testRange():
     p = r.drawRandomPoint()
     assert p == 2.3
 
-    with pytest.raises(AssertionError): Range(3.0, 1.0)
+    with pytest.raises(AssertionError):
+        Range(3.0, 1.0)
 
-    with pytest.raises(TypeError): Range(3)
-    with pytest.raises(TypeError): Range("foo")
-    with pytest.raises(TypeError): Range(3.0, "foo")
+    with pytest.raises(TypeError):
+        Range(3)
+    with pytest.raises(TypeError):
+        Range("foo")
+    with pytest.raises(TypeError):
+        Range(3.0, "foo")
+
 
 @enforce_types
 def testRangeStr():
@@ -64,10 +71,11 @@ def testRangeStr():
     assert "2.2" in s
     assert "Range}" in s
 
+
 @enforce_types
 def testRandunif():
-    for i in range(20):
-        #happy path
+    for _ in range(20):
+        # happy path
         p = randunif(-1.5, 2.5)
         assert -1.5 <= p <= 2.5
 
@@ -77,7 +85,7 @@ def testRandunif():
         p = randunif(0.0, 100.0)
         assert 0.0 <= p <= 100.0
 
-        #min = max
+        # min = max
         p = randunif(-2.0, -2.0)
         assert p == -2.0
 
@@ -87,12 +95,17 @@ def testRandunif():
         p = randunif(2.0, 2.0)
         assert p == 2.0
 
-    #exceptions
-    with pytest.raises(AssertionError): p = randunif(0.0, -1.0)
+    # exceptions
+    with pytest.raises(AssertionError):
+        p = randunif(0.0, -1.0)
 
-    with pytest.raises(TypeError): randunif(0.0, 3)
-    with pytest.raises(TypeError): randunif(0, 3.0)
-    with pytest.raises(TypeError): randunif(3.0, "foo")
+    with pytest.raises(TypeError):
+        randunif(0.0, 3)
+    with pytest.raises(TypeError):
+        randunif(0, 3.0)
+    with pytest.raises(TypeError):
+        randunif(3.0, "foo")
+
 
 @enforce_types
 def test_round_sig():
