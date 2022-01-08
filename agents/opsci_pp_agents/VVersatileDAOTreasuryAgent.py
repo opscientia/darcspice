@@ -5,12 +5,12 @@ from enforce_typing import enforce_types
 from typing import List, Dict
 import math
 
-from engine.AgentBase import AgentBase
+from engine import AgentBase
 from util.constants import S_PER_MONTH
 # Note: TICKS_BETWEEN_PROPOSALS should not be in constants but rather in SimStrategy
 
 @enforce_types
-class VVersatileDAOTreasuryAgent(AgentBase):
+class VVersatileDAOTreasuryAgent(AgentBase.AgentBaseNoEvm):
     '''
     MultDAOTreasuryAgent but funding is disbursed on a rolling basis
     Sends OCEAN to be burned, evaluates proposals, disburses funds to researchers (TODO) (acts as a treasury)

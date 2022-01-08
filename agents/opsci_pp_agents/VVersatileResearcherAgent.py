@@ -2,13 +2,13 @@ import logging
 from enforce_typing import enforce_types
 import random
 from typing import List
-from engine.AgentBase import AgentBase
-from assets.agents.opsci_pp_agents.ResearchProject import ResearchProject
+from engine import AgentBase
+from agents.opsci_pp_agents.ResearchProject import ResearchProject
 
 log = logging.getLogger('agents')
 
 @enforce_types
-class VVersatileResearcherAgent(AgentBase):
+class VVersatileResearcherAgent(AgentBase.AgentBaseNoEvm):
     '''
     Works like MultTimeResearcherAgent but is adapted to the public/private research open science model
     ResearcherAgent publishes proposals, creates knowledge assets and publishes them to a knowledge curator.

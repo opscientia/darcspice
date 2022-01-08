@@ -3,11 +3,11 @@ from enforce_typing import enforce_types
 import random
 from typing import List
 
-from engine.AgentBase import AgentBase
+from engine import AgentBase
 log = logging.getLogger('agents')
 
 @enforce_types
-class MultTimeResearcherAgent(AgentBase):
+class MultTimeResearcherAgent(AgentBase.AgentBaseNoEvm):
     '''
     Works like MultResearcherAgent but is adapted to the rolling basis funding mechanism
     ResearcherAgent publishes proposals, creates knowledge assets and publishes them to a knowledge curator.

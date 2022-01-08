@@ -5,11 +5,11 @@ from enforce_typing import enforce_types
 from typing import List, Dict
 import random
 
-from engine.AgentBase import AgentBase
+from engine import AgentBase
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class CommunityAgent(AgentBase):
+class CommunityAgent(AgentBase.AgentBaseNoEvm):
     '''
     Participates in the knowledge market, integrates knowledge assets, receives rewards
     '''

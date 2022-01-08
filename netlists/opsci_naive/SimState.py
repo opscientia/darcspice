@@ -1,7 +1,6 @@
 from enforce_typing import enforce_types
 from typing import Set
 
-from agents import MinterAgents
 from agents.opsci_agents.BaselineResearcherAgent import BaselineResearcherAgent
 from agents.opsci_agents.profit_sharing_agents.OpscientiaDAOAgent import OpscientiaDAOAgent
 from agents.opsci_agents.SellerAgent import SellerAgent

@@ -4,12 +4,11 @@ log = logging.getLogger('agents')
 from enforce_typing import enforce_types
 import random
 
-from assets.agents.opsci_pp_agents.VersatileResearcherAgent import VersatileResearcherAgent
-from engine.AgentBase import AgentBase
-from web3tools.web3util import toBase18
+from agents.opsci_pp_agents.VersatileResearcherAgent import VersatileResearcherAgent
+from engine import AgentBase
                     
 @enforce_types
-class ResearcherGeneratorAgent(AgentBase):
+class ResearcherGeneratorAgent(AgentBase.AgentBaseNoEvm):
     """Community growth agent"""
     def __init__(self, name: str, evaluator: str, USD: float, OCEAN: float, 
                  generator_cond_type: str, generator_type: str, time_interval: int, start_gen: int):

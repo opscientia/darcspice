@@ -6,14 +6,12 @@ from typing import List, Dict
 import random
 import math
 
-from assets.agents.PoolAgent import PoolAgent
-from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
-from engine.AgentBase import AgentBase
-from web3tools.web3util import toBase18
+from agents.PoolAgent import PoolAgent
+from engine import AgentBase
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class KnowledgeMarketAgent(AgentBase):
+class KnowledgeMarketAgent(AgentBase.AgentBaseNoEvm):
     '''
     Properties:
         - collects/stores knowledge assets (and OCEAN)

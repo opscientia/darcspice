@@ -3,11 +3,11 @@ from enforce_typing import enforce_types
 import random
 from typing import List
 
-from engine.AgentBase import AgentBase
+from engine import AgentBase
 log = logging.getLogger('agents')
 
 @enforce_types
-class ResearcherAgent(AgentBase):
+class ResearcherAgent(AgentBase.AgentBaseNoEvm):
     '''
     ResearcherAgent publishes proposals, creates knowledge assets and publishes them to a knowledge curator.
     Also, it keeps track of the following metrics:

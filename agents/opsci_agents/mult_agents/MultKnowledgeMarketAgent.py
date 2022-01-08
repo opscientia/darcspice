@@ -6,14 +6,12 @@ from typing import List, Dict
 import random
 import math
 
-from assets.agents.PoolAgent import PoolAgent
-from web3engine import bfactory, bpool, datatoken, dtfactory, globaltokens
-from engine.AgentBase import AgentBase
-from web3tools.web3util import toBase18
+from agents.PoolAgent import PoolAgent
+from engine import AgentBase
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class MultKnowledgeMarketAgent(AgentBase):
+class MultKnowledgeMarketAgent(AgentBase.AgentBaseNoEvm):
     '''
     Works like KnowledgeMarketAgent but is adapted use the slightly more complex proposal_evaluation
     from MultDAOTreasuryAgent

@@ -2,12 +2,12 @@ import math
 from typing import List
 from enforce_typing import enforce_types
 
-from engine.AgentBase import AgentBase
+from engine import AgentBase
 
 from util.constants import S_PER_MONTH
 
 @enforce_types
-class SellerAgent(AgentBase):
+class SellerAgent(AgentBase.AgentBaseNoEvm):
     '''
     Seller of assets in the Opscientia Marketplace (sells data, algorithms, compute services, etc.)
     In the naive model, sellers only receive rewards at each step from the sales of their assets.
