@@ -1,36 +1,35 @@
-import logging
-log = logging.getLogger('mathutil')
-
-from enforce_typing import enforce_types
 from math import log10, floor
-import numpy
 import random
 import re
-import typing
+from typing import Union
 
-from util.constants import INF
+from enforce_typing import enforce_types
+
 from util.strutil import StrMixin
 
+
 def isNumber(x) -> bool:
-    return isinstance(x, int) or isinstance(x, float)
+    return isinstance(x, (int, float))
+
 
 @enforce_types
-def intInStr(s : str) -> int:
+def intInStr(s: str) -> int:
     int_s = re.sub("[^0-9]", "", s)
     return int(int_s)
 
+
 @enforce_types
 class Range(StrMixin):
-    def __init__(self, min_: float, max_: typing.Union[float,None]=None):
+    def __init__(self, min_: float, max_: Union[float, None] = None):
         assert (max_ is None) or (max_ >= min_)
         self.min_: float = min_
-        self.max_: typing.Union[float, None] = max_
+        self.max_: Union[float, None] = max_
 
     def drawRandomPoint(self) -> float:
         if self.max_ is None:
             return self.min_
-        else:
-            return randunif(self.min_, self.max_)
+        return randunif(self.min_, self.max_)
+
 
 @enforce_types
 def randunif(mn: float, mx: float) -> float:
@@ -38,10 +37,10 @@ def randunif(mn: float, mx: float) -> float:
     assert mx >= mn
     if mn == mx:
         return mn
-    else:
-        return mn + random.random() * (mx - mn)
+    return mn + random.random() * (mx - mn)
+
 
 @enforce_types
-def round_sig(x: typing.Union[int,float], sig: int) -> typing.Union[int,float]:
+def round_sig(x: Union[int, float], sig: int) -> Union[int, float]:
     """Return a number with the specified # significant bits"""
-    return round(x, sig-int(floor(log10(abs(x))))-1)
+    return round(x, sig - int(floor(log10(abs(x)))) - 1)
