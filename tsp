@@ -22,6 +22,9 @@ TOOLS:
   tsp rplot [[Plot research project data from 1 run. Input csv. Output pngs.]]
   tsp showstats [[Show performance statistics for a run]]
 
+  === Simulation configurations ===
+  --no_researchers= [[Specify the number of researchers in the simulation]]
+
   === Tests === 
   pytest [[run all tests]]
   pytest engine/ [[run all tests in engine/ directory]]
@@ -61,8 +64,14 @@ def do_run():
     netlist_str = sys.argv[2]
     output_dir = sys.argv[3]
     do_profile = False
+    no_researchers = None
     if len(sys.argv) == 5 and sys.argv[4] == 'True':
         do_profile = True
+    elif len(sys.argv) == 5 and sys.argv[4][:17] == '--no_researchers=':
+        no_researchers = int(sys.argv[4][17:])
+    elif len(sys.argv) == 6 and sys.argv[4] == 'True' and sys.argv[5][:17] == '--no_researchers=':
+        do_profile = True
+        no_researchers = int(sys.argv[5][17:])
 
     print(f"Arguments: NETLIST={netlist_str}, OUTPUT_DIR={output_dir},"
           " DO_PROFILE={do_profile}")
@@ -77,7 +86,12 @@ def do_run():
 
     # go
     netlist_module = _importNetlistModule(netlist_str)
-    netlist_state = netlist_module.SimState()
+    if no_researchers is not None:
+        netlist_ss = netlist_module.SimStrategy(no_researchers)
+    if netlist_ss is not None:
+        netlist_state = netlist_module.SimState(netlist_ss)
+    else:
+        netlist_state = netlist_module.SimState()
     netlist_log_func = netlist_module.netlist_createLogData
     netlist_rp_log_func = netlist_module.netlist_rp_createLogData
     
