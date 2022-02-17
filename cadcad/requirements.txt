@@ -1,0 +1,4 @@
+cadCAD
+matplotlib
+plotly
+numpy
