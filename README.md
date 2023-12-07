@@ -152,7 +152,7 @@ tsp
 
 ## Run Simulations for Science Token Communities
 
-This is an overview of how Opscientia is using DARC-SPICE for simulations of science token communities. It contains inoformation on how to run the existing simulations on your own machine, description of the agents and models, and a list of features open to contributors.
+This is an overview of how Opscientia is using DARC-SPICE for simulations of science token communities. It contains information on how to run the existing simulations on your own machine, description of the agents and models, and a list of features open to contributors.
 
 Firstly, make follow the setup guide above. There are currently six netlists simulating different science value flows. The description of the different models can be found in `assets/netlists/opsci_naive/`, `assets/netlists/opsci_profit_sharing/` (contains information about profit_sharing, mult_profit_sharing, and mult_time_profit_sharing models), `assets/netlists/opsci_public_funding_ps/`.
 
